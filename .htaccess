@@ -1,0 +1,53 @@
+RewriteEngine On
+RewriteBase /base/
+
+# Disable all caching
+FileETag None
+
+# Força o Apache a enviar os headers corretos para evitar cache
+<IfModule mod_headers.c>
+    # Desabilita cache para todos os arquivos
+    Header unset ETag
+    Header unset Last-Modified
+    Header unset Cache-Control
+    Header unset Expires
+    Header unset Pragma
+    
+    # Define headers padrão para todos os arquivos
+    Header always set Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"
+    Header always set Pragma "no-cache"
+    Header always set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
+    
+    # Headers específicos para tipos de arquivos
+    <FilesMatch "\.(html|htm|php|js|css|json|xml|txt|jpg|jpeg|png|gif|svg|pdf|ico)$">
+        Header always set Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"
+        Header always set Pragma "no-cache"
+        Header always set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
+    </FilesMatch>
+
+    # Regras específicas para arquivos JavaScript
+    <FilesMatch "\.js$">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+
+    # Previne cache em navegadores móveis
+    Header always append Vary "User-Agent"
+    
+    # Força revalidação
+    Header always set must-revalidate true
+</IfModule>
+
+# Disable caching in PHP
+<IfModule mod_php.c>
+    php_value session.cache_limiter "nocache"
+</IfModule>
+
+# Route for escala visualization
+RewriteRule ^ver/?$ src/pages/escalas/ver/index.php [L,QSA,NC]
+
+# Handle other routes
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . index.php [L,NC]

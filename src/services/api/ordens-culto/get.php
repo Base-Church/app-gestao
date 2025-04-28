@@ -1,0 +1,71 @@
+<?php
+require_once __DIR__ . '/../../../../vendor/autoload.php';
+require_once __DIR__ . '/../../SessionService.php';
+
+// Carrega as variáveis de ambiente
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
+$dotenv->load();
+
+header('Content-Type: application/json');
+
+function returnError($message, $code = 400) {
+    http_response_code($code);
+    echo json_encode(['error' => $message]);
+    exit;
+}
+
+// Verifica autenticação
+SessionService::start();
+if (!SessionService::isLoggedIn()) {
+    returnError('Não autorizado', 401);
+}
+
+// Parâmetros da requisição
+$organizacao_id = SessionService::getOrganizacaoId();
+
+// Validações
+if (!$organizacao_id) {
+    returnError('ID da organização não encontrado');
+}
+
+// Monta a URL da API
+$apiUrl = $_ENV['API_BASE_URL'] . '/api/ordens-culto';
+$params = http_build_query([
+    'organizacao_id' => $organizacao_id
+]);
+$url = "{$apiUrl}?{$params}";
+
+// Configuração do cURL
+$ch = curl_init();
+curl_setopt_array($ch, [
+    CURLOPT_URL => $url,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_HTTPHEADER => [
+        'Accept: application/json',
+        'Authorization: ' . $_ENV['API_KEY']
+    ]
+]);
+
+// Executa a requisição
+$response = curl_exec($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+if (curl_errno($ch)) {
+    $error = curl_error($ch);
+    curl_close($ch);
+    returnError("Erro ao conectar com a API: {$error}", 500);
+}
+
+curl_close($ch);
+
+$data = json_decode($response, true);
+if (json_last_error() !== JSON_ERROR_NONE) {
+    returnError('Resposta inválida da API', 500);
+}
+
+http_response_code($httpCode);
+echo json_encode([
+    'code' => 200,
+    'message' => 'Ordens de culto recuperadas com sucesso',
+    'data' => $data['data'] ?? []
+]);

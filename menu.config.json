@@ -1,0 +1,87 @@
+[
+    {
+        "id": 1,
+        "nome": "Início",
+        "url": "/src/pages/inicio"
+    },
+    {
+        "id": 2,
+        "nome": "Escalas",
+        "url": "/src/pages/escalas"
+    },
+    {
+        "id": 3,
+        "nome": "Visualizar Escalas",
+        "url": "/src/pages/escalas"
+    },
+    {
+        "id": 4,
+        "nome": "Modelos",
+        "url": "/src/pages/modelos"
+    },
+    {
+        "id": 5,
+        "nome": "Lista de Músicas",
+        "url": "/src/pages/musicas"
+    },
+    {
+        "id": 6,
+        "nome": "Ministérios",
+        "url": "/src/pages/ministerios"
+    },
+    {
+        "id": 7,
+        "nome": "Liderança",
+        "url": "/src/pages/lideres"
+    },
+    {
+        "id": 8,
+        "nome": "Atividades",
+        "url": "/src/pages/atividades"
+    },
+    {
+        "id": 9,
+        "nome": "Categorias",
+        "url": "/src/pages/categoria-atividade"
+    },
+    {
+        "id": 10,
+        "nome": "Eventos",
+        "url": "/src/pages/eventos"
+    },
+    {
+        "id": 11,
+        "nome": "Recados",
+        "url": "/src/pages/recados"
+    },
+    {
+        "id": 12,
+        "nome": "Voluntários",
+        "url": "/src/pages/voluntarios"
+    },
+    {
+        "id": 13,
+        "nome": "Listagem",
+        "url": "/src/pages/voluntarios/"
+    },
+    {
+        "id": 14,
+        "nome": "Calendário",
+        "url": "/src/pages/calendario"
+    },
+    {
+        "id": 15,
+        "nome": "Observações",
+        "url": "/src/pages/observacoes"
+    },
+    {
+        "id": 16,
+        "nome": "Orden de culto",
+        "url": "/src/pages/orden-culto"
+    },
+    {
+        "id": 17,
+        "nome": "Configurações",
+        "url": "/src/pages/configuracoes"
+    }
+]
