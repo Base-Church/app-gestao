@@ -10,7 +10,7 @@ SessionService::start();
 
 // Redireciona se já estiver logado
 if (SessionService::isLoggedIn()) {
-    header('Location: ' . $_ENV['URL_BASE'] . '/src/pages/inicio');
+    header('Location: ' . $_ENV['URL_BASE'] . '/inicio');
     exit;
 }
 

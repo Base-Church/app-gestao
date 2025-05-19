@@ -138,4 +138,3 @@ class ApiService {
 (function() {
     window.apiService = new ApiService();
 })();
-// Nenhuma redundância encontrada.

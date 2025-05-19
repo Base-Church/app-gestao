@@ -130,6 +130,7 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 <!-- Escala -->
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/escala/escala.manager.service.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/escala/escala.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/escala/submit.service.js"></script>
 
 <!-- Atividades -->
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/atividades/atividades.componentes.service.js"></script>
