@@ -1,6 +1,6 @@
 async function alterarMinisterio(ministerioId) {
     try {
-        const response = await fetch(`${window.URL_BASE}/src/api/ministerios/alterar-ministerio.php`, {
+        const response = await fetch(`${window.URL_BASE}/config/alterar.ministerio.php`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

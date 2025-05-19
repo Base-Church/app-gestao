@@ -124,20 +124,8 @@ require_once __DIR__ . '/components/modal-permissions.php';
     }
 </script>
 
-<script type="module">
-    import { initializePermissionsHandlers } from './js/permissions.js';
-    
-    // Inicializa os handlers
-    initializePermissionsHandlers();
-    
-    // Importa e expõe funções necessárias globalmente
-    import { createUsuario, loadUsuarios } from './js/api.js';
-    window.createUsuario = createUsuario;
-    window.loadUsuarios = loadUsuarios;
-    
-    // Carrega dados iniciais
-    await loadUsuarios();
-</script>
+<script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/configuracoes/js/permissions.js"></script>
+<script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/configuracoes/js/api.js"></script>
 
 <?php require_once __DIR__ . '/../../components/layout/footer.php'; ?>
 

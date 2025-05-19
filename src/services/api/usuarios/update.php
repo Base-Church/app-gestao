@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../../../vendor/autoload.php';
-require_once __DIR__ . '/../../SessionService.php';
+require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 // Ativa logs de erro para debug
 ini_set('display_errors', 1);

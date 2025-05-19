@@ -100,15 +100,17 @@ require_once __DIR__ . '/../../components/layout/header.php';
 </main>
 
 <!-- Load modules and initialize app -->
+<script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/musicas/js/api.js"></script>
+<script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/musicas/js/app.js"></script>
+
 <script type="module">
-    import { MusicasAPI } from './js/api.js';
-    import { MusicasApp } from './js/app.js';
-    
-    // Configure global settings
+    import { MusicasAPI } from '<?= $_ENV['URL_BASE'] ?>/src/pages/musicas/js/api.js';
+    import { MusicasApp } from '<?= $_ENV['URL_BASE'] ?>/src/pages/musicas/js/app.js';
+
     window.APP_CONFIG = {
-        baseUrl: '<?php echo $_ENV['URL_BASE']; ?>',
-        apiUrl: '<?php echo $_ENV['API_BASE_URL']; ?>',
-        apiKey: '<?php echo $_ENV['API_KEY']; ?>',
+        baseUrl: '<?= $_ENV['URL_BASE'] ?>',
+        apiUrl: '<?= $_ENV['API_BASE_URL'] ?>',
+        apiKey: '<?= $_ENV['API_KEY'] ?>',
     };
 
     window.USER = {
@@ -118,9 +120,8 @@ require_once __DIR__ . '/../../components/layout/header.php';
         nivel: <?= json_encode(SessionService::getNivel()) ?>
     };
 
-    // Initialize app after DOM is ready
     window.addEventListener('DOMContentLoaded', () => {
-        const api = new MusicasAPI(window.APP_CONFIG.apiUrl);
+        const api = new MusicasAPI(window.APP_CONFIG.baseUrl);
         window.app = new MusicasApp(api);
     });
 </script>

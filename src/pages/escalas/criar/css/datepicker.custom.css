@@ -1,0 +1,20 @@
+.ui-datepicker {
+    font-size: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid #eee3ff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 8px;
+}
+.ui-datepicker-calendar .ui-state-highlight {
+    background: #6f16ff !important;
+    color: #fff !important;
+    border-radius: 10%;
+}
+.ui-datepicker-calendar .ui-state-active {
+    background: #6f16ff !important;
+    color: #fff !important;
+}
+.ui-datepicker-calendar td a {
+    border-radius: 10%;
+}

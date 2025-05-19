@@ -4,8 +4,8 @@
   "description": "Sistema de gerenciamento de escalas.",
   "main": "index.js",
   "scripts": {
-    "dev": "tailwindcss -i ./src/css/styles.css -o ./src/css/output.css --watch",
-    "build": "tailwindcss -i ./src/css/styles.css -o ./src/css/output.css",
+    "dev": "tailwindcss -i ./assets/css/styles.css -o ./assets/css/output.css --watch",
+    "build": "tailwindcss -i ./assets/css/styles.css -o ./assets/css/output.css",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

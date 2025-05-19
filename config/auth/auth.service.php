@@ -1,11 +1,11 @@
 <?php
-require_once __DIR__ . '/../../../vendor/autoload.php';
+require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 
 class AuthService {
     private $apiBaseUrl;
 
     public function __construct() {
-        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
+        $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__, 2));
         $dotenv->load();
         $this->apiBaseUrl = $_ENV['API_BASE_URL'];
     }

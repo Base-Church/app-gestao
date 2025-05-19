@@ -76,26 +76,39 @@ require_once __DIR__ . '/../../../components/layout/header.php';
                             </div>
                         </div>
                         <div class="flex items-end">
-                            <button type="button" class="w-full px-4 py-2 bg-primary-600 hover:bg-primary-600 text-white rounded-lg flex items-center justify-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                            <button type="button" 
+                                    data-action="salvar-escala"
+                                    class="w-full px-4 py-2 bg-primary-600 hover:bg-primary-600 text-white rounded-lg flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                </svg>
                                 Salvar
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-          <!-- Container de Eventos -->
-            <div id="eventos-container" class="p-4 space-y-4">
-                <!-- Os eventos serão adicionados dinamicamente aqui -->
+          <!-- Container de Itens -->
+            <div id="itens-container" class="space-y-4">
+                <!-- Os itens serão adicionados dinamicamente aqui -->
             </div>
 
-            <!-- Botão Adicionar Evento -->
-            <button type="button" id="btn-adicionar-evento" class="w-full py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-primary-600 hover:text-primary-700 dark:text-primary-400">
-                + Adicionar Evento
+            <!-- Botão Adicionar Item -->
+            <button type="button" id="btn-adicionar-item" class="w-full py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-primary-600 hover:text-primary-700 dark:text-primary-400">
+                + Adicionar Item
             </button>
         </div>
     </div>
 </div>
+
+<style>
+    @import url('<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/css/animacoes.escala.css');
+     @import url('<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/css/datepicker.custom.css');
+</style>
+
+ <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+  <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
 
 <script>
     // Definindo variáveis globais para uso nos serviços
@@ -103,14 +116,40 @@ require_once __DIR__ . '/../../../components/layout/header.php';
     window.API_BASE_URL = '<?php echo $_ENV['API_BASE_URL']; ?>';
     window.ORGANIZACAO_ID = '<?php echo SessionService::getOrganizacaoId(); ?>';
     window.URL_BASE = '<?php echo $_ENV['URL_BASE']; ?>';
+    window.ministerio_atual = '<?php echo SessionService::getMinisterioAtual(); ?>';
 </script>
 
-<!-- Scripts na ordem correta de dependência -->
+<!-- Geral -->
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/api.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/eventos.componentes.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/cabecalho.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/eventos.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/cabecalho/cabecalho.service.js"></script>
 
+<!-- Eventos -->
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/eventos/eventos.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/eventos/eventos.componentes.service.js"></script>
+
+<!-- Escala -->
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/escala/escala.manager.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/escala/escala.service.js"></script>
+
+<!-- Atividades -->
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/atividades/atividades.componentes.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/atividades/atividades.service.js"></script>
+
+<!-- Itens -->
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/item/item.componentes.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/item/item.manager.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/item/item.service.js"></script>
+
+<!-- voluntarios -->
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/voluntarios/voluntarios.componentes.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/voluntarios/voluntarios.service.js"></script>
+
+<!-- Utilitários -->
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/utils/item.duplicar.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/utils/item.modelos.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/utils/resumo.escala.util.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/utils/json.debug.util.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/utils/eventos.combinacao.util.service.js"></script>
 <?php require_once __DIR__ . '/../../../components/layout/footer.php'; ?>
 
 

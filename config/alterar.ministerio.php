@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../../../vendor/autoload.php';
-require_once __DIR__ . '/../../services/SessionService.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/auth/session.service.php';
 
 // Prevenir cache
 header('Content-Type: application/json');

@@ -130,9 +130,9 @@ require_once __DIR__ . '/../../components/layout/header.php';
 </script>
 
 <!-- Scripts com caminhos corrigidos -->
-<script type="module" src="js/api.js"></script>
-<script type="module" src="js/ui.js"></script>
-<script type="module" src="js/state.js"></script>
-<script type="module" src="js/main.js"></script>
+<script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/ministerios/js/api.js"></script>
+<script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/ministerios/js/ui.js"></script>
+<script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/ministerios/js/state.js"></script>
+<script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/ministerios/js/main.js"></script>
 
 <?php require_once __DIR__ . '/../../components/layout/footer.php'; ?>

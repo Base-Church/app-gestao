@@ -1,11 +1,7 @@
-</div> <!-- Fechamento do layout principal -->
-</body>
-</html>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const sessionData = <?php 
-        require_once __DIR__ . '/../../services/SessionService.php';
+        require_once __DIR__ . '/../../../config/auth/session.service.php';
         SessionService::start();
         $userData = SessionService::getUser();
         echo json_encode($userData ?? []);
@@ -23,3 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
+
+</div> <!-- Fechamento do layout principal -->
+</body>
+</html>

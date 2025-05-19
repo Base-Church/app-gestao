@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../../vendor/autoload.php';
-require_once __DIR__ . '/../../services/SessionService.php';
+require_once __DIR__ . '/../../../config/auth/session.service.php';
 
 // Carrega as variáveis de ambiente
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
@@ -35,7 +35,7 @@ $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="base-url" content="<?php echo $_ENV['URL_BASE']; ?>">
     <title><?php echo isset($pageTitle) ? $pageTitle . ' - ' : ''; ?><?php echo $_ENV['APP_NAME']; ?></title>
-    <link href="<?php echo $_ENV['URL_BASE']; ?>/src/css/output.css" rel="stylesheet">
+    <link href="<?php echo $_ENV['URL_BASE']; ?>/assets/css/output.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">

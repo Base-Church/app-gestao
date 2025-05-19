@@ -1,13 +1,18 @@
 <?php
-require_once __DIR__ . '/SessionService.php';
+require_once __DIR__ . '/auth/session.service.php';
 
 class MenuService {
     private static $menuConfig = null;
 
     public static function loadMenuConfig() {
         if (self::$menuConfig === null) {
-            $jsonContent = file_get_contents(__DIR__ . '/../../menu.config.json');
-            self::$menuConfig = json_decode($jsonContent, true);
+            $configPath = realpath(__DIR__ . '/../menu.config.json');
+            if ($configPath && file_exists($configPath)) {
+                $jsonContent = file_get_contents($configPath);
+                self::$menuConfig = json_decode($jsonContent, true);
+            } else {
+                self::$menuConfig = [];
+            }
         }
         return self::$menuConfig;
     }

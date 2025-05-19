@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../../../vendor/autoload.php';
-require_once __DIR__ . '/../../services/api/AuthService.php';
-require_once __DIR__ . '/../../services/SessionService.php';
+require_once __DIR__ . '/../../../config/auth/auth.service.php';
+require_once __DIR__ . '/../../../config/auth/session.service.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
 $dotenv->load();
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
         
-        header('Location: ' . $_ENV['URL_BASE'] . '/src/pages/inicio');
+        header('Location: ' . $_ENV['URL_BASE'] . '/inicio');
         exit;
     } else {
         $error = $result['data']['message'] ?? 'Erro ao fazer login';
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - <?php echo $_ENV['APP_NAME']; ?></title>
-    <link href="<?php echo $_ENV['URL_BASE']; ?>/src/css/output.css" rel="stylesheet">
+    <link href="<?php echo $_ENV['URL_BASE']; ?>/assets/css/output.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <style>
         body{
@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   /* Firefox */
   * {
     scrollbar-width: none;
-    scrollbar-color: #8f54a0 #ffffff;
+    scrollbar-color: #8b5cf6 #ffffff;
   }
 
   /* Chrome, Edge, and Safari */
@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
   *::-webkit-scrollbar-thumb {
-    background-color: #8f54a0;
+    background-color: #8b5cf6;
     border-radius: 10px;
     border: 3px solid #ffffff;
   }
@@ -78,10 +78,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="w-full max-w-md">
         <div class="bg-white rounded-2xl shadow-xl p-8 space-y-6">
             <div class="text-center">
-                <img src="<?php echo $_ENV['URL_BASE']; ?>/assets/img/logo-preta.svg" alt="Logo" class="h-16 w-auto relative z-10 mx-auto">
-                <p class="text-gray-600">Faça login para acessar sua conta</p>
+                <img src="<?php echo $_ENV['URL_BASE']; ?>/assets/img/logo-preta.svg" alt="Logo" class="h-18 md:h-20 w-auto relative z-10 mx-auto transition-transform hover:scale-105">
+                <p class="text-gray-600 mt-4">Faça login para acessar sua conta</p>
             </div>
-
             <?php if (isset($_GET['cadastro']) && $_GET['cadastro'] === 'success'): ?>
                 <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded">
                     <div class="flex">
@@ -163,11 +162,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </p>
         </div>
 
-        <p class="mt-8 text-center text-sm text-gray-500">
+       
+         <img src="<?php echo $_ENV['URL_BASE']; ?>/assets/img/rodape-login.png" class="mt-8 h-22 pm-8 mx-auto">
+
+          <p class="mt-8 text-center text-sm text-gray-500">
             Copyright © <?php echo date('Y'); ?> <?php echo $_ENV['APP_NAME']; ?> | Desenvolvido com ♥ por 
             <a href="https://wa.me/5563984193411" target="_blank" class="text-primary-600 hover:text-primary-700">
               Triks
             </a>
+          
         </p>
     </div>
 

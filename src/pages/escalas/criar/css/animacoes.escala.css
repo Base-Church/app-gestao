@@ -1,0 +1,29 @@
+@keyframes fade-in {
+    from { opacity: 0; transform: scale(0.96);}
+    to { opacity: 1; transform: scale(1);}
+}
+@keyframes fade-out {
+    from { opacity: 1; transform: scale(1);}
+    to { opacity: 0; transform: scale(0.96);}
+}
+.animate-fade-in {
+    animation: fade-in 0.25s cubic-bezier(.4,0,.2,1);
+}
+.animate-fade-out {
+    animation: fade-out 0.22s cubic-bezier(.4,0,.2,1);
+}
+
+.lista-atividades-flutuante {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.lista-atividades-flutuante::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(2px);
+    z-index: -1;
+}
