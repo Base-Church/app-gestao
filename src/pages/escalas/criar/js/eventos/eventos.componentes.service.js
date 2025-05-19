@@ -72,7 +72,7 @@ class EventosComponentesService {
             </button>
             <span class="mini-cards-eventos-combinados flex flex-row flex-nowrap items-center gap-1 ml-2 flex-shrink-0" data-seletor-id="${seletorId}" style="white-space:nowrap;overflow-x:auto;max-width:320px;"></span>
             <label class="block text-sm font-medium text-white dark:text-gray-100 ml-2 flex-shrink-0">Data:</label>
-            <div class="relative flex-1 min-w-0" style="max-width:180px;">
+            <div class="relative flex-1 min-w-0" style="max-width:150px;">
                 <input 
                 type="text" 
                 id="evento-data-input-${evento.id}-${seletorId}"

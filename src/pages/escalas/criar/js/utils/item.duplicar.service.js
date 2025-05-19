@@ -17,7 +17,7 @@ class ItemDuplicarService {
             if (select.parentElement && !select.parentElement.querySelector('.btn-duplicar-item')) {
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = 'btn-duplicar-item ml-2 flex items-center px-3 py-2 h-[40px] bg-primary-50 hover:bg-primary-100 border border-primary-300 text-primary-700 rounded-lg transition text-sm font-semibold shadow-sm';
+                btn.className = 'btn-duplicar-item ml-2 flex items-center px-3 py-2 h-[40px] bg-primary-50 hover:bg-primary-100 border border-primary-300 text-primary-700 rounded-lg transition text-sm font-semibold ';
                 btn.title = 'Duplicar este item';
                 btn.innerHTML = `
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

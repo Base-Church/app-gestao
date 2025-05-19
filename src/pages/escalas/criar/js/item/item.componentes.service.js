@@ -4,7 +4,7 @@
 class ItemComponentesService {
     criarItemCard(itemId) {
         return `
-        <div id="${itemId}" class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-4">
+        <div id="${itemId}" class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden mb-4">
             <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
                 <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Item</h3>
                 <div class="flex items-center gap-2">

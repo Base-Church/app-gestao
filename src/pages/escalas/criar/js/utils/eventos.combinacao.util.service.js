@@ -65,18 +65,39 @@
             const selecionados = Array.from(modalDiv.querySelectorAll('.evento-card-combinavel'))
                 .filter(card => card.querySelector('.checkbox-combinar-evento').checked)
                 .map(card => parseInt(card.dataset.eventoId));
-            // Atualiza mini-cards no cabeçalho do evento
+
+            console.log('Debug - Eventos selecionados:', selecionados);
+            console.log('Debug - SeletorId usado:', seletorId);
+
             const miniCards = document.querySelector(`.mini-cards-eventos-combinados[data-seletor-id="${seletorId}"]`);
+            console.log('Debug - MiniCards encontrado para salvar:', miniCards);
+
             if (miniCards) {
+                // Atualiza dataset e estado
+                miniCards.dataset.eventosCombinados = selecionados.join(',');
+                
+                // Atualiza o item diretamente no itemService
+                const itemAtual = window.itemService.getItens().find(item => {
+                    const eventoDataInput = document.querySelector(`.evento-datepicker[id^="evento-data-input-${item.evento?.id}"]`);
+                    return eventoDataInput?.id?.includes(seletorId);
+                });
+
+                if (itemAtual) {
+                    itemAtual.eventos_combinados = selecionados;
+                    // Força atualização do estado
+                    window.escalaManagerService.estado.itens = window.itemService.getItens();
+                }
+
+                // Atualiza visual
                 miniCards.innerHTML = '';
-                miniCards.dataset.eventosCombinados = selecionados.filter(id => Number.isInteger(id)).join(',');
-                // Layout: mini-cards sempre em linha, sem quebra
                 miniCards.style.display = "flex";
                 miniCards.style.flexDirection = "row";
                 miniCards.style.flexWrap = "nowrap";
                 miniCards.style.overflowX = "auto";
                 miniCards.style.alignItems = "center";
                 miniCards.style.maxWidth = "220px";
+
+                // Renderiza mini-cards
                 eventos.filter(ev => selecionados.includes(ev.id)).forEach(ev => {
                     miniCards.innerHTML += `
                         <span class="inline-flex items-center px-2 py-1 rounded-full border border-primary-400 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-xs mr-1 min-w-0" title="${ev.nome}" style="white-space:nowrap;">

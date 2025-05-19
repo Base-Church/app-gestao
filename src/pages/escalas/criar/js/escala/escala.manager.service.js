@@ -64,38 +64,39 @@ class EscalaManagerService {
         const cabecalho = { ...this.estado.cabecalho };
         const itens = (window.itemService.getItens() || []).map(item => {
             // Buscar a data do evento usando o seletor correto
-            const eventoDataInput = document.querySelector(`.evento-datepicker[id^="evento-data-input-${item.evento?.id}"]`);
+            const eventoId = item.evento?.id;
+            const eventoDataInput = document.querySelector(`.evento-datepicker[id^="evento-data-input-${eventoId}"]`);
             const eventoData = eventoDataInput?.value || null;
 
-            // Recupera eventos combinados do DOM (mini-cards)
+            // Corrigir a busca dos eventos combinados
             let eventosCombinados = [];
-            const seletorId = eventoDataInput?.id?.split('-').slice(-1)[0];
-            if (seletorId) {
-                const miniCards = document.querySelector(`.mini-cards-eventos-combinados[data-seletor-id="${seletorId}"]`);
-                if (miniCards && miniCards.dataset.eventosCombinados) {
+            if (eventoDataInput) {
+                // Primeiro tenta encontrar pelo seletorId do input
+                const seletorId = eventoDataInput.id.split('-').pop();
+                console.log('Debug - Buscando miniCards pelo seletorId:', seletorId);
+                
+                const miniCards = document.querySelector(`.mini-cards-eventos-combinados[data-seletor-id="seletor-eventos-${seletorId}"]`);
+                console.log('Debug - MiniCards encontrado (nova busca):', miniCards?.dataset);
+
+                if (miniCards?.dataset.eventosCombinados) {
                     eventosCombinados = miniCards.dataset.eventosCombinados
                         .split(',')
-                        .map(id => parseInt(id, 10))
-                        .filter(id => Number.isInteger(id) && !isNaN(id));
+                        .map(id => parseInt(id))
+                        .filter(id => !isNaN(id));
+                    console.log('Debug - Eventos combinados encontrados:', eventosCombinados);
                 }
             }
-
-            const conjuntos = (window.escalaService.getConjuntosDoItem(item.id) || []).map(conjunto => ({
-                atividade: conjunto.atividade ? { ...conjunto.atividade } : null,
-                voluntario: conjunto.voluntario ? { ...conjunto.voluntario } : null
-            }));
 
             return {
                 ...item,
                 data_evento: eventoData,
-                conjuntos,
+                conjuntos: window.escalaService.getConjuntosDoItem(item.id) || [],
                 eventos_combinados: eventosCombinados
             };
         });
-        return {
-            cabecalho,
-            itens
-        };
+        
+        console.log('Debug - Estado final gerado:', { cabecalho, itens });
+        return { cabecalho, itens };
     }
 }
 

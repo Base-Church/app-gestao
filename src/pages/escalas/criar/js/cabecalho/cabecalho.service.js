@@ -36,70 +36,56 @@ class CabecalhoService {
      * Ajusta as datas com base no tipo de escala selecionado
      */
     ajustarDatasComBaseNoTipo() {
-        // Usar os IDs específicos para maior precisão
         const tipoSelect = document.getElementById('tipo-escala');
         const inputDataInicio = document.getElementById('data-inicio');
         const inputDataTermino = document.getElementById('data-termino');
         
         if (!tipoSelect || !inputDataInicio || !inputDataTermino) {
-            console.error("Elementos não encontrados", {
-                tipoSelect: !!tipoSelect,
-                inputDataInicio: !!inputDataInicio,
-                inputDataTermino: !!inputDataTermino
-            });
+            console.error("Elementos não encontrados");
             return;
         }
         
         const hoje = new Date();
         const tipo = tipoSelect.value;
         
-        
         if (!tipo) {
-            // Se nenhum tipo foi selecionado, limpa os campos de data
             inputDataInicio.value = "";
             inputDataTermino.value = "";
+            // Atualiza estado
+            window.escalaManagerService.estado.cabecalho.dataInicio = "";
+            window.escalaManagerService.estado.cabecalho.dataTermino = "";
             return;
         }
         
+        let dataInicio, dataTermino;
+        
         switch (tipo) {
             case 'semanal':
-                // Para escala semanal:
-                // - Início: próximo domingo (ou hoje se for domingo)
-                // - Término: 6 dias após a data de início (de domingo a sábado)
-                const proximoDomingo = this.obterProximoDomingo(hoje);
-                inputDataInicio.value = this.formatarDataParaInput(proximoDomingo);
-                
-                const terminoSemanal = new Date(proximoDomingo);
-                terminoSemanal.setDate(proximoDomingo.getDate() + 6);
-                inputDataTermino.value = this.formatarDataParaInput(terminoSemanal);
-                
+                dataInicio = this.obterProximoDomingo(hoje);
+                dataTermino = new Date(dataInicio);
+                dataTermino.setDate(dataInicio.getDate() + 6);
                 break;
                 
             case 'mensal':
-                // Para escala mensal
-                let primeiroDiaMes;
-                if (hoje.getDate() > 15) {
-                    primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 1);
-                } else {
-                    primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-                }
-                
-                const ultimoDiaMes = new Date(primeiroDiaMes.getFullYear(), primeiroDiaMes.getMonth() + 1, 0);
-                
-                inputDataInicio.value = this.formatarDataParaInput(primeiroDiaMes);
-                inputDataTermino.value = this.formatarDataParaInput(ultimoDiaMes);
-                
+                dataInicio = new Date(hoje.getDate() > 15 ? 
+                    new Date(hoje.getFullYear(), hoje.getMonth() + 1, 1) :
+                    new Date(hoje.getFullYear(), hoje.getMonth(), 1));
+                dataTermino = new Date(dataInicio.getFullYear(), dataInicio.getMonth() + 1, 0);
                 break;
                 
             case 'avulso':
-                // Para escala avulsa
-                const proximoSabado = this.obterProximoDiaSemana(hoje, 6); // 6 = sábado
-                
-                inputDataInicio.value = this.formatarDataParaInput(proximoSabado);
-                inputDataTermino.value = this.formatarDataParaInput(proximoSabado);
-                
+                dataInicio = this.obterProximoDiaSemana(hoje, 6);
+                dataTermino = new Date(dataInicio);
                 break;
         }
+        
+        // Atualiza inputs
+        inputDataInicio.value = this.formatarDataParaInput(dataInicio);
+        inputDataTermino.value = this.formatarDataParaInput(dataTermino);
+        
+        // Atualiza estado do escalaManagerService
+        window.escalaManagerService.estado.cabecalho.dataInicio = this.formatarDataParaInput(dataInicio);
+        window.escalaManagerService.estado.cabecalho.dataTermino = this.formatarDataParaInput(dataTermino);
     }
     
     /**

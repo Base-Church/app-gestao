@@ -1148,22 +1148,6 @@ select {
   z-index: 6000;
 }
 
-.order-2 {
-  order: 2;
-}
-
-.order-3 {
-  order: 3;
-}
-
-.order-4 {
-  order: 4;
-}
-
-.order-5 {
-  order: 5;
-}
-
 .col-span-full {
   grid-column: 1 / -1;
 }
@@ -1639,6 +1623,10 @@ select {
   max-width: 80rem;
 }
 
+.max-w-\[100px\] {
+  max-width: 100px;
+}
+
 .max-w-\[1200px\] {
   max-width: 1200px;
 }
@@ -1655,28 +1643,12 @@ select {
   max-width: 28rem;
 }
 
-.max-w-xs {
-  max-width: 20rem;
-}
-
-.max-w-\[100px\] {
-  max-width: 100px;
-}
-
 .flex-1 {
   flex: 1 1 0%;
 }
 
 .flex-none {
   flex: none;
-}
-
-.flex-\[grow\] {
-  flex: grow;
-}
-
-.flex-\[shrink\] {
-  flex: shrink;
 }
 
 .flex-shrink-0 {
@@ -1687,20 +1659,8 @@ select {
   flex-shrink: 0;
 }
 
-.shrink {
-  flex-shrink: 1;
-}
-
 .flex-grow {
   flex-grow: 1;
-}
-
-.grow {
-  flex-grow: 1;
-}
-
-.basis-\[percent\] {
-  flex-basis: percent;
 }
 
 .border-collapse {
@@ -1842,10 +1802,6 @@ select {
 
 .items-center {
   align-items: center;
-}
-
-.justify-start {
-  justify-content: flex-start;
 }
 
 .justify-end {
@@ -2428,10 +2384,6 @@ select {
 .bg-zinc-900 {
   --tw-bg-opacity: 1;
   background-color: rgb(24 24 27 / var(--tw-bg-opacity, 1));
-}
-
-.bg-transparent {
-  background-color: transparent;
 }
 
 .bg-opacity-20 {
@@ -3767,6 +3719,11 @@ select {
   background-color: rgb(20 83 45 / 0.5);
 }
 
+.dark\:bg-primary-800:is(.dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(91 33 182 / var(--tw-bg-opacity, 1));
+}
+
 .dark\:bg-primary-800\/20:is(.dark *) {
   background-color: rgb(91 33 182 / 0.2);
 }
@@ -3841,15 +3798,6 @@ select {
 
 .dark\:bg-zinc-900\/60:is(.dark *) {
   background-color: rgb(24 24 27 / 0.6);
-}
-
-.dark\:bg-primary-800:is(.dark *) {
-  --tw-bg-opacity: 1;
-  background-color: rgb(91 33 182 / var(--tw-bg-opacity, 1));
-}
-
-.dark\:bg-gray-800\/80:is(.dark *) {
-  background-color: rgb(31 41 55 / 0.8);
 }
 
 .dark\:bg-opacity-50:is(.dark *) {
@@ -4051,6 +3999,11 @@ select {
   background-color: rgb(17 24 39 / var(--tw-bg-opacity, 1));
 }
 
+.dark\:hover\:bg-primary-700:hover:is(.dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(109 40 217 / var(--tw-bg-opacity, 1));
+}
+
 .dark\:hover\:bg-primary-800:hover:is(.dark *) {
   --tw-bg-opacity: 1;
   background-color: rgb(91 33 182 / var(--tw-bg-opacity, 1));
@@ -4080,11 +4033,6 @@ select {
 
 .dark\:hover\:bg-zinc-800\/50:hover:is(.dark *) {
   background-color: rgb(39 39 42 / 0.5);
-}
-
-.dark\:hover\:bg-primary-700:hover:is(.dark *) {
-  --tw-bg-opacity: 1;
-  background-color: rgb(109 40 217 / var(--tw-bg-opacity, 1));
 }
 
 .dark\:hover\:text-blue-300:hover:is(.dark *) {
@@ -4411,28 +4359,12 @@ select {
     flex-direction: row;
   }
 
-  .md\:items-center {
-    align-items: center;
-  }
-
-  .md\:justify-end {
-    justify-content: flex-end;
-  }
-
-  .md\:justify-between {
-    justify-content: space-between;
-  }
-
   .md\:gap-6 {
     gap: 1.5rem;
   }
 
   .md\:gap-8 {
     gap: 2rem;
-  }
-
-  .md\:gap-4 {
-    gap: 1rem;
   }
 
   .md\:space-y-6 > :not([hidden]) ~ :not([hidden]) {

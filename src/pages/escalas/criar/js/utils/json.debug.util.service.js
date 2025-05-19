@@ -1,12 +1,9 @@
 (function() {
     function abrirModalJsonEscala() {
-        // Remove modal anterior se existir
-        document.getElementById('modal-json-escala-debug')?.remove();
-
-        // Obtém o estado atual da escala
         let estado = {};
         if (window.escalaManagerService && typeof window.escalaManagerService.getEstadoAtual === 'function') {
             estado = window.escalaManagerService.getEstadoAtual();
+            console.log('Debug - Estado obtido:', estado); // Adicionar log
         }
 
         // Cria o modal
