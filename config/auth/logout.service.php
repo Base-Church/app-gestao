@@ -9,5 +9,5 @@ $dotenv->load();
 SessionService::logout();
 
 // Redireciona para a página de login
-header('Location: ' . $_ENV['URL_BASE'] . '/src/pages/login');
+header('Location: ' . $_ENV['URL_BASE'] . '/login');
 exit;
