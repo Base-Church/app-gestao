@@ -7,8 +7,8 @@
     root * /app
     encode gzip
     php_server {
-        php_version 8.2
-        resolver 127.0.0.11
+        root /app
+        worker /app/index.php
     }
     file_server
 }

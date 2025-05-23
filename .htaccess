@@ -47,7 +47,7 @@ FileETag None
 # Route for escala visualization
 RewriteRule ^ver/?$ src/pages/escalas/ver/index.php [L,QSA,NC]
 
-# Handle all other routes via index.php (para URLs amigáveis)
+# Handle all other routes via index.php
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [L,NC]
