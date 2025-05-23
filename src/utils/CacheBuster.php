@@ -1,4 +1,6 @@
 <?php
+namespace App\Utils;
+
 class CacheBuster {
     private static $version = null;
     private static $hasLoggedStart = false;

@@ -1,6 +1,7 @@
 {
     "name": "base/app",
     "description": "Base Escalas Application",
+    "version": "1.0.0",
     "require": {
         "php": "^8.2",
         "vlucas/phpdotenv": "^5.3",
