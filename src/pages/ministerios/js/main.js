@@ -10,7 +10,6 @@ class App {
             return;
         }
 
-        console.log('Inicializando aplicação...');
 
         // Usa a configuração do APP_CONFIG em vez de calcular a baseUrl
         this.api = new MinisteriosAPI(window.APP_CONFIG.baseUrl);
@@ -26,7 +25,6 @@ class App {
         // Carrega os dados iniciais
         this.loadMinisterios();
 
-        console.log('Aplicação inicializada com sucesso');
         this.initializeColorPicker();
     }
 
@@ -63,7 +61,6 @@ class App {
     }
 
     setupEventListeners() {
-        console.log('Configurando event listeners...');
 
         // Image Preview
         const fotoInput = document.getElementById('foto');
@@ -89,7 +86,6 @@ class App {
         this.ui.searchInput?.addEventListener('input', (e) => {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
-                console.log('Buscando:', e.target.value);
                 this.state.setSearch(e.target.value);
                 this.state.setPage(1);
                 this.loadMinisterios();
@@ -288,27 +284,46 @@ class App {
         }
 
         try {
-            console.log('Carregando ministérios...');
             this.state.setLoading(true);
             this.state.setError(null);
             this.ui.toggleElements(true);
 
             const { page, search } = this.state.getQueryParams();
-            console.log('Parâmetros da busca:', { page, search });
 
             const data = await this.api.list(page, 12, search);
-            console.log('Dados recebidos:', data);
 
             if (!data.data || data.data.length === 0) {
-                console.log('Nenhum ministério encontrado');
                 this.ui.toggleElements(false, false, true);
                 return;
             }
 
-            const html = data.data.map(ministerio => this.ui.renderMinisterioCard(ministerio)).join('');
-            this.ui.ministeriosGrid.innerHTML = html;
-            
-            if (data.meta) {
+            // Renderiza grid de cards
+            if (this.ui.ministeriosGrid) this.ui.ministeriosGrid.innerHTML = '';
+            if (this.ui.gridContainer) {
+                this.ui.gridContainer.innerHTML = this.ui.renderMinisteriosGrid(data.data);
+            }
+
+            // Anima os contadores de voluntários
+            setTimeout(() => {
+                document.querySelectorAll('.animate-vol-counter').forEach(el => {
+                    const target = parseInt(el.getAttribute('data-count')) || 0;
+                    let current = 0;
+                    const duration = 700;
+                    const step = Math.ceil(target / (duration / 30));
+                    const animate = () => {
+                        current += step;
+                        if (current >= target) {
+                            el.textContent = target;
+                        } else {
+                            el.textContent = current;
+                            setTimeout(animate, 30);
+                        }
+                    };
+                    animate();
+                });
+            }, 200);
+
+            if (data.meta && this.ui.paginationContainer) {
                 this.ui.paginationContainer.innerHTML = this.ui.renderPagination(data.meta);
             }
 
@@ -318,7 +333,7 @@ class App {
             console.error('Erro ao carregar ministérios:', error);
             this.state.setError(error.message);
             this.ui.toggleElements(false, true);
-            this.ui.errorMessage.textContent = error.message;
+            if (this.ui.errorMessage) this.ui.errorMessage.textContent = error.message;
         } finally {
             this.state.setLoading(false);
         }
@@ -375,6 +390,5 @@ class App {
 
 // Inicializa a aplicação quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM carregado. Inicializando App...');
     new App();
 });
