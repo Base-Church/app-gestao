@@ -5,7 +5,7 @@
                 <!-- Header do Modal -->
                 <div class="flex items-center justify-between border-b dark:border-gray-700 px-6 py-4">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-                        Novo Criador de Escalas
+                      Criador de Escalas
                     </h3>
                     <button type="button" 
                             onclick="document.getElementById('modal-criador-escala').classList.add('hidden')"
@@ -27,7 +27,7 @@
                             </svg>
                             <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Criador Tradicional</h4>
                             <p class="text-sm text-gray-600 dark:text-gray-300 text-center mb-4">
-                                Crie escalas manualmente, preenchendo todos os campos e eventos de forma personalizada.
+                                Crie escalas, preenchendo todos os campos e eventos de forma personalizada.
                             </p>
                             <a href="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar.php"
                                class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-primary-600 hover:bg-primary-500 transition">
@@ -41,7 +41,7 @@
                             </svg>
                             <h4 class="text-lg font-semibold text-primary-700 dark:text-primary-300 mb-2">Novo Criador (Beta)</h4>
                             <p class="text-sm text-primary-800 dark:text-primary-200 text-center mb-4">
-                                Experimente o novo criador de escalas, mais rápido e inteligente, com sugestões automáticas.
+                                Experimente o novo criador de escalas, mais rápido e inteligente, com sugestões visão geral.
                             </p>
                             <a href="<?= $_ENV['URL_BASE'] ?>/escalas/criar"
                                class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-primary-700 hover:bg-primary-600 transition">
