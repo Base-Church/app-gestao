@@ -472,22 +472,34 @@ export class VoluntariosPage {
             return '<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">Não está no grupo</span>';
         }
 
-        const currentMonth = new Date().toISOString().slice(0, 7);
-        const nextMonth = new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().slice(0, 7);
-        
+        const now = new Date();
+        const currentMonth = now.toISOString().slice(0, 7);
+        const nextMonthDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        const nextMonth = nextMonthDate.toISOString().slice(0, 7);
+
+        const day = now.getDate();
+        const inPrazo = day >= 22 && day <= 28;
+
         if (!mes) {
             return '<span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">Não preencheu</span>';
         }
-        
-        if (mes === currentMonth || mes === nextMonth) {
-            return '<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">Preencheu</span>';
-        }
-        
-        if (mes !== currentMonth && mes !== nextMonth) {
+
+        if (inPrazo) {
+            if (mes === nextMonth) {
+                return '<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">Preencheu</span>';
+            }
+            if (mes === currentMonth) {
+                return '<span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">Não preencheu</span>';
+            }
+            // Fora dos dois, desatualizado
+            return '<span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400">Desatualizado</span>';
+        } else {
+            // Fora do prazo, lógica antiga
+            if (mes === currentMonth || mes === nextMonth) {
+                return '<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">Preencheu</span>';
+            }
             return '<span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400">Desatualizado</span>';
         }
-
-        return '';
     }
 
     renderVoluntarios(data) {

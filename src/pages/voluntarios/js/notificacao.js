@@ -20,18 +20,38 @@ export class NotificacaoApp {
     }
 
     carregarVoluntariosPendentes() {
-        const currentMonth = new Date().toISOString().slice(0, 7);
-        const nextMonth = new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().slice(0, 7);
-        
-        // Filtra voluntários que não preencheram ou estão desatualizados
+        const now = new Date();
+        const currentMonth = now.toISOString().slice(0, 7);
+        const nextMonthDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        const nextMonth = nextMonthDate.toISOString().slice(0, 7);
+        const day = now.getDate();
+        const inPrazo = day >= 22 && day <= 28;
+
+        // Filtra voluntários que não preencheram ou estão desatualizados conforme nova regra
         this.voluntariosPendentes = window.app.voluntarios.filter(v => {
             const mes = v.mes_indisponibilidade;
-            return !mes || (mes !== currentMonth && mes !== nextMonth);
+            if (!mes) return true;
+            if (inPrazo) {
+                if (mes === nextMonth) return false; // Preencheu
+                if (mes === currentMonth) return true; // Não preencheu
+                return true; // Desatualizado
+            } else {
+                if (mes === currentMonth || mes === nextMonth) return false; // Preencheu
+                return true; // Desatualizado
+            }
         });
 
         // Atualiza contadores
-        const naoPreencheram = this.voluntariosPendentes.filter(v => !v.mes_indisponibilidade).length;
-        const desatualizados = this.voluntariosPendentes.length - naoPreencheram;
+        let naoPreencheram = 0;
+        let desatualizados = 0;
+        this.voluntariosPendentes.forEach(v => {
+            const mes = v.mes_indisponibilidade;
+            if (!mes) {
+                naoPreencheram++;
+            } else {
+                desatualizados++;
+            }
+        });
 
         document.getElementById('nao-preencheu-count').textContent = naoPreencheram;
         document.getElementById('desatualizado-count').textContent = desatualizados;
@@ -43,7 +63,31 @@ export class NotificacaoApp {
     renderizarLista() {
         if (!this.voluntariosList) return;
 
-        this.voluntariosList.innerHTML = this.voluntariosPendentes.map(voluntario => `
+        const now = new Date();
+        const currentMonth = now.toISOString().slice(0, 7);
+        const nextMonthDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        const nextMonth = nextMonthDate.toISOString().slice(0, 7);
+        const day = now.getDate();
+        const inPrazo = day >= 22 && day <= 28;
+
+        this.voluntariosList.innerHTML = this.voluntariosPendentes.map(voluntario => {
+            let statusLabel = 'Desatualizado';
+            if (!voluntario.mes_indisponibilidade) {
+                statusLabel = 'Não preencheu';
+            } else if (inPrazo) {
+                if (voluntario.mes_indisponibilidade === nextMonth) {
+                    statusLabel = 'Preencheu';
+                } else if (voluntario.mes_indisponibilidade === currentMonth) {
+                    statusLabel = 'Não preencheu';
+                }
+            } else {
+                if (voluntario.mes_indisponibilidade === currentMonth || voluntario.mes_indisponibilidade === nextMonth) {
+                    statusLabel = 'Preencheu';
+                }
+            }
+            if (statusLabel === 'Preencheu') return ''; // Não mostra quem já preencheu
+
+            return `
             <div class="bg-white dark:bg-gray-700 rounded-lg shadow-sm transition-all cursor-pointer 
                       ${this.voluntariosSelecionados.has(voluntario.id) ? 
                         'ring-2 ring-primary-500 bg-primary-50 dark:bg-primary-900/20' : 
@@ -68,7 +112,7 @@ export class NotificacaoApp {
                     <div class="flex-1 min-w-0">
                         <h4 class="text-sm font-medium text-gray-900 dark:text-white">${voluntario.nome}</h4>
                         <p class="text-sm text-gray-500 dark:text-gray-400">
-                            ${voluntario.mes_indisponibilidade ? 'Desatualizado' : 'Não preencheu'}
+                            ${statusLabel}
                         </p>
                         <div class="mt-1 flex items-center text-xs text-gray-500 dark:text-gray-400">
                             <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
@@ -79,7 +123,8 @@ export class NotificacaoApp {
                     </div>
                 </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     formatWhatsApp(numero) {
