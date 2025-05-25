@@ -63,20 +63,28 @@ $debug = MenuService::debug();
 
                 <!-- Escalas (ID: 2) -->
                 <?php if (hasAccess('2')): ?>
+                    <?php
+                        // Verifica se alguma rota filha está ativa para manter submenu aberto
+                        $escalasActive = strpos($currentPath, '/escalas') !== false || strpos($currentPath, '/modelos') !== false || strpos($currentPath, '/musicas') !== false;
+                    ?>
                     <div class="space-y-1">
-                        <button onclick="toggleSubMenu('escalasSubMenu')" 
-                                class="w-full flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
+                        <button type="button" onclick="toggleSubMenu('escalasSubMenu', this)" 
+                                aria-expanded="<?= $escalasActive ? 'true' : 'false' ?>"
+                                class="w-full flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group focus:outline-none">
                             <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                             </svg>
-                            <span class="font-medium">Escalas</span>
+                            <span class="font-medium flex-1 text-left">Escalas</span>
+                            <svg id="escalasArrow" class="w-4 h-4 ml-auto transition-transform duration-200 <?= $escalasActive ? 'rotate-180' : '' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
                         </button>
-                        <div id="escalasSubMenu" class="hidden pl-11 space-y-1"> <!-- Adicione 'hidden' aqui -->
+                        <div id="escalasSubMenu" class="<?= $escalasActive ? '' : 'hidden' ?> pl-11 space-y-1">
                             <!-- Visualizar Escalas (ID: 3) -->
                             <?php if (hasAccess('3')): ?>
                                 <a href="<?php echo $_ENV['URL_BASE']; ?>/escalas" 
                                    class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
-                                    <span>Visualizar Escalas</span>
+                                    <span>Ver Escalas</span>
                                 </a>
                             <?php endif; ?>
                             
@@ -120,25 +128,32 @@ $debug = MenuService::debug();
 
                 <!-- Atividades (ID: 7) -->
                 <?php if (hasAccess('7')): ?>
+                    <?php
+                        $atividadesActive = strpos($currentPath, '/atividades') !== false || strpos($currentPath, '/categoria-atividade') !== false;
+                    ?>
                     <div class="space-y-1">
-                        <button onclick="toggleSubMenu('atividadesSubMenu')" 
-                                class="w-full flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
+                        <button type="button" onclick="toggleSubMenu('atividadesSubMenu', this)" 
+                                aria-expanded="<?= $atividadesActive ? 'true' : 'false' ?>"
+                                class="w-full flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group focus:outline-none">
                             <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                             </svg>
-                            <span class="font-medium">Atividades</span>
+                            <span class="font-medium flex-1 text-left">Atividades</span>
+                            <svg id="atividadesArrow" class="w-4 h-4 ml-auto transition-transform duration-200 <?= $atividadesActive ? 'rotate-180' : '' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
                         </button>
-                        <div id="atividadesSubMenu" class="pl-11 space-y-1">
+                        <div id="atividadesSubMenu" class="<?= $atividadesActive ? '' : 'hidden' ?> pl-11 space-y-1">
                             <!-- Categorias (ID: 8) -->
                             <?php if (hasAccess('8')): ?>
-                                <a href="<?php echo $_ENV['URL_BASE']; ?>/categoria-atividade" 
+                                <a href="<?php echo $_ENV['URL_BASE']; ?>/atividades" 
                                    class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
-                                    <span>Categorias</span>
+                                    <span>Listagem</span>
                                 </a>
                             <?php endif; ?>
                             <!-- Atividades (ID: 9) -->
                             <?php if (hasAccess('9')): ?>
-                                <a href="<?php echo $_ENV['URL_BASE']; ?>/atividades" 
+                                <a href="<?php echo $_ENV['URL_BASE']; ?>/categoria-atividade" 
                                    class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
                                     <span>Atividades</span>
                                 </a>
@@ -171,20 +186,27 @@ $debug = MenuService::debug();
 
                 <!-- Voluntários (ID: 12) -->
                 <?php if (hasAccess('12')): ?>
+                    <?php
+                        $voluntariosActive = strpos($currentPath, '/voluntarios') !== false || strpos($currentPath, '/calendario') !== false || strpos($currentPath, '/observacoes') !== false;
+                    ?>
                     <div class="space-y-1">
-                        <button onclick="toggleSubMenu('voluntariosSubMenu')" 
-                                class="w-full flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
+                        <button type="button" onclick="toggleSubMenu('voluntariosSubMenu', this)" 
+                                aria-expanded="<?= $voluntariosActive ? 'true' : 'false' ?>"
+                                class="w-full flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group focus:outline-none">
                             <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                             </svg>
-                            <span class="font-medium">Voluntários</span>
+                            <span class="font-medium flex-1 text-left">Voluntários</span>
+                            <svg id="voluntariosArrow" class="w-4 h-4 ml-auto transition-transform duration-200 <?= $voluntariosActive ? 'rotate-180' : '' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
                         </button>
-                        <div id="voluntariosSubMenu" class="pl-11 space-y-1">
+                        <div id="voluntariosSubMenu" class="<?= $voluntariosActive ? '' : 'hidden' ?> pl-11 space-y-1">
                             <!-- Listagem (ID: 13) -->
                             <?php if (hasAccess('13')): ?>
                                 <a href="<?php echo $_ENV['URL_BASE']; ?>/src/pages/voluntarios/" 
                                    class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
-                                    <span>Listagem</span>
+                                    <span>Ver voluntários</span>
                                 </a>
                             <?php endif; ?>
                             <!-- Calendário (ID: 14) -->
@@ -218,35 +240,50 @@ $debug = MenuService::debug();
             </div>
 
             <script>
-            function toggleSubMenu(menuId) {
-                // Pega o estado atual do menu
-                const subMenu = document.getElementById(menuId);
-                const arrowId = menuId.replace('SubMenu', 'Arrow');
-                const arrow = document.getElementById(arrowId);
-                
-                // Fecha todos os outros submenus primeiro
+            function toggleSubMenu(menuId, btn) {
+                // Fecha todos os outros submenus
                 document.querySelectorAll('[id$="SubMenu"]').forEach(menu => {
                     if (menu.id !== menuId) {
                         menu.classList.add('hidden');
-                        const otherArrow = document.getElementById(menu.id.replace('SubMenu', 'Arrow'));
-                        if (otherArrow) {
-                            otherArrow.classList.remove('rotate-180');
-                        }
+                        const arrow = document.getElementById(menu.id.replace('SubMenu', 'Arrow'));
+                        if (arrow) arrow.classList.remove('rotate-180');
+                        const button = menu.previousElementSibling;
+                        if (button) button.setAttribute('aria-expanded', 'false');
                     }
                 });
-                
-                // Toggle apenas o menu clicado
-                subMenu.classList.toggle('hidden');
-                if (arrow) {
-                    arrow.classList.toggle('rotate-180');
+                // Toggle submenu clicado
+                const subMenu = document.getElementById(menuId);
+                const arrow = document.getElementById(menuId.replace('SubMenu', 'Arrow'));
+                if (subMenu.classList.contains('hidden')) {
+                    subMenu.classList.remove('hidden');
+                    if (arrow) arrow.classList.add('rotate-180');
+                    if (btn) btn.setAttribute('aria-expanded', 'true');
+                } else {
+                    subMenu.classList.add('hidden');
+                    if (arrow) arrow.classList.remove('rotate-180');
+                    if (btn) btn.setAttribute('aria-expanded', 'false');
                 }
             }
 
-            // Garante que todos os submenus comecem fechados ao carregar a página
+            // Fecha submenus ao clicar fora (desktop)
+            document.addEventListener('click', function(event) {
+                const sidebar = document.getElementById('sidebar');
+                if (!sidebar.contains(event.target)) {
+                    document.querySelectorAll('[id$="SubMenu"]').forEach(menu => {
+                        menu.classList.add('hidden');
+                        const arrow = document.getElementById(menu.id.replace('SubMenu', 'Arrow'));
+                        if (arrow) arrow.classList.remove('rotate-180');
+                        const button = menu.previousElementSibling;
+                        if (button) button.setAttribute('aria-expanded', 'false');
+                    });
+                }
+            });
+
+            // Garante que todos os submenus comecem fechados ao carregar a página, exceto o ativo
             document.addEventListener('DOMContentLoaded', function() {
-                document.querySelectorAll('[id$="SubMenu"]').forEach(menu => {
-                    menu.classList.add('hidden');
-                });
+                <?php if (!$escalasActive): ?>document.getElementById('escalasSubMenu')?.classList.add('hidden');<?php endif; ?>
+                <?php if (!$atividadesActive): ?>document.getElementById('atividadesSubMenu')?.classList.add('hidden');<?php endif; ?>
+                <?php if (!$voluntariosActive): ?>document.getElementById('voluntariosSubMenu')?.classList.add('hidden');<?php endif; ?>
             });
             </script>
 
