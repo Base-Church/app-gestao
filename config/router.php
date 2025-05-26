@@ -50,4 +50,7 @@ return [
 
     // Sem ministério
     '/sem-ministerio' => '/src/pages/sem-ministerio/index.php',
+
+    // Aniversariantes
+    '/aniversariantes' => '/src/pages/aniversariantes/index.php',
 ];

@@ -204,7 +204,7 @@ $debug = MenuService::debug();
                         <div id="voluntariosSubMenu" class="<?= $voluntariosActive ? '' : 'hidden' ?> pl-11 space-y-1">
                             <!-- Listagem (ID: 13) -->
                             <?php if (hasAccess('13')): ?>
-                                <a href="<?php echo $_ENV['URL_BASE']; ?>/src/pages/voluntarios/" 
+                                <a href="<?php echo $_ENV['URL_BASE']; ?>/voluntarios/" 
                                    class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
                                     <span>Ver voluntários</span>
                                 </a>
@@ -221,6 +221,12 @@ $debug = MenuService::debug();
                                 <a href="<?php echo $_ENV['URL_BASE']; ?>/observacoes" 
                                    class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
                                     <span>Observações</span>
+                                </a>
+                            <?php endif; ?>
+                            <?php if (hasAccess('15')): ?>
+                                <a href="<?php echo $_ENV['URL_BASE']; ?>/aniversariantes" 
+                                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+                                    <span>Aniversariantes</span>
                                 </a>
                             <?php endif; ?>
                         </div>
