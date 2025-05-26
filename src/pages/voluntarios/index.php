@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <input type="text" 
                            id="search-input" 
                            class="w-full pl-10 pr-4 py-3 border rounded-lg dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                           placeholder="Buscar por nome ou whatsapp..."
+                           placeholder="Buscar por nome ou CPF..."
                            autocomplete="off">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

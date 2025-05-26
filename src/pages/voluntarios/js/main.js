@@ -537,8 +537,8 @@ export class VoluntariosPage {
         if (this.search) {
             const searchLower = this.search.toLowerCase();
             voluntarios = voluntarios.filter(voluntario => 
-                voluntario.nome.toLowerCase().includes(searchLower) || 
-                this.formatWhatsApp(voluntario.whatsapp).includes(searchLower)
+                voluntario.nome.toLowerCase().includes(searchLower) ||
+                (voluntario.cpf && voluntario.cpf.replace(/\D/g, '').includes(searchLower.replace(/\D/g, '')))
             );
         }
 
