@@ -8,13 +8,13 @@ $dotenv->load();
 
 // Verificar se o usuário está logado
 if (!SessionService::isLoggedIn()) {
-    header('Location: ' . $_ENV['URL_BASE'] . '/src/pages/login');
+    header('Location: ' . $_ENV['URL_BASE'] . '/login');
     exit;
 }
 
 // Verificar se o usuário tem ministérios
 if (!SessionService::hasMinisterios()) {
-    header('Location: ' . $_ENV['URL_BASE'] . '/src/pages/sem-ministerio');
+    header('Location: ' . $_ENV['URL_BASE'] . '/sem-ministerio');
     exit;
 }
 

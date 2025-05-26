@@ -47,4 +47,7 @@ return [
     // Páginas públicas
     '/login' => '/src/pages/login/index.php',
     '/cadastro' => '/src/pages/cadastro/index.php',
+
+    // Sem ministério
+    '/sem-ministerio' => '/src/pages/sem-ministerio/index.php',
 ];
