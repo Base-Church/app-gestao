@@ -204,7 +204,7 @@ $debug = MenuService::debug();
                         <div id="voluntariosSubMenu" class="<?= $voluntariosActive ? '' : 'hidden' ?> pl-11 space-y-1">
                             <!-- Listagem (ID: 13) -->
                             <?php if (hasAccess('13')): ?>
-                                <a href="<?php echo $_ENV['URL_BASE']; ?>/voluntarios/" 
+                                <a href="<?php echo $_ENV['URL_BASE']; ?>/voluntarios" 
                                    class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
                                     <span>Ver voluntários</span>
                                 </a>

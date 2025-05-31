@@ -98,6 +98,7 @@ require_once __DIR__ . '/componentes/modal-criar.php';
     window.ENV = {
         API_BASE_URL: '<?= $_ENV['API_BASE_URL'] ?>',
         API_KEY: '<?= $_ENV['API_KEY'] ?>',
+        VER_ESCALA_URL: '<?= $_ENV['VER_ESCALA_URL'] ?>',
         URL_BASE: '<?= $_ENV['URL_BASE'] ?>'
     };
 </script>

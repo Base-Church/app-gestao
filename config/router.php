@@ -7,7 +7,8 @@ return [
     // Escalas
     '/escalas' => '/src/pages/escalas/index.php',
     '/escalas/criar' => '/src/pages/escalas/criar/index.php',
-    
+    '/escalas/editar' => '/src/pages/escalas/editar.php',
+
     '/musicas' => '/src/pages/musicas/index.php',
 
     // Modelos

@@ -82,7 +82,7 @@ require_once __DIR__ . '/../../../components/layout/header.php';
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                                 </svg>
-                                Salvar
+                                Criar escala
                             </button>
                         </div>
                     </div>
@@ -151,6 +151,10 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/utils/resumo.escala.util.service.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/utils/json.debug.util.service.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/utils/eventos.combinacao.util.service.js"></script>
+
+<!-- Escala Editar: Popula campos ao carregar se for edição -->
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/escala/escala.editar.service.js"></script>
+
 <?php require_once __DIR__ . '/../../../components/layout/footer.php'; ?>
 
 
