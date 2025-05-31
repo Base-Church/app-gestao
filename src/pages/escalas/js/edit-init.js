@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     // Preencher data do evento
                     const dataEvento = ultimoEvento.querySelector('input[name="data_evento[]"]');
                     if (dataEvento) {
-                        dataEvento.value = evento.data_evento.split('T')[0];
+                        dataEvento.value = evento.data_evento ? evento.data_evento.split('T')[0] : ''; // Ajuste para aceitar eventos sem data
                     }
 
                     // Para cada atividade do evento
