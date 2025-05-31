@@ -90,8 +90,8 @@ class EscalasListManager {
             const dataInicio = new Date(escala.data_inicio).toLocaleDateString('pt-BR');
             const dataFim = new Date(escala.data_fim).toLocaleDateString('pt-BR');
             const isAtiva = new Date(escala.data_fim) >= hoje;
-            const baseUrl = window.ENV?.URL_BASE || '';
-            const viewUrl = `${window.ENV.VER_ESCALA_URL}?ec=${escala.prefixo}-${escala.slug}`;
+            const baseUrl = "https://app.basechurch.com.br";
+            const viewUrl = `https://escalas.basechurch.com.br/ver?ec=${escala.prefixo}-${escala.slug}`;
             const editUrl = `${baseUrl}/escalas/editar?id=${escala.id}`;
 
             return `
