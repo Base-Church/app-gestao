@@ -1,6 +1,5 @@
 <?php
-// Removido require_once __DIR__ . '/../../../config/menu.service.php';
-// Removido controle de $authorizedMenus, $menuIds, função hasAccess, $debug
+
 
 // Detectar submenus ativos conforme a URL
 $currentPath = $_SERVER['REQUEST_URI'];
