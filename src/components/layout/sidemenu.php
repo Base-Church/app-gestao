@@ -1,17 +1,12 @@
 <?php
-require_once __DIR__ . '/../../../config/menu.service.php';
+// Removido require_once __DIR__ . '/../../../config/menu.service.php';
+// Removido controle de $authorizedMenus, $menuIds, função hasAccess, $debug
 
+// Detectar submenus ativos conforme a URL
 $currentPath = $_SERVER['REQUEST_URI'];
-$authorizedMenus = MenuService::getUserAuthorizedMenus();
-$menuIds = is_array($authorizedMenus) ? array_column($authorizedMenus, 'id') : [];
-
-// Função helper para verificar acesso ao menu
-function hasAccess($menuId) {
-    return MenuService::hasMenuAccess($menuId);
-}
-
-// Debug temporário para verificar permissões
-$debug = MenuService::debug();
+$escalasActive = strpos($currentPath, '/escalas') !== false || strpos($currentPath, '/modelos') !== false || strpos($currentPath, '/musicas') !== false;
+$atividadesActive = strpos($currentPath, '/atividades') !== false || strpos($currentPath, '/categoria-atividade') !== false;
+$voluntariosActive = strpos($currentPath, '/voluntarios') !== false || strpos($currentPath, '/calendario') !== false || strpos($currentPath, '/observacoes') !== false;
 ?>
 
 <!-- Botão Toggle Menu Mobile -->
@@ -50,287 +45,150 @@ $debug = MenuService::debug();
         <!-- Menu Items -->
         <nav class="flex-1 overflow-y-auto py-4 px-3">
             <div class="space-y-1">
-                <!-- Início (ID: 1) -->
-                <?php if (hasAccess('1')): ?>
-                    <a href="<?php echo $_ENV['URL_BASE']; ?>/inicio" 
-                       class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
-                        <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                        </svg>
-                        <span class="font-medium">Início</span>
-                    </a>
-                <?php endif; ?>
+                <!-- Início -->
+                <a href="<?php echo $_ENV['URL_BASE']; ?>/inicio" 
+                   class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
+                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    <span class="font-medium">Início</span>
+                </a>
 
-                <!-- Escalas (ID: 2) -->
-                <?php if (hasAccess('2')): ?>
-                    <?php
-                        // Verifica se alguma rota filha está ativa para manter submenu aberto
-                        $escalasActive = strpos($currentPath, '/escalas') !== false || strpos($currentPath, '/modelos') !== false || strpos($currentPath, '/musicas') !== false;
-                    ?>
-                    <div class="space-y-1">
-                        <button type="button" onclick="toggleSubMenu('escalasSubMenu', this)" 
-                                aria-expanded="<?= $escalasActive ? 'true' : 'false' ?>"
-                                class="w-full flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group focus:outline-none">
-                            <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                            <span class="font-medium flex-1 text-left">Escalas</span>
-                            <svg id="escalasArrow" class="w-4 h-4 ml-auto transition-transform duration-200 <?= $escalasActive ? 'rotate-180' : '' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </button>
-                        <div id="escalasSubMenu" class="<?= $escalasActive ? '' : 'hidden' ?> pl-11 space-y-1">
-                            <!-- Visualizar Escalas (ID: 3) -->
-                            <?php if (hasAccess('3')): ?>
-                                <a href="<?php echo $_ENV['URL_BASE']; ?>/escalas" 
-                                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
-                                    <span>Ver Escalas</span>
-                                </a>
-                            <?php endif; ?>
-                            
-                            <!-- Modelos (ID: 4) -->
-                            <?php if (hasAccess('4')): ?>
-                                <a href="<?php echo $_ENV['URL_BASE']; ?>/modelos" 
-                                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
-                                    <span>Modelos</span>
-                                </a>
-                            <?php endif; ?>
-                            <?php if (hasAccess('4')): ?>
-                                <a href="<?php echo $_ENV['URL_BASE']; ?>/musicas" 
-                                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
-                                    <span>Músicas</span>
-                                </a>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-                <!-- Ministérios (ID: 5) -->
-                <?php if (hasAccess('5')): ?>
-                    <a href="<?php echo $_ENV['URL_BASE']; ?>/ministerios" 
-                       class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
-                        <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                        </svg>
-                        <span class="font-medium">Ministérios</span>
-                    </a>
-                <?php endif; ?>
-                 <!-- solicitacoes (ID: 18) -->
-                 <?php if (hasAccess('18')): ?>
-                    <a href="<?php echo $_ENV['URL_BASE']; ?>/solicitacoes" 
-                       class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
-                        <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                        </svg>
-                        <span class="font-medium">Solicitações</span>
-                    </a>
-                <?php endif; ?>
-
-                <!-- Atividades (ID: 7) -->
-                <?php if (hasAccess('7')): ?>
-                    <?php
-                        $atividadesActive = strpos($currentPath, '/atividades') !== false || strpos($currentPath, '/categoria-atividade') !== false;
-                    ?>
-                    <div class="space-y-1">
-                        <button type="button" onclick="toggleSubMenu('atividadesSubMenu', this)" 
-                                aria-expanded="<?= $atividadesActive ? 'true' : 'false' ?>"
-                                class="w-full flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group focus:outline-none">
-                            <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                            <span class="font-medium flex-1 text-left">Atividades</span>
-                            <svg id="atividadesArrow" class="w-4 h-4 ml-auto transition-transform duration-200 <?= $atividadesActive ? 'rotate-180' : '' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </button>
-                        <div id="atividadesSubMenu" class="<?= $atividadesActive ? '' : 'hidden' ?> pl-11 space-y-1">
-                            <!-- Categorias (ID: 8) -->
-                            <?php if (hasAccess('8')): ?>
-                                <a href="<?php echo $_ENV['URL_BASE']; ?>/atividades" 
-                                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
-                                    <span>Listagem</span>
-                                </a>
-                            <?php endif; ?>
-                            <!-- Atividades (ID: 9) -->
-                            <?php if (hasAccess('9')): ?>
-                                <a href="<?php echo $_ENV['URL_BASE']; ?>/categoria-atividade" 
-                                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
-                                    <span>Atividades</span>
-                                </a>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-                <!-- Eventos (ID: 10) -->
-                <?php if (hasAccess('10')): ?>
-                    <a href="<?php echo $_ENV['URL_BASE']; ?>/eventos" 
-                       class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
+                <!-- Escalas (submenu) -->
+                <div class="space-y-1">
+                    <button type="button" onclick="toggleSubMenu('escalasSubMenu', this)" 
+                            aria-expanded="<?= $escalasActive ? 'true' : 'false' ?>"
+                            class="w-full flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group focus:outline-none">
                         <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
-                        <span class="font-medium">Eventos</span>
-                    </a>
-                <?php endif; ?>
-
-                <!-- Recados (ID: 11) -->
-                <?php if (hasAccess('11')): ?>
-                    <a href="<?php echo $_ENV['URL_BASE']; ?>/recados" 
-                       class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
-                        <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                        <span class="font-medium flex-1 text-left">Escalas</span>
+                        <svg id="escalasArrow" class="w-4 h-4 ml-auto transition-transform duration-200 <?= $escalasActive ? 'rotate-180' : '' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
-                        <span class="font-medium">Recados</span>
-                    </a>
-                <?php endif; ?>
-
-                <!-- Voluntários (ID: 12) -->
-                <?php if (hasAccess('12')): ?>
-                    <?php
-                        $voluntariosActive = strpos($currentPath, '/voluntarios') !== false || strpos($currentPath, '/calendario') !== false || strpos($currentPath, '/observacoes') !== false;
-                    ?>
-                    <div class="space-y-1">
-                        <button type="button" onclick="toggleSubMenu('voluntariosSubMenu', this)" 
-                                aria-expanded="<?= $voluntariosActive ? 'true' : 'false' ?>"
-                                class="w-full flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group focus:outline-none">
-                            <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                            </svg>
-                            <span class="font-medium flex-1 text-left">Voluntários</span>
-                            <svg id="voluntariosArrow" class="w-4 h-4 ml-auto transition-transform duration-200 <?= $voluntariosActive ? 'rotate-180' : '' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </button>
-                        <div id="voluntariosSubMenu" class="<?= $voluntariosActive ? '' : 'hidden' ?> pl-11 space-y-1">
-                            <!-- Listagem (ID: 13) -->
-                            <?php if (hasAccess('13')): ?>
-                                <a href="<?php echo $_ENV['URL_BASE']; ?>/voluntarios" 
-                                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
-                                    <span>Ver voluntários</span>
-                                </a>
-                            <?php endif; ?>
-                            <!-- Calendário (ID: 14) -->
-                            <?php if (hasAccess('14')): ?>
-                                <a href="<?php echo $_ENV['URL_BASE']; ?>/calendario" 
-                                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
-                                    <span>Calendário</span>
-                                </a>
-                            <?php endif; ?>
-                            <!-- Observações (ID: 15) -->
-                            <?php if (hasAccess('15')): ?>
-                                <a href="<?php echo $_ENV['URL_BASE']; ?>/observacoes" 
-                                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
-                                    <span>Observações</span>
-                                </a>
-                            <?php endif; ?>
-                            <?php if (hasAccess('15')): ?>
-                                <a href="<?php echo $_ENV['URL_BASE']; ?>/aniversariantes" 
-                                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
-                                    <span>Aniversariantes</span>
-                                </a>
-                            <?php endif; ?>
-                        </div>
+                    </button>
+                    <div id="escalasSubMenu" class="<?= $escalasActive ? '' : 'hidden' ?> pl-11 space-y-1">
+                        <a href="<?php echo $_ENV['URL_BASE']; ?>/escalas" 
+                           class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+                            <span>Ver Escalas</span>
+                        </a>
+                        <a href="<?php echo $_ENV['URL_BASE']; ?>/modelos" 
+                           class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+                            <span>Modelos</span>
+                        </a>
+                        <a href="<?php echo $_ENV['URL_BASE']; ?>/musicas" 
+                           class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+                            <span>Músicas</span>
+                        </a>
                     </div>
-                <?php endif; ?>
-
-                <!-- Orden de culto (ID: 16) -->
-                <?php if (hasAccess('16')): ?>
-                    <a href="<?php echo $_ENV['URL_BASE']; ?>/orden-culto" 
-                       class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
-                        <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                        </svg>
-                        <span class="font-medium">Orden de culto</span>
-                    </a>
-                <?php endif; ?>
-            </div>
-
-            <script>
-            function toggleSubMenu(menuId, btn) {
-                // Fecha todos os outros submenus
-                document.querySelectorAll('[id$="SubMenu"]').forEach(menu => {
-                    if (menu.id !== menuId) {
-                        menu.classList.add('hidden');
-                        const arrow = document.getElementById(menu.id.replace('SubMenu', 'Arrow'));
-                        if (arrow) arrow.classList.remove('rotate-180');
-                        const button = menu.previousElementSibling;
-                        if (button) button.setAttribute('aria-expanded', 'false');
-                    }
-                });
-                // Toggle submenu clicado
-                const subMenu = document.getElementById(menuId);
-                const arrow = document.getElementById(menuId.replace('SubMenu', 'Arrow'));
-                if (subMenu.classList.contains('hidden')) {
-                    subMenu.classList.remove('hidden');
-                    if (arrow) arrow.classList.add('rotate-180');
-                    if (btn) btn.setAttribute('aria-expanded', 'true');
-                } else {
-                    subMenu.classList.add('hidden');
-                    if (arrow) arrow.classList.remove('rotate-180');
-                    if (btn) btn.setAttribute('aria-expanded', 'false');
-                }
-            }
-
-            // Fecha submenus ao clicar fora (desktop)
-            document.addEventListener('click', function(event) {
-                const sidebar = document.getElementById('sidebar');
-                if (!sidebar.contains(event.target)) {
-                    document.querySelectorAll('[id$="SubMenu"]').forEach(menu => {
-                        menu.classList.add('hidden');
-                        const arrow = document.getElementById(menu.id.replace('SubMenu', 'Arrow'));
-                        if (arrow) arrow.classList.remove('rotate-180');
-                        const button = menu.previousElementSibling;
-                        if (button) button.setAttribute('aria-expanded', 'false');
-                    });
-                }
-            });
-
-            // Garante que todos os submenus comecem fechados ao carregar a página, exceto o ativo
-            document.addEventListener('DOMContentLoaded', function() {
-                <?php if (!$escalasActive): ?>document.getElementById('escalasSubMenu')?.classList.add('hidden');<?php endif; ?>
-                <?php if (!$atividadesActive): ?>document.getElementById('atividadesSubMenu')?.classList.add('hidden');<?php endif; ?>
-                <?php if (!$voluntariosActive): ?>document.getElementById('voluntariosSubMenu')?.classList.add('hidden');<?php endif; ?>
-            });
-            </script>
-
-            <!-- Seção de Configurações -->
-            <?php if (hasAccess('17')): ?>
-            <div class="mt-8">
-                <h3 class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Configurações</h3>
-                <div class="mt-4 space-y-1">
-                    <a href="<?php echo $_ENV['URL_BASE']; ?>/configuracoes" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
-                        <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                        </svg>
-                        <span class="font-medium">Configurações</span>
-                    </a>
                 </div>
-            </div>
-            <?php endif; ?>
-        </nav>
 
-        <!-- Session Debug Info -->
-        <div class="mt-auto px-4 py-3 border-t border-gray-200 dark:border-gray-700">
-            <div class="text-xs text-gray-400 dark:text-gray-500 space-y-1">
-                <details class="group">
-                    <summary class="flex items-center cursor-pointer hover:text-gray-500 dark:hover:text-gray-400">
-                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                <!-- Ministérios -->
+                <a href="<?php echo $_ENV['URL_BASE']; ?>/ministerios" 
+                   class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
+                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <span class="font-medium">Ministérios</span>
+                </a>
+                <!-- Solicitações -->
+                <a href="<?php echo $_ENV['URL_BASE']; ?>/solicitacoes" 
+                   class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
+                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    <span class="font-medium">Solicitações</span>
+                </a>
+                <!-- Atividades (submenu) -->
+                <div class="space-y-1">
+                    <button type="button" onclick="toggleSubMenu('atividadesSubMenu', this)" 
+                            aria-expanded="<?= $atividadesActive ? 'true' : 'false' ?>"
+                            class="w-full flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group focus:outline-none">
+                        <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
-                        Debug Info
-                    </summary>
-                    <div class="mt-2 pl-4 border-l border-gray-200 dark:border-gray-700 space-y-1">
-                        <p>ID Ministério: <?php echo $_SESSION['user']['ministerio_atual']; ?></p>
-                        <p>ID Org: <?php echo $_SESSION['user']['organizacao_id']; ?></p>
-                        <p>Nível: <?php echo $debug['nivel']; ?></p>
-                        <p>Permissões: <?php echo implode(', ', $debug['permissions']); ?></p>
-                        <p>Menus Autorizados: <?php echo implode(', ', array_column($debug['menus'], 'id')); ?></p>
-                        <p>Session ID: <?php echo session_id(); ?></p>
+                        <span class="font-medium flex-1 text-left">Atividades</span>
+                        <svg id="atividadesArrow" class="w-4 h-4 ml-auto transition-transform duration-200 <?= $atividadesActive ? 'rotate-180' : '' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="atividadesSubMenu" class="<?= $atividadesActive ? '' : 'hidden' ?> pl-11 space-y-1">
+                        <a href="<?php echo $_ENV['URL_BASE']; ?>/atividades" 
+                           class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+                            <span>Listagem</span>
+                        </a>
+                        <a href="<?php echo $_ENV['URL_BASE']; ?>/categoria-atividade" 
+                           class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+                            <span>Atividades</span>
+                        </a>
                     </div>
-                </details>
+                </div>
+                <!-- Eventos -->
+                <a href="<?php echo $_ENV['URL_BASE']; ?>/eventos" 
+                   class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
+                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <span class="font-medium">Eventos</span>
+                </a>
+                <!-- Recados -->
+                <a href="<?php echo $_ENV['URL_BASE']; ?>/recados" 
+                   class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
+                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                    </svg>
+                    <span class="font-medium">Recados</span>
+                </a>
+                <!-- Voluntários (submenu) -->
+                <div class="space-y-1">
+                    <button type="button" onclick="toggleSubMenu('voluntariosSubMenu', this)" 
+                            aria-expanded="<?= $voluntariosActive ? 'true' : 'false' ?>"
+                            class="w-full flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group focus:outline-none">
+                        <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        <span class="font-medium flex-1 text-left">Voluntários</span>
+                        <svg id="voluntariosArrow" class="w-4 h-4 ml-auto transition-transform duration-200 <?= $voluntariosActive ? 'rotate-180' : '' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="voluntariosSubMenu" class="<?= $voluntariosActive ? '' : 'hidden' ?> pl-11 space-y-1">
+                        <a href="<?php echo $_ENV['URL_BASE']; ?>/voluntarios" 
+                           class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+                            <span>Ver voluntários</span>
+                        </a>
+                        <a href="<?php echo $_ENV['URL_BASE']; ?>/calendario" 
+                           class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+                            <span>Calendário</span>
+                        </a>
+                        <a href="<?php echo $_ENV['URL_BASE']; ?>/observacoes" 
+                           class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+                            <span>Observações</span>
+                        </a>
+                        <a href="<?php echo $_ENV['URL_BASE']; ?>/aniversariantes" 
+                           class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+                            <span>Aniversariantes</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Orden de culto -->
+                <a href="<?php echo $_ENV['URL_BASE']; ?>/orden-culto" 
+                   class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
+                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    <span class="font-medium">Orden de culto</span>
+                </a>
+                <!-- Configurações -->
+                <a href="<?php echo $_ENV['URL_BASE']; ?>/configuracoes" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
+                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <span class="font-medium">Configurações</span>
+                </a>
             </div>
-        </div>
+        </nav>
 
         <!-- User Menu Button -->
         <div class="p-4 border-t dark:border-gray-700">
@@ -433,3 +291,65 @@ document.getElementById('menuToggle').addEventListener('click', function() {
     window.URL_BASE = '<?php echo $_ENV['URL_BASE']; ?>';
 </script>
 <script src="<?php echo $_ENV['URL_BASE']; ?>/assets/js/ministerio-switcher.js"></script>
+<script>
+function toggleSubMenu(menuId, btn) {
+    // Fecha todos os outros submenus
+    document.querySelectorAll('[id$="SubMenu"]').forEach(menu => {
+        if (menu.id !== menuId) {
+            menu.classList.add('hidden');
+            const arrow = document.getElementById(menu.id.replace('SubMenu', 'Arrow'));
+            if (arrow) arrow.classList.remove('rotate-180');
+            const button = menu.previousElementSibling;
+            if (button) button.setAttribute('aria-expanded', 'false');
+        }
+    });
+    // Toggle submenu clicado
+    const subMenu = document.getElementById(menuId);
+    const arrow = document.getElementById(menuId.replace('SubMenu', 'Arrow'));
+    if (subMenu.classList.contains('hidden')) {
+        subMenu.classList.remove('hidden');
+        if (arrow) arrow.classList.add('rotate-180');
+        if (btn) btn.setAttribute('aria-expanded', 'true');
+    } else {
+        subMenu.classList.add('hidden');
+        if (arrow) arrow.classList.remove('rotate-180');
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+    }
+}
+
+// Fecha submenus ao clicar fora (desktop)
+document.addEventListener('click', function(event) {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar.contains(event.target)) {
+        document.querySelectorAll('[id$="SubMenu"]').forEach(menu => {
+            menu.classList.add('hidden');
+            const arrow = document.getElementById(menu.id.replace('SubMenu', 'Arrow'));
+            if (arrow) arrow.classList.remove('rotate-180');
+            const button = menu.previousElementSibling;
+            if (button) button.setAttribute('aria-expanded', 'false');
+        });
+    }
+});
+
+// Garante que todos os submenus comecem fechados/abertos conforme a rota ao carregar a página
+document.addEventListener('DOMContentLoaded', function() {
+    <?php if (!$escalasActive): ?>document.getElementById('escalasSubMenu')?.classList.add('hidden');<?php endif; ?>
+    <?php if ($escalasActive): ?>
+        document.getElementById('escalasSubMenu')?.classList.remove('hidden');
+        document.getElementById('escalasArrow')?.classList.add('rotate-180');
+        document.querySelector('button[onclick*="escalasSubMenu"]')?.setAttribute('aria-expanded', 'true');
+    <?php endif; ?>
+    <?php if (!$atividadesActive): ?>document.getElementById('atividadesSubMenu')?.classList.add('hidden');<?php endif; ?>
+    <?php if ($atividadesActive): ?>
+        document.getElementById('atividadesSubMenu')?.classList.remove('hidden');
+        document.getElementById('atividadesArrow')?.classList.add('rotate-180');
+        document.querySelector('button[onclick*="atividadesSubMenu"]')?.setAttribute('aria-expanded', 'true');
+    <?php endif; ?>
+    <?php if (!$voluntariosActive): ?>document.getElementById('voluntariosSubMenu')?.classList.add('hidden');<?php endif; ?>
+    <?php if ($voluntariosActive): ?>
+        document.getElementById('voluntariosSubMenu')?.classList.remove('hidden');
+        document.getElementById('voluntariosArrow')?.classList.add('rotate-180');
+        document.querySelector('button[onclick*="voluntariosSubMenu"]')?.setAttribute('aria-expanded', 'true');
+    <?php endif; ?>
+});
+</script>
