@@ -43,16 +43,16 @@ $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
         body{
             font-family: 'Inter', sans-serif;
         }
-    /* ===== Scrollbar CSS ===== */
+/* ===== Scrollbar CSS ===== */
   /* Firefox */
   * {
-    scrollbar-width: none;
-    scrollbar-color: #8f54a0 #ffffff;
+    scrollbar-width: thin;
+    scrollbar-color: #4a4a4a #ffffff;
   }
 
   /* Chrome, Edge, and Safari */
   *::-webkit-scrollbar {
-    width: 16px;
+    width: 11px;
   }
 
   *::-webkit-scrollbar-track {
@@ -60,9 +60,9 @@ $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
   }
 
   *::-webkit-scrollbar-thumb {
-    background-color: #8f54a0;
-    border-radius: 10px;
-    border: 3px solid #ffffff;
+    background-color: #4a4a4a;
+    border-radius: 5px;
+    border: 1px solid #ffffff;
   }
 </style>
 

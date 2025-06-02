@@ -20,6 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-</div> <!-- Fechamento do layout principal -->
+</div>
 </body>
 </html>

@@ -71,18 +71,31 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Preencher dados do cabeçalho
             document.querySelector('input[type="text"]').value = escala.nome;
             
-            // Garantir que o select receba o valor correto
-            const tipoSelect = document.querySelector('select');
+            // Garantir que o select correto (Tipo) receba o valor correto
+            // Busca pelo label "Tipo" e seleciona o select correspondente
+            const tipoLabel = Array.from(document.querySelectorAll('label')).find(label => label.textContent.trim().toLowerCase() === 'tipo');
+            let tipoSelect = null;
+            if (tipoLabel) {
+                // O select está no mesmo grid, logo após o label
+                tipoSelect = tipoLabel.parentElement.querySelector('select');
+            }
+            // Fallback: se não encontrar pelo label, pega o primeiro select do formulário
+            if (!tipoSelect) {
+                tipoSelect = document.querySelector('form select');
+            }
             // Verificar se o valor existe nas opções antes de atribuir
-            const tipoOptions = Array.from(tipoSelect.options).map(opt => opt.value);
-            if (tipoOptions.includes(escala.tipo)) {
-                tipoSelect.value = escala.tipo;
+            if (tipoSelect) {
+                const tipoOptions = Array.from(tipoSelect.options).map(opt => opt.value);
+                if (tipoOptions.includes(escala.tipo)) {
+                    tipoSelect.value = escala.tipo;
+                } else {
+                    // Opcional: Adicionar o valor como nova opção
+                    const newOption = new Option(escala.tipo, escala.tipo);
+                    tipoSelect.add(newOption);
+                    tipoSelect.value = escala.tipo;
+                }
             } else {
-                console.warn('Tipo não encontrado nas opções:', escala.tipo);
-                // Opcional: Adicionar o valor como nova opção
-                const newOption = new Option(escala.tipo, escala.tipo);
-                tipoSelect.add(newOption);
-                tipoSelect.value = escala.tipo;
+                console.warn('Campo select de tipo não encontrado.');
             }
 
             document.querySelectorAll('input[type="date"]')[0].value = escala.data_inicio.split('T')[0];
