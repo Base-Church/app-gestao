@@ -224,7 +224,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 const voluntarioSelector = ultimaAtividade.querySelector('.voluntario-selector .voluntario-toggle-btn');
                                 if (voluntarioSelector) {
                                     voluntarioSelector.innerHTML = `
-                                        <img src="${atividade.voluntario_foto || `${URL_BASE}/assets/img/placeholder.jpg`}" class="w-12 h-12 rounded-full object-cover">
+                                        <img 
+                                            src="${atividade.voluntario_foto || `${URL_BASE}/assets/img/placeholder.jpg`}" 
+                                            class="w-12 h-12 rounded-full object-cover"
+                                            onerror="this.onerror=null; this.src='${URL_BASE}/assets/img/placeholder.jpg';"
+                                            alt="${atividade.voluntario_nome}"
+                                        >
                                         <div class="flex-1 text-left">
                                             <span class="text-gray-900 dark:text-white">${atividade.voluntario_nome}</span>
                                         </div>

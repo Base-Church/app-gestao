@@ -1,12 +1,12 @@
 <?php
-require_once __DIR__ . '/../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../config/auth/session.service.php';
+require_once __DIR__ . '/../../../../vendor/autoload.php';
+require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
 $dotenv->load();
 
 $pageTitle = 'Editar Escala';
-include __DIR__ . '/../../components/layout/header.php';
+include __DIR__ . '/../../../components/layout/header.php';
 ?>
 
 <div class="p-4 sm:ml-64">
@@ -73,13 +73,13 @@ include __DIR__ . '/../../components/layout/header.php';
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <!-- Scripts necessários para edição -->
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/js/notification-manager.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/js/get-eventos.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/js/get-atividades.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/js/get-voluntarios.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/js/dynamic-fields-manager.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/js/edit-manager.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/js/escala-edit-service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/js/edit-init.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/editar/js/notification-manager.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/editar/js/get-eventos.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/editar/js/get-atividades.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/editar/js/get-voluntarios.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/editar/js/dynamic-fields-manager.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/editar/js/edit-manager.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/editar/js/escala-edit-service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/editar/js/edit-init.js"></script>
 
-<?php require_once __DIR__ . '/../../components/layout/footer.php'; ?>
+<?php require_once __DIR__ . '/../../../components/layout/footer.php'; ?>
