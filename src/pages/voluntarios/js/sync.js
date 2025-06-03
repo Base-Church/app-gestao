@@ -82,15 +82,17 @@ export class SyncService {
     async getProfilePicture(number) {
         try {
             const response = await fetch(
-                `${this.urls.whatsapp.base}/chat/fetchProfilePictureUrl/${this.urls.whatsapp.instance}`,
+                'https://triks.uazapi.com/chat/GetNameAndImageURL',
                 {
                     method: 'POST',
                     headers: {
+                        'Accept': 'application/json',
                         'Content-Type': 'application/json',
-                        'apikey': this.urls.whatsapp.key
+                        'token': '0dd7e611-a560-4b44-bf24-f1fcd65f4613'
                     },
                     body: JSON.stringify({ 
-                        number: number // Mantém o número original com @s.whats
+                        number: number.replace('@s.whats', ''), // Remove @s.whats pois a nova API não precisa
+                        preview: false
                     })
                 }
             );
@@ -100,12 +102,12 @@ export class SyncService {
             }
 
             const data = await response.json();
-            console.log('Resposta da API:', data); // Debug
+            console.log('Resposta da API:', data);
 
-            // Verifica apenas a existência do profilePictureUrl
-            if (data && data.profilePictureUrl) {
+            // Verifica a existência do campo image na nova estrutura
+            if (data && data.image) {
                 return {
-                    profilePictureUrl: data.profilePictureUrl
+                    profilePictureUrl: data.image // Usa o campo image da nova estrutura
                 };
             } else {
                 console.warn('Resposta da API sem foto:', data);

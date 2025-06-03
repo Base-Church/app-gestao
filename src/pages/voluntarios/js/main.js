@@ -69,13 +69,16 @@ export class VoluntariosPage {
     }
 
     initializeEventListeners() {
-        // Search Input com debounce mais curto e melhor feedback
+        // Search Input com debounce otimizado
         const searchInput = document.getElementById('search-input');
-        searchInput?.addEventListener('input', this.debounce(() => {
-            this.search = searchInput.value;
-            // Usar os dados já carregados ao invés de fazer nova requisição
-            this.renderVoluntarios({ data: this.voluntarios });
-        }, 300)); // Reduzido para 300ms para feedback mais rápido
+        if (searchInput) {
+            searchInput.addEventListener('input', this.debounce(() => {
+                this.search = searchInput.value.trim();
+                if (this.voluntarios) {
+                    this.renderVoluntarios({ data: this.voluntarios });
+                }
+            }, 300));
+        }
 
         // Status Filter
         const statusSelect = document.getElementById('status-select');
@@ -533,16 +536,16 @@ export class VoluntariosPage {
         // Filtrar e ordenar voluntários
         let voluntarios = Array.isArray(data.data) ? data.data : [];
 
-        // Aplicar filtros
+        // Aplicar filtro de busca apenas por nome
         if (this.search) {
-            const searchLower = this.search.toLowerCase();
-            voluntarios = voluntarios.filter(voluntario => 
-                voluntario.nome.toLowerCase().includes(searchLower) ||
-                (voluntario.cpf && voluntario.cpf.replace(/\D/g, '').includes(searchLower.replace(/\D/g, '')))
-            );
+            const searchLower = this.search.toLowerCase().trim();
+            voluntarios = voluntarios.filter(voluntario => {
+                const nome = voluntario.nome ? voluntario.nome.toLowerCase() : '';
+                return nome.includes(searchLower);
+            });
         }
 
-        // Ordenar por ordem alfabética com proteção contra nomes nulos/undefined
+        // Ordenar por ordem alfabética
         voluntarios.sort((a, b) => {
             const nameA = (a?.nome || '').toLowerCase();
             const nameB = (b?.nome || '').toLowerCase();
