@@ -78,7 +78,7 @@ class ItemDuplicarService {
             // Popular o select de modelos (igual ao fluxo do item original)
             const selectModelo = novoItemDiv.querySelector('.select-modelo');
             if (selectModelo) {
-                window.modelosService.buscarModelos(window.ministerio_atual).then(modelos => {
+                window.modelosService.buscarModelos(window.USER.ministerio_atual).then(modelos => {
                     modelos.forEach(modelo => {
                         const opt = document.createElement('option');
                         opt.value = modelo.id;

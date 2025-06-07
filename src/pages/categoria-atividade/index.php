@@ -153,14 +153,7 @@ require_once __DIR__ . '/../../components/layout/header.php';
     </div>
 </main>
 
-<script>
-    window.USER = {
-        baseUrl: '<?= $_ENV['URL_BASE'] ?>',
-        organizacao_id: <?= SessionService::getOrganizacaoId() ?>,
-        ministerio_atual: <?= SessionService::getMinisterioAtual() ?>,
-        ministerios: <?= json_encode(SessionService::getMinisterios()) ?>,
-    };
-</script>
+
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/categoria-atividade/js/api.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/categoria-atividade/js/ui.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/categoria-atividade/js/main.js"></script>

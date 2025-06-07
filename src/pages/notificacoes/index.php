@@ -75,19 +75,6 @@ require_once __DIR__ . '/../../components/layout/footer.php';
 require_once __DIR__ . '/modal.php';
 ?>
 
-<script type="module">
-    window.USER = {
-        ministerios: <?= json_encode(SessionService::getMinisterios()) ?>,
-        organizacao_id: <?= SessionService::getOrganizacaoId() ?>,
-        nivel: <?= json_encode(SessionService::getNivel()) ?>
-    };
-    
-    window.ENV = {
-        API_BASE_URL: '<?= $_ENV['API_BASE_URL'] ?>',
-        API_KEY: '<?= $_ENV['API_KEY'] ?>',
-        URL_BASE: '<?= $_ENV['URL_BASE'] ?>'
-    };
-</script>
 
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/notificacoes/js/api-escalas-get.js"></script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/notificacoes/js/api.js"></script>

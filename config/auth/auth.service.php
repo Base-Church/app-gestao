@@ -38,8 +38,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $responseData = json_decode($response, true);
 
     if ($httpCode === 200 && isset($responseData['nome'])) {
-        // Cria a sessão do usuário com os dados retornados
-        SessionService::createUserSession($responseData);
+        // Garantir que todos os dados necessários estejam na sessão
+        $sessionData = [
+            'nome' => $responseData['nome'],
+            'ministerios' => $responseData['ministerios'] ?? [],
+            'ministerio_atual' => $responseData['ministerios'][0]['id'] ?? null,
+            'organizacao_id' => $responseData['organizacao_id'],
+            'nivel' => $responseData['nivel'],
+            'permissoes' => $responseData['permissoes'] ?? []
+        ];
+
+        // Cria a sessão do usuário com os dados completos
+        SessionService::createUserSession($sessionData);
 
         echo json_encode([
             'success' => true,

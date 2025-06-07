@@ -59,23 +59,9 @@ require_once __DIR__ . '/../../components/layout/header.php';
     </div>
 </main>
 
-<!-- Altere o script para incluir a meta tag base-url -->
-<meta name="base-url" content="<?= $_ENV['URL_BASE'] ?>">
-
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/observacoes/js/api.js"></script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/observacoes/js/ui.js"></script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/observacoes/js/main.js"></script>
 
-<script>
-    window.USER = {
-        baseUrl: '<?= $_ENV['URL_BASE'] ?>',
-        apiBaseUrl: '<?= $_ENV['API_BASE_URL'] ?>',
-        apiKey: '<?= $_ENV['API_KEY'] ?>',
-        organizacao_id: <?= $_SESSION['user']['organizacao_id'] ?>,
-        ministerio_atual: <?= $_SESSION['user']['ministerio_atual'] ?>,
-        ministerios: <?= json_encode($_SESSION['user']['ministerios']) ?>,
-        nivel: '<?= $_SESSION['user']['nivel'] ?>'
-    };
-</script>
 
 <?php require_once __DIR__ . '/../../components/layout/footer.php'; ?>

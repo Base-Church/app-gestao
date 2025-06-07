@@ -1,4 +1,3 @@
-
 import { permissionsManager } from './logic.js';
 
 export function updatePermissionsUI(ministerios) {
@@ -9,7 +8,7 @@ export function updatePermissionsUI(ministerios) {
              data-id="${ministerio.id}">
             <div class="flex items-center">
                 ${ministerio.foto 
-                    ? `<img src="${window.BASE_URL}/${ministerio.foto}" alt="${ministerio.nome}" class="w-8 h-8 rounded-full object-cover">`
+                    ? `<img src="${window.APP_CONFIG.baseUrl}/${ministerio.foto}" alt="${ministerio.nome}" class="w-8 h-8 rounded-full object-cover">`
                     : `<div class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center">
                            <span class="text-primary-700 dark:text-primary-300 font-medium text-sm">
                                ${ministerio.nome.charAt(0).toUpperCase()}

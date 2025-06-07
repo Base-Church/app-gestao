@@ -1,8 +1,7 @@
 export class UI {
     constructor() {
         this.initializeElements();
-        // Use a variável global BASE_URL se disponível, senão calcula
-        this.baseUrl = window.BASE_URL || window.location.origin + window.location.pathname.split('/src/')[0];
+        this.baseUrl = window.APP_CONFIG.baseUrl;
     }
 
     initializeElements() {

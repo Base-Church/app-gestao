@@ -6,7 +6,7 @@ class ApiService {
         // Usa as variáveis globais definidas no index.php
         this.API_BASE_URL = window.API_BASE_URL || '';
         this.API_KEY = window.API_KEY || '';
-        this.URL_BASE = window.URL_BASE || '';
+        this.URL_BASE = window.APP_CONFIG.baseUrl || '';
     }
 
     /**
@@ -47,8 +47,8 @@ class ApiService {
             let query = new URLSearchParams({
                 page: params.page || 1,
                 limit: params.limit || 100,
-                organizacao_id: params.organizacao_id || window.ORGANIZACAO_ID,
-                ministerio_id: params.ministerio_id || window.ministerio_atual
+                organizacao_id: params.organizacao_id || window.USER.organizacao_id,
+                ministerio_id: params.ministerio_id || window.USER.ministerio_atual
             }).toString();
 
             const apiUrl = `${this.URL_BASE}/src/services/api/atividades/get.php?${query}`;
@@ -112,6 +112,9 @@ class ApiService {
                     cleanParams[k] = params[k];
                 }
             });
+            // Garante uso dos dados do footer
+            if (!cleanParams.organizacao_id) cleanParams.organizacao_id = window.USER.organizacao_id;
+            if (!cleanParams.ministerio_id) cleanParams.ministerio_id = window.USER.ministerio_atual;
             const query = new URLSearchParams(cleanParams).toString();
             const apiUrl = `${this.URL_BASE}/src/services/api/voluntarios/get-sugestoes.php?${query}`;
             const response = await fetch(apiUrl, {

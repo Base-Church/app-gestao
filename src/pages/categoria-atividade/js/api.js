@@ -1,9 +1,6 @@
 class CategoriaAtividadeAPI {
-    constructor(baseUrl) {
-        if (!baseUrl) {
-            throw new Error('baseUrl é obrigatório');
-        }
-        this.baseUrl = baseUrl;
+    constructor() {
+        this.baseUrl = window.APP_CONFIG.baseUrl;
     }
 
     async list(page = 1, limit = 12, search = '') {

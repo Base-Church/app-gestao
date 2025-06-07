@@ -21,13 +21,13 @@ class EventosComponentesService {
 
     criarItemListaEvento(evento) {
         const imagemPath = evento.foto 
-            ? `${window.URL_BASE}/assets/img/eventos/${evento.foto}`
-            : `${window.URL_BASE}/assets/img/placeholder.jpg`;
+            ? `${window.APP_CONFIG.baseUrl}/assets/img/eventos/${evento.foto}`
+            : `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`;
         const horario = evento.hora ? evento.hora.substring(0, 5) : '';
         return `
         <div class="evento-item flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 transition-all duration-200" data-evento-id="${evento.id}">
             <div class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex-shrink-0">
-                <img src="${imagemPath}" alt="${evento.nome}" class="w-full h-full object-cover" onerror="this.src='${window.URL_BASE}/assets/img/placeholder.jpg'">
+                <img src="${imagemPath}" alt="${evento.nome}" class="w-full h-full object-cover" onerror="this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
             </div>
             <div class="ml-3 flex-1">
                 <h4 class="text-sm font-medium text-gray-800 dark:text-white truncate">${evento.nome}</h4>
@@ -43,8 +43,8 @@ class EventosComponentesService {
 
     criarCardEventoDetalhado(evento, seletorId) {
         const imagemPath = evento.foto 
-            ? `${window.URL_BASE}/assets/img/eventos/${evento.foto}`
-            : `${window.URL_BASE}/assets/img/placeholder.jpg`;
+            ? `${window.APP_CONFIG.baseUrl}/assets/img/eventos/${evento.foto}`
+            : `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`;
         const horario = evento.hora ? evento.hora.substring(0, 5) : '';
 
         // Mapeia dia da semana para número (0=domingo, 1=segunda, ..., 6=sábado)
@@ -95,7 +95,7 @@ class EventosComponentesService {
                      style="flex: 0 0 35%; align-items:flex-start;">
                     <div class="flex items-center flex-shrink-0 min-w-0 w-full">
                         <div class="w-16 h-16 bg-white/20 rounded-full overflow-hidden flex-shrink-0">
-                            <img src="${imagemPath}" alt="${evento.nome}" class="w-full h-full object-cover" onerror="this.src='${window.URL_BASE}/assets/img/placeholder.jpg'">
+                            <img src="${imagemPath}" alt="${evento.nome}" class="w-full h-full object-cover" onerror="this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
                         </div>
                         <div class="ml-4 flex-1 min-w-0">
                             <h3 class="text-xl font-bold text-white truncate">${evento.nome}</h3>

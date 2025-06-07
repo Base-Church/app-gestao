@@ -1,10 +1,7 @@
 export class MusicasAPI {
-    constructor(baseUrl) {
-        if (!baseUrl) {
-            throw new Error('baseUrl é obrigatório');
-        }
-        this.baseUrl = baseUrl;
-        this.apiPath = `${baseUrl}/src/services/api/musicas`;
+    constructor() {
+        this.baseUrl = window.APP_CONFIG.baseUrl;
+        this.apiPath = `${this.baseUrl}/src/services/api/musicas`;
     }
 
     async list(page = 1, limit = 1000, search = '') {

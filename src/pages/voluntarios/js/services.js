@@ -1,21 +1,32 @@
 class VoluntariosServices {
     static async getAtividades() {
         try {
+            if (!window.USER?.ministerio_atual) {
+                throw new Error('Ministério não selecionado');
+            }
+
             const params = new URLSearchParams({
                 organizacao_id: window.USER.organizacao_id,
-                ministerio_id: window.USER.ministerio_atual,
-                limit: 20
+                ministerio_id: window.USER.ministerio_atual
             });
 
-            const response = await fetch(`${window.BASE_URL}/src/services/api/atividades/get.php?${params}`);
-            if (!response.ok) throw new Error('Erro ao carregar atividades');
-            
+            const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/atividades/get.php?${params}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Cache-Control': 'no-cache'
+                },
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao carregar atividades');
+            }
+
             const data = await response.json();
-            // Mantém compatibilidade com o retorno atual da API
             return {
                 data: data.data?.map(item => ({
                     ...item,
-                    // Corrige a URL da imagem para não duplicar o caminho
                     foto: item.foto ? `/assets/img/atividades/${item.foto}` : '/assets/img/placeholder.jpg'
                 })) || [],
                 meta: data.meta
@@ -33,15 +44,14 @@ class VoluntariosServices {
                 limit: 20
             });
 
-            const response = await fetch(`${window.BASE_URL}/src/services/api/ministerios/get.php?${params}`);
+            const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/ministerios/get.php?${params}`);
             if (!response.ok) throw new Error('Erro ao carregar ministérios');
             
             const data = await response.json();
-            // Mantém compatibilidade com o retorno atual da API
             return {
                 data: data.data?.map(item => ({
                     ...item,
-                    foto: item.foto ? `${window.BASE_URL}/assets/img/ministerios/${item.foto}` : `${window.BASE_URL}/assets/img/placeholder.jpg`
+                    foto: item.foto ? `${window.APP_CONFIG.baseUrl}/assets/img/ministerios/${item.foto}` : `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`
                 })) || [],
                 meta: data.meta
             };
@@ -58,7 +68,7 @@ class VoluntariosServices {
                 ministerio_id: window.USER.ministerio_atual
             });
 
-            const response = await fetch(`${window.BASE_URL}/src/services/api/categoria-atividade/get.php?${params}`);
+            const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/categoria-atividade/get.php?${params}`);
             if (!response.ok) throw new Error('Erro ao carregar categorias');
             
             const data = await response.json();

@@ -1,11 +1,11 @@
 class App {
     constructor() {
-        if (!window.USER || !window.USER.baseUrl) {
-            console.error('Erro: Objeto USER não encontrado ou incompleto');
+        if (!window.USER) {
+            console.error('Erro: Objeto USER não encontrado');
             return;
         }
 
-        this.api = new EventosAPI(window.USER.baseUrl);
+        this.api = new EventosAPI();
         this.ui = new EventosUI();
         this.state = new EventosState();
         this.isEditing = false;

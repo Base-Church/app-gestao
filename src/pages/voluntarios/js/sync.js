@@ -121,8 +121,8 @@ export class SyncService {
 
     async updateVoluntarioFoto(id, foto) {
         try {
-            const url = `${window.BASE_URL}/src/services/api/voluntarios/update.php`;
-            console.log('URL da requisição:', url); // Debug
+            const url = `${window.APP_CONFIG.baseUrl}/src/services/api/voluntarios/update.php`;
+            console.log('URL da requisição:', url);
             
             const response = await fetch(url, {
                 method: 'PUT',

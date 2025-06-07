@@ -46,5 +46,4 @@ function toggleTheme() {
     }
 }
 
-// Remova o addEventListener do DOMContentLoaded para evitar duplicação
 </script>

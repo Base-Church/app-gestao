@@ -64,8 +64,12 @@ class EscalasListManager {
                 throw new Error(response.message || 'Erro ao carregar escalas');
             }
         } catch (error) {
+            let msg = error.message;
+            if (msg && msg.includes('A resposta da API não é JSON')) {
+                msg += ' (Verifique se a API está online e retornando JSON)';
+            }
+            this.showError(msg);
             console.error('Erro:', error);
-            this.showError(error.message);
         }
     }
 
@@ -90,7 +94,7 @@ class EscalasListManager {
             const dataInicio = new Date(escala.data_inicio).toLocaleDateString('pt-BR');
             const dataFim = new Date(escala.data_fim).toLocaleDateString('pt-BR');
             const isAtiva = new Date(escala.data_fim) >= hoje;
-            const baseUrl = window.ENV?.URL_BASE || window.location.origin + '';
+            const baseUrl = window.APP_CONFIG?.baseUrl || window.location.origin + '';
             const viewUrl = `https://escalas.basechurch.com.br/ver?ec=${escala.prefixo}-${escala.slug}`;
             const editUrl = `${baseUrl}/escalas/editar?id=${escala.id}`;
 
@@ -282,8 +286,12 @@ class EscalasListManager {
                 throw new Error(response.message || 'Erro ao excluir escala');
             }
         } catch (error) {
+            let msg = error.message;
+            if (msg && msg.includes('A resposta da API não é JSON')) {
+                msg += ' (Verifique se a API está online e retornando JSON)';
+            }
+            this.showError(msg);
             console.error('Erro:', error);
-            this.showError(error.message);
         }
     }
 
@@ -301,7 +309,7 @@ class EscalasListManager {
             return;
         }
 
-        const baseUrl = window.ENV?.URL_BASE || window.location.origin + '/baseescalas';
+        const baseUrl = window.APP_CONFIG?.baseUrl || window.location.origin + '/baseescalas';
         const viewUrl = `${baseUrl}/ver?ec=${escala.prefixo}-${escala.slug}`;
         const ministerio_id = window.USER?.ministerio_atual;
         

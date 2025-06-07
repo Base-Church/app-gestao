@@ -105,11 +105,6 @@ require_once __DIR__ . '/../../components/layout/header.php';
     <?php require_once __DIR__ . '/components/modal.php'; ?>
 </main>
 
-<script>
-    window.USER = {
-        baseUrl: '<?= $_ENV['URL_BASE'] ?>'
-    };
-</script>
 
 <!-- Scripts da página -->
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/eventos/js/api.js"></script>

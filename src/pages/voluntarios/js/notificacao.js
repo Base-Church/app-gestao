@@ -63,13 +63,6 @@ export class NotificacaoApp {
     renderizarLista() {
         if (!this.voluntariosList) return;
 
-        const now = new Date();
-        const currentMonth = now.toISOString().slice(0, 7);
-        const nextMonthDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-        const nextMonth = nextMonthDate.toISOString().slice(0, 7);
-        const day = now.getDate();
-        const inPrazo = day >= 22 && day <= 28;
-
         this.voluntariosList.innerHTML = this.voluntariosPendentes.map(voluntario => {
             let statusLabel = 'Desatualizado';
             if (!voluntario.mes_indisponibilidade) {
@@ -98,7 +91,7 @@ export class NotificacaoApp {
                     <div class="flex-shrink-0">
                         <div class="relative">
                             <img class="h-12 w-12 rounded-full object-cover" 
-                                 src="${voluntario.foto || `${window.BASE_URL}/assets/img/placeholder.jpg`}" 
+                                 src="${voluntario.foto || `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`}" 
                                  alt="${voluntario.nome}">
                             ${this.voluntariosSelecionados.has(voluntario.id) ? `
                                 <div class="absolute -top-1 -right-1 bg-primary-500 rounded-full p-1">

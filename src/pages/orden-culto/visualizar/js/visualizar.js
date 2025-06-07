@@ -8,7 +8,7 @@ async function carregarOrdemCulto() {
     }
 
     try {
-        const response = await fetch(`${window.ENV.URL_BASE}/src/services/api/ordens-culto/get-by-id.php?id=${id}`, {
+        const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/ordens-culto/get-by-id.php?id=${id}`, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -81,9 +81,9 @@ function renderizarInfoEvento(evento) {
     return `
         <div class="bg-black rounded-lg shadow p-4 border border-gray-800">
             <div class="flex items-center gap-4">
-                <img src="${window.ENV.URL_BASE}/assets/img/eventos/${evento.foto}" 
+                <img src="${window.APP_CONFIG.baseUrl}/assets/img/eventos/${evento.foto}" 
                      alt="${evento.nome}"
-                     onerror="this.src='${window.ENV.URL_BASE}/assets/img/placeholder.jpg'"
+                     onerror='this.onerror=null;this.src="${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg"'
                      class="w-16 h-16 rounded-lg object-cover">
                 <div>
                     <h2 class="text-xl font-semibold text-white">

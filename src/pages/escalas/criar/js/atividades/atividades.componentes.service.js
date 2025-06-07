@@ -34,8 +34,8 @@ class AtividadesComponentesService {
 
     criarCardAtividade(atividade) {
         const imagemPath = atividade.foto
-            ? `${window.URL_BASE}/assets/img/atividades/${atividade.foto}`
-            : `${window.URL_BASE}/assets/img/placeholder.jpg`;
+            ? `${window.APP_CONFIG.baseUrl}/assets/img/atividades/${atividade.foto}`
+            : `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`;
         
         return `
         <div class="atividade-card flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 transition-all duration-200"

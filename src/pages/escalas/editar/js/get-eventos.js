@@ -11,13 +11,13 @@ async function carregarEventos(eventoContainer) {
         params.append('page', '1');
         params.append('limit', '100');
 
-        const apiUrl = `${API_BASE_URL}/api/eventos?${params}`;
+        const apiUrl = `${window.APP_CONFIG.apiUrl}/api/eventos?${params}`;
 
         const response = await fetch(apiUrl, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'Authorization': `Bearer ${API_KEY}`
+                'Authorization': `Bearer ${window.APP_CONFIG.apiKey}`
             }
         });
         
@@ -93,8 +93,8 @@ function renderizarEventos(eventos, eventosLista, eventoContainer) {
     
     eventos.forEach(evento => {
         const fotoPath = evento.foto 
-            ? `${URL_BASE}/assets/img/eventos/${evento.foto}` 
-            : `${URL_BASE}/assets/img/eventos/placeholder.jpg`;
+            ? `${window.APP_CONFIG.baseUrl}/assets/img/eventos/${evento.foto}` 
+            : `${window.APP_CONFIG.baseUrl}/assets/img/eventos/placeholder.jpg`;
         
         const turno = getTurno(evento.hora);
         
@@ -154,8 +154,8 @@ function selecionarEvento(id, nome, foto, eventoContainer) {
         const evento = window.todosEventos.find(e => e.id === id);
         const turno = getTurno(evento.hora);
         const fotoPath = foto 
-            ? `${URL_BASE}/assets/img/eventos/${foto}` 
-            : `${URL_BASE}/assets/img/eventos/placeholder.jpg`;
+            ? `${window.APP_CONFIG.baseUrl}/assets/img/eventos/${foto}` 
+            : `${window.APP_CONFIG.baseUrl}/assets/img/eventos/placeholder.jpg`;
         
         // Modificação na estrutura do HTML para manter os inputs fora da div aninhada
         seletor.innerHTML = `

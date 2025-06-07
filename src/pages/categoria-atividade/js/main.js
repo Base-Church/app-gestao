@@ -1,11 +1,11 @@
 class App {
     constructor() {
-        if (!window.USER || !window.USER.baseUrl) {
-            console.error('Erro: Objeto USER não encontrado ou incompleto');
+        if (!window.USER) {
+            console.error('Erro: Objeto USER não encontrado');
             return;
         }
 
-        this.api = new CategoriaAtividadeAPI(window.USER.baseUrl);
+        this.api = new CategoriaAtividadeAPI();
         this.ui = new CategoriaAtividadeUI();
         this.currentPage = 1;
         this.itemsPerPage = 10;

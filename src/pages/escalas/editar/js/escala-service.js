@@ -157,7 +157,7 @@ class EscalaService {
 
             // Enviar requisição
             this.logInfo('ENVIANDO_REQUISIÇÃO', {
-                url: `${API_BASE_URL}/api/escalas`,
+                url: `${window.APP_CONFIG.apiUrl}/api/escalas`,
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -166,12 +166,12 @@ class EscalaService {
                 }
             });
 
-            const response = await fetch(`${API_BASE_URL}/api/escalas`, {
+            const response = await fetch(`${window.APP_CONFIG.apiUrl}/api/escalas`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${API_KEY}`
+                    'Authorization': `Bearer ${window.APP_CONFIG.apiKey}`
                 },
                 body: JSON.stringify(payload)
             });
@@ -209,7 +209,7 @@ class EscalaService {
                     showConfirmButton: false,
                     timer: 3000
                 }).then(() => {
-                    window.location.href = `${URL_BASE}/src/pages/escalas/`;
+                    window.location.href = `${window.APP_CONFIG.baseUrl}/src/pages/escalas/`;
                 });
             }
 

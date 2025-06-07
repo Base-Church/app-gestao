@@ -74,14 +74,13 @@ async function carregarVoluntarios(atividadeContainer) {
         params.append('page', '1');
         params.append('limit', '100');
 
-        const apiUrl = `${API_BASE_URL}/api/voluntarios-sugestoes?${params}`;
+        const apiUrl = `${window.APP_CONFIG.apiUrl}/api/voluntarios-sugestoes?${params}`;
       
-
         const response = await fetch(apiUrl, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'Authorization': `Bearer ${API_KEY}`
+                'Authorization': `Bearer ${window.APP_CONFIG.apiKey}`
             }
         });
         
@@ -206,10 +205,10 @@ function criarCardVoluntario(voluntario, isSugestao, atividadeId, atividadeConta
     // Foto
     const foto = document.createElement('img');
     foto.classList.add('w-12', 'h-12', 'rounded-full', 'object-cover', 'border-2', 'border-transparent', 'group-hover:border-primary-300');
-    foto.src = voluntario.foto || `${URL_BASE}/assets/img/placeholder.jpg`;
+    foto.src = voluntario.foto || `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`;
     foto.alt = voluntario.nome;
     foto.onerror = () => {
-        foto.src = `${URL_BASE}/assets/img/placeholder.jpg`;
+        foto.src = `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`;
     };
 
     // Informações do voluntário

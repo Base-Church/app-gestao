@@ -98,15 +98,7 @@ require_once __DIR__ . '/../../components/layout/header.php';
     </div>
 </div>
 
-<script>
-    window.USER = {
-        baseUrl: '<?= $_ENV['URL_BASE'] ?>',
-        organizacao_id: '<?= $_SESSION['user']['organizacao_id'] ?>',
-        ministerio_atual: '<?= $_SESSION['user']['ministerio_atual'] ?>',
-        ministerios: <?= json_encode($_SESSION['user']['ministerios']) ?>,
-        nivel: '<?= $_SESSION['user']['nivel'] ?>'
-    };
-</script>
+
 
 <!-- Scripts -->
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/calendario/js/api.js"></script>

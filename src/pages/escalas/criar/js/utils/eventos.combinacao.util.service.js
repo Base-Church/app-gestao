@@ -30,7 +30,7 @@
                     ${eventos.map(ev => `
                         <div class="evento-card-combinavel flex items-center gap-3 p-2 rounded border border-gray-200 dark:border-gray-700 cursor-pointer transition ${eventosCombinados.includes(ev.id) ? 'bg-primary-50 border-primary-400' : 'bg-white dark:bg-gray-900'}"
                             data-evento-id="${ev.id}">
-                            <img src="${ev.foto ? window.URL_BASE + '/assets/img/eventos/' + ev.foto : window.URL_BASE + '/assets/img/placeholder.jpg'}" class="w-10 h-10 rounded-full object-cover" alt="${ev.nome}">
+                            <img src="${ev.foto ? window.APP_CONFIG.baseUrl + '/assets/img/eventos/' + ev.foto : window.APP_CONFIG.baseUrl + '/assets/img/placeholder.jpg'}" class="w-10 h-10 rounded-full object-cover" alt="${ev.nome}">
                             <div class="flex-1 min-w-0">
                                 <div class="font-semibold text-gray-900 dark:text-white">${ev.nome}</div>
                                 <div class="text-xs text-gray-500">${ev.dia_semana || ''} • ${ev.hora ? ev.hora.substring(0,5) : ''} • ${ev.tipo || ''}</div>
@@ -101,7 +101,7 @@
                 eventos.filter(ev => selecionados.includes(ev.id)).forEach(ev => {
                     miniCards.innerHTML += `
                         <span class="inline-flex items-center px-2 py-1 rounded-full border border-primary-400 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-xs mr-1 min-w-0" title="${ev.nome}" style="white-space:nowrap;">
-                            <img src="${ev.foto ? window.URL_BASE + '/assets/img/eventos/' + ev.foto : window.URL_BASE + '/assets/img/placeholder.jpg'}" class="w-5 h-5 rounded-full object-cover mr-1 flex-shrink-0" alt="${ev.nome}">
+                            <img src="${ev.foto ? window.APP_CONFIG.baseUrl + '/assets/img/eventos/' + ev.foto : window.APP_CONFIG.baseUrl + '/assets/img/placeholder.jpg'}" class="w-5 h-5 rounded-full object-cover mr-1 flex-shrink-0" alt="${ev.nome}">
                             <span class="truncate max-w-[100px]">${ev.nome}</span>
                             <span class="ml-1 text-gray-500 dark:text-gray-400 flex-shrink-0">${ev.hora ? ev.hora.substring(0,5) : ''}</span>
                         </span>

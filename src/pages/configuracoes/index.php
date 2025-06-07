@@ -98,15 +98,6 @@ require_once __DIR__ . '/components/modal-permissions.php';
 ?>
 
 <script>
-    window.USER = {
-        ministerios: <?= json_encode(SessionService::getMinisterios()) ?>,
-        organizacao_id: <?= SessionService::getOrganizacaoId() ?>,
-        ministerio_atual: <?= json_encode(SessionService::getMinisterioAtual()) ?>,
-        nivel: <?= json_encode(SessionService::getNivel()) ?>
-    };
-    window.BASE_URL = '<?= $_ENV['URL_BASE'] ?>';
-    window.API_KEY = '<?= $_ENV['API_KEY'] ?>';
-    
     function switchTab(tabId) {
         // Atualiza classes dos botões
         document.querySelectorAll('.tab-button').forEach(button => {

@@ -62,13 +62,6 @@ include __DIR__ . '/../../../components/layout/header.php';
 
 <?php require_once __DIR__ . '/templates.php'; ?>
 <!-- Definir variáveis globais -->
-<script>
-    const API_KEY = '<?php echo $_ENV['API_KEY']; ?>';
-    const API_BASE_URL = '<?php echo $_ENV['API_BASE_URL']; ?>';
-    const ORGANIZACAO_ID = '<?php echo SessionService::getOrganizacaoId(); ?>';
-    const URL_BASE = '<?php echo $_ENV['URL_BASE']; ?>';
-</script>
-
 <!-- Adicionar SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

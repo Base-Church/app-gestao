@@ -8,13 +8,7 @@ class App {
             return;
         }
 
-        const baseUrl = document.querySelector('meta[name="base-url"]')?.content;
-        if (!baseUrl) {
-            console.error('Base URL não encontrada');
-            return;
-        }
-
-        this.api = new ObservacoesAPI(baseUrl);
+        this.api = new ObservacoesAPI();
         this.ui = new UI();
         this.setupEventListeners();
         this.initialize();
@@ -42,22 +36,17 @@ class App {
             const { organizacao_id, ministerio_atual } = window.USER;
             const mes = this.ui.mesSelect.value;
 
-         
-
             const response = await this.api.list(organizacao_id, ministerio_atual, mes);
             
             if (!response.data || response.data.length === 0) {
-             
                 this.ui.toggleElements(false, false, true);
                 return;
             }
 
-          
             this.ui.renderObservacoes(response.data);
             this.ui.toggleElements();
 
         } catch (error) {
-        
             this.ui.showError(error.message);
         }
     }

@@ -122,14 +122,5 @@ require_once __DIR__ . '/components/modal.php';
 require_once __DIR__ . '/../../components/layout/footer.php';
 ?>
 
-<script>
-    window.BASE_URL = '<?= $_ENV['URL_BASE'] ?>';
-    window.USER = {
-        ministerios: <?= json_encode(SessionService::getMinisterios()) ?>,
-        ministerio_atual: <?= json_encode(SessionService::getMinisterioAtual()) ?>,
-        organizacao_id: <?= SessionService::getOrganizacaoId() ?>,
-        nivel: <?= json_encode(SessionService::getNivel()) ?>
-    };
-</script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/atividades/js/api.js"></script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/atividades/js/main.js"></script>

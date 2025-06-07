@@ -2,7 +2,7 @@ import { MusicasAPI } from './api.js';
 
 export class MusicasApp {
     constructor() {
-        this.api = new MusicasAPI(window.APP_CONFIG.baseUrl);
+        this.api = new MusicasAPI();
         this.currentPage = 1;
         this.searchTimeout = null;
         this.currentItem = null;
@@ -383,5 +383,4 @@ export class MusicasApp {
     }
 }
 
-// Torna a classe disponível globalmente
 window.MusicasApp = MusicasApp;

@@ -23,7 +23,7 @@ class App {
             ministerio_atual: window.USER.ministerio_atual
         };
 
-        this.api = new RecadosAPI(window.USER.baseUrl);
+        this.api = new RecadosAPI();
         this.ui = new RecadosUI();
         this.showAll = false; // Adiciona controle para mostrar todos
         this.isEditing = false;

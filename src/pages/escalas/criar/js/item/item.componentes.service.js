@@ -52,7 +52,7 @@ class ItemComponentesService {
                         ? `<div class="h-full w-full flex items-center bg-gray-50 dark:bg-gray-700 rounded-lg">
                             <div class="w-full p-4 flex items-center gap-3">
                                 <div class="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden flex-shrink-0">
-                                    <img src="${conjunto.atividade.img || (window.URL_BASE + '/assets/img/placeholder.jpg')}" alt="${conjunto.atividade.nome}" class="w-full h-full object-cover rounded-full">
+                                    <img src="${conjunto.atividade.img || (window.APP_CONFIG.baseUrl + '/assets/img/placeholder.jpg')}" alt="${conjunto.atividade.nome}" class="w-full h-full object-cover rounded-full">
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <h4 class="font-medium text-gray-900 dark:text-white text-sm truncate">${conjunto.atividade.nome}</h4>
@@ -71,7 +71,7 @@ class ItemComponentesService {
                         ? `<div class="h-full w-full flex items-center bg-gray-50 dark:bg-gray-700 rounded-lg">
                             <div class="w-full p-4 flex items-center gap-3">
                                 <div class="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden flex-shrink-0">
-                                    <img src="${conjunto.voluntario.img || (window.URL_BASE + '/assets/img/placeholder.jpg')}" alt="${conjunto.voluntario.nome}" class="w-full h-full object-cover rounded-full" onerror="this.onerror=null;this.src='${window.URL_BASE}/assets/img/placeholder.jpg'">
+                                    <img src="${conjunto.voluntario.img || (window.APP_CONFIG.baseUrl + '/assets/img/placeholder.jpg')}" alt="${conjunto.voluntario.nome}" class="w-full h-full object-cover rounded-full" onerror="this.onerror=null;this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <h4 class="font-medium text-gray-900 dark:text-white text-sm truncate">${conjunto.voluntario.nome}</h4>

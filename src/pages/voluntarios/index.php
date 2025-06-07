@@ -1,6 +1,7 @@
 <?php
 $pageTitle = "Voluntários";
 require_once __DIR__ . '/../../components/layout/header.php';
+
 ?>
 
 <!-- Move o modal para o container de modais -->
@@ -106,30 +107,6 @@ require_once __DIR__ . '/components/modal.php';
 require_once __DIR__ . '/components/modal-notificacao.php';
 require_once __DIR__ . '/../../components/layout/footer.php';
 ?>
-
-<script type="module">
-    // Garantir que as variáveis globais estejam disponíveis antes dos scripts
-    window.USER = {
-        ministerios: <?= json_encode(SessionService::getMinisterios()) ?>,
-        organizacao_id: <?= SessionService::getOrganizacaoId() ?>,
-        ministerio_atual: <?= json_encode(SessionService::getMinisterioAtual()) ?>, // Usar json_encode para garantir tipo correto
-        nivel: <?= json_encode(SessionService::getNivel()) ?>
-    };
-    window.BASE_URL = '<?= $_ENV['URL_BASE'] ?>';
-    window.API_KEY = '<?= $_ENV['API_KEY'] ?>';
-    // Adicionar configurações do WhatsApp
-    window.WHATSAPP_API_URL = '<?= $_ENV['WHATSAPP_API_URL'] ?>';
-    window.WHATSAPP_API_KEY = '<?= $_ENV['WHATSAPP_API_KEY'] ?>';
-    window.WHATSAPP_INSTANCE = '<?= $_ENV['WHATSAPP_INSTANCE'] ?>';
-
-    
-    // Verificar se há ministério selecionado
-    if (!window.USER.ministerio_atual) {
-        document.getElementById('error-message').textContent = 'Selecione um ministério para continuar';
-        document.getElementById('error-container').classList.remove('hidden');
-    }
-</script>
-
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/voluntarios/js/api.js"></script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/voluntarios/js/main.js"></script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/voluntarios/js/notificacao.js"></script>

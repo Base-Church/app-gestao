@@ -49,15 +49,5 @@ require_once __DIR__ . '/../../components/layout/header.php';
 
 <?php require_once __DIR__ . '/../../components/layout/footer.php'; ?>
 
-<script type="module">
-window.USER = {
-    ministerios: <?= json_encode(SessionService::getMinisterios()) ?>,
-    organizacao_id: <?= SessionService::getOrganizacaoId() ?>,
-    ministerio_atual: <?= json_encode(SessionService::getMinisterioAtual()) ?>,
-    nivel: <?= json_encode(SessionService::getNivel()) ?>
-};
-window.BASE_URL = '<?= $_ENV['URL_BASE'] ?>';
-window.API_KEY = '<?= $_ENV['API_KEY'] ?>';
-</script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/aniversariantes/js/api.js"></script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/aniversariantes/js/main.js"></script>

@@ -12,23 +12,33 @@ export async function getEscalas(params = {}) {
     });
 
     try {
-        const response = await fetch(`${window.ENV.API_BASE_URL}/api/escalas?${searchParams}`, {
+        const response = await fetch(`${window.APP_CONFIG.apiUrl}/api/escalas?${searchParams}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'Authorization': `Bearer ${window.ENV.API_KEY}`
+                'Authorization': `Bearer ${window.APP_CONFIG.apiKey}`
             },
-            // Remover configurações de cache dos headers e usar modo de cache
             mode: 'cors',
             credentials: 'omit'
         });
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Erro ao carregar escalas');
+        const text = await response.text();
+        let json;
+        try {
+            json = JSON.parse(text);
+        } catch (e) {
+            // Se a resposta não for JSON, provavelmente é HTML de erro
+            if (text.startsWith('<!DOCTYPE') || text.startsWith('<html')) {
+                throw new Error('A resposta da API não é JSON. Verifique a URL da API ou se o backend está online.');
+            }
+            throw new Error('Erro ao processar resposta da API: ' + e.message);
         }
 
-        return await response.json();
+        if (!response.ok) {
+            throw new Error(json.message || 'Erro ao carregar escalas');
+        }
+
+        return json;
     } catch (error) {
         console.error('Erro na requisição:', error);
         throw error;

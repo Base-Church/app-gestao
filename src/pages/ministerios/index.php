@@ -78,26 +78,7 @@ require_once __DIR__ . '/../../components/layout/header.php';
     <?php require_once __DIR__ . '/components/modal.php'; ?>
 </main>
 
-<script>
-    // Disponibiliza as variáveis de ambiente necessárias para o JavaScript
-    window.APP_CONFIG = {
-        baseUrl: '<?php echo $_ENV['URL_BASE']; ?>',
-        apiUrl: '<?php echo $_ENV['API_BASE_URL']; ?>',
-        whatsapp: {
-            apiUrl: '<?php echo $_ENV['WHATSAPP_API_URL']; ?>',
-            apiKey: '<?php echo $_ENV['WHATSAPP_API_KEY']; ?>',
-            instance: '<?php echo $_ENV['WHATSAPP_INSTANCE']; ?>'
-        }
-    };
 
-    // Garantir que as variáveis globais estejam disponíveis antes dos scripts
-    window.USER = {
-        ministerios: <?= json_encode(SessionService::getMinisterios()) ?>,
-        organizacao_id: <?= SessionService::getOrganizacaoId() ?>,
-        ministerio_atual: <?= json_encode(SessionService::getMinisterioAtual()) ?>,
-        nivel: <?= json_encode(SessionService::getNivel()) ?>
-    };
-</script>
 
 <!-- Scripts com caminhos corrigidos -->
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/ministerios/js/api.js"></script>

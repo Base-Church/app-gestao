@@ -1,10 +1,6 @@
 export class AtividadesAPI {
-    constructor(baseUrl) {
-        if (!baseUrl) {
-            throw new Error('baseUrl é obrigatório');
-        }
-        // Corrige o caminho da API
-        this.baseUrl = `${baseUrl}/src/services/api/atividades`;
+    constructor() {
+        this.baseUrl = `${window.APP_CONFIG.baseUrl}/src/services/api/atividades`;
     }
 
     async list(ministerio_id, page = 1, limit = 20, search = '', categoria_id = '') {

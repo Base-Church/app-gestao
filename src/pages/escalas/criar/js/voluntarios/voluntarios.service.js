@@ -15,6 +15,9 @@ class VoluntariosService {
                     cleanParams[k] = params[k];
                 }
             });
+            // Garante uso dos dados do footer
+            if (!cleanParams.organizacao_id) cleanParams.organizacao_id = window.USER.organizacao_id;
+            if (!cleanParams.ministerio_id) cleanParams.ministerio_id = window.USER.ministerio_atual;
             const { sugestoes, todos } = await window.apiService.buscarVoluntariosSugestoes(cleanParams);
             window.voluntariosComponentesService.criarSidebar({ sugestoes, todos }, onSelecionar);
         } catch (err) {

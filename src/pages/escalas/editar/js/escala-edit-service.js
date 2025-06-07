@@ -2,13 +2,13 @@ class EscalaEditService {
     static async buscarEscala(id) {
         try {
             const params = new URLSearchParams();
-            params.append('organizacao_id', ORGANIZACAO_ID);
+            params.append('organizacao_id', window.USER.organizacao_id);
 
-            const response = await fetch(`${API_BASE_URL}/api/escalas/${id}?${params}`, {
+            const response = await fetch(`${window.APP_CONFIG.apiUrl}/api/escalas/${id}?${params}`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
-                    'Authorization': `Bearer ${API_KEY}`
+                    'Authorization': `Bearer ${window.APP_CONFIG.apiKey}`
                 }
             });
 
@@ -47,12 +47,12 @@ class EscalaEditService {
 
             console.log('Payload sendo enviado:', JSON.stringify(payload, null, 2));
 
-            const response = await fetch(`${API_BASE_URL}/api/escalas/${id}`, {
+            const response = await fetch(`${window.APP_CONFIG.apiUrl}/api/escalas/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${API_KEY}`
+                    'Authorization': `Bearer ${window.APP_CONFIG.apiKey}`
                 },
                 body: JSON.stringify(payload)
             });

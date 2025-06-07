@@ -110,14 +110,6 @@ require_once __DIR__ . '/../../../components/layout/header.php';
   <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
   <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
 
-<script>
-    // Definindo variáveis globais para uso nos serviços
-    window.API_KEY = '<?php echo $_ENV['API_KEY']; ?>';
-    window.API_BASE_URL = '<?php echo $_ENV['API_BASE_URL']; ?>';
-    window.ORGANIZACAO_ID = '<?php echo SessionService::getOrganizacaoId(); ?>';
-    window.URL_BASE = '<?php echo $_ENV['URL_BASE']; ?>';
-    window.ministerio_atual = '<?php echo SessionService::getMinisterioAtual(); ?>';
-</script>
 
 <!-- Geral -->
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/api.service.js"></script>

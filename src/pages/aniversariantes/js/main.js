@@ -59,7 +59,7 @@ class AniversariantesPage {
             <div class="p-4">
                 <div class="flex items-center gap-4">
                 <img class="h-16 w-16 rounded-lg object-cover" 
-                     src="${v.foto || window.BASE_URL + '/assets/img/placeholder.jpg'}" 
+                     src="${v.foto || window.APP_CONFIG.baseUrl + '/assets/img/placeholder.jpg'}" 
                      alt="${v.nome}">
                 <div class="flex-1 min-w-0">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">

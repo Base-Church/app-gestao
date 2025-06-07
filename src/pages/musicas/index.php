@@ -101,29 +101,14 @@ require_once __DIR__ . '/../../components/layout/header.php';
 
 <!-- Load modules and initialize app -->
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/musicas/js/api.js"></script>
-<script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/musicas/js/app.js"></script>
+
 
 <script type="module">
-    import { MusicasAPI } from '<?= $_ENV['URL_BASE'] ?>/src/pages/musicas/js/api.js';
     import { MusicasApp } from '<?= $_ENV['URL_BASE'] ?>/src/pages/musicas/js/app.js';
-
-    window.APP_CONFIG = {
-        baseUrl: '<?= $_ENV['URL_BASE'] ?>',
-        apiUrl: '<?= $_ENV['API_BASE_URL'] ?>',
-        apiKey: '<?= $_ENV['API_KEY'] ?>',
-    };
-
-    window.USER = {
-        ministerios: <?= json_encode(SessionService::getMinisterios()) ?>,
-        organizacao_id: <?= SessionService::getOrganizacaoId() ?>,
-        ministerio_atual: <?= json_encode(SessionService::getMinisterioAtual()) ?>,
-        nivel: <?= json_encode(SessionService::getNivel()) ?>
-    };
-
     window.addEventListener('DOMContentLoaded', () => {
-        const api = new MusicasAPI(window.APP_CONFIG.baseUrl);
-        window.app = new MusicasApp(api);
+        window.app = new MusicasApp();
     });
 </script>
 
 <?php require_once __DIR__ . '/../../components/layout/footer.php'; ?>
+

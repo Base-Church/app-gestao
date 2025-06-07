@@ -1,34 +1,38 @@
 async function alterarMinisterio(ministerioId) {
     try {
-        const response = await fetch(`${window.URL_BASE}/config/alterar.ministerio.php`, {
+        if (!ministerioId) {
+            console.error('ID do ministério não fornecido');
+            return;
+        }
+
+        const response = await fetch(`${window.APP_CONFIG.baseUrl}/config/alterar.ministerio.php`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                'Pragma': 'no-cache',
-                'Expires': '0'
             },
             body: JSON.stringify({ ministerio_id: ministerioId }),
-            credentials: 'same-origin',
-            cache: 'no-store'
+            credentials: 'include'
         });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
 
         const data = await response.json();
 
-        if (data.success) {
-            console.log('Ministério alterado com sucesso:', data);
-            // Força recarregamento sem cache
-            window.location.href = window.location.href.split('?')[0] + '?t=' + new Date().getTime();
+        if (response.ok && data.success) {
+            window.USER.ministerio_atual = ministerioId;
+            // Dispatch event for other components
+            window.dispatchEvent(new CustomEvent('ministerio-changed', { 
+                detail: { ministerio_id: ministerioId }
+            }));
+            window.location.reload();
         } else {
             console.error('Erro ao alterar ministério:', data.error);
-            alert('Erro ao alterar ministério. Por favor, tente novamente.');
+            if (data.error === 'Usuário não autenticado') {
+                window.location.href = `${window.APP_CONFIG.baseUrl}/login`;
+            } else {
+                alert(data.error || 'Erro ao alterar ministério');
+            }
         }
     } catch (error) {
-        console.error('Erro na requisição:', error);
+        console.error('Erro:', error);
         alert('Erro ao alterar ministério. Por favor, tente novamente.');
     }
 }

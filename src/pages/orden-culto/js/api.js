@@ -1,6 +1,6 @@
 export async function getOrdensCulto() {
     try {
-        const response = await fetch(`${window.ENV.URL_BASE}/src/services/api/ordens-culto/get.php`, {
+        const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/ordens-culto/get.php`, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -20,7 +20,7 @@ export async function getOrdensCulto() {
 
 export async function createOrdemCulto(dados) {
     try {
-        const response = await fetch(`${window.ENV.URL_BASE}/src/services/api/ordens-culto/create.php`, {
+        const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/ordens-culto/create.php`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -50,7 +50,7 @@ export async function createOrdemCulto(dados) {
 
 export async function deleteOrdemCulto(id) {
     try {
-        const response = await fetch(`${window.ENV.URL_BASE}/src/services/api/ordens-culto/delete.php/${id}`, {
+        const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/ordens-culto/delete.php/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -70,7 +70,7 @@ export async function deleteOrdemCulto(id) {
 
 export async function getOrdemCulto(id) {
     try {
-        const response = await fetch(`${window.ENV.URL_BASE}/src/services/api/ordens-culto/get-by-id.php?id=${id}`, {
+        const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/ordens-culto/get-by-id.php?id=${id}`, {
             headers: {
                 'Content-Type': 'application/json'
             }

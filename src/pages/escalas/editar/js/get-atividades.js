@@ -8,11 +8,11 @@ async function carregarCategorias() {
         params.append('organizacao_id', ORGANIZACAO_ID);
         params.append('ministerio_id', MINISTERIO_ATUAL);
 
-        const response = await fetch(`${API_BASE_URL}/api/categoria-atividade?${params}`, {
+        const response = await fetch(`${window.APP_CONFIG.apiUrl}/api/categoria-atividade?${params}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'Authorization': `Bearer ${API_KEY}`
+                'Authorization': `Bearer ${window.APP_CONFIG.apiKey}`
             }
         });
 
@@ -53,12 +53,12 @@ async function carregarAtividades(atividadeContainer) {
         params.append('page', '1');
         params.append('limit', '100');
 
-        const apiUrl = `${API_BASE_URL}/api/atividades?${params}`;
+        const apiUrl = `${window.APP_CONFIG.apiUrl}/api/atividades?${params}`;
         const response = await fetch(apiUrl, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'Authorization': `Bearer ${API_KEY}`
+                'Authorization': `Bearer ${window.APP_CONFIG.apiKey}`
             }
         });
         
@@ -158,8 +158,8 @@ function renderizarAtividadesPorCategoria(atividades, atividadesLista, atividade
             // Renderizar atividades desta categoria
             categoria.atividades.forEach(atividade => {
                 const fotoPath = atividade.foto 
-                    ? `${URL_BASE}/assets/img/atividades/${atividade.foto}` 
-                    : `${URL_BASE}/assets/img/atividades/placeholder.jpg`;
+                    ? `${window.APP_CONFIG.baseUrl}/assets/img/atividades/${atividade.foto}` 
+                    : `${window.APP_CONFIG.baseUrl}/assets/img/atividades/placeholder.jpg`;
                 
                 const atividadeDiv = document.createElement('div');
                 atividadeDiv.classList.add(
@@ -209,8 +209,8 @@ function selecionarAtividade(id, nome, foto, corIndicador, atividadeContainer) {
     const seletor = atividadeContainer.querySelector('.atividade-selector .cursor-pointer');
     if (seletor) {
         const fotoPath = foto 
-            ? `${URL_BASE}/assets/img/atividades/${foto}` 
-            : `${URL_BASE}/assets/img/atividades/placeholder.jpg`;
+            ? `${window.APP_CONFIG.baseUrl}/assets/img/atividades/${foto}` 
+            : `${window.APP_CONFIG.baseUrl}/assets/img/atividades/placeholder.jpg`;
         
         seletor.innerHTML = `
             <div class="flex items-center space-x-3">

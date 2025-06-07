@@ -91,12 +91,12 @@ class VoluntariosComponentesService {
         // Foto: usa a URL se existir, senão placeholder, e fallback para placeholder se erro
         const imagemPath = voluntario.foto
             ? voluntario.foto
-            : `${window.URL_BASE}/assets/img/placeholder.jpg`;
+            : `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`;
 
         return `
         <div class="voluntario-card flex items-center p-3 cursor-pointer hover:bg-primary-50 dark:hover:bg-primary-900/20 border-b border-gray-200 dark:border-gray-700 rounded transition-all duration-200" data-voluntario-id="${voluntario.id}">
             <div class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex-shrink-0">
-                <img src="${imagemPath}" alt="${voluntario.nome}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${window.URL_BASE}/assets/img/placeholder.jpg'">
+                <img src="${imagemPath}" alt="${voluntario.nome}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
             </div>
             <div class="ml-3 flex-1">
                 <h4 class="text-sm font-medium text-gray-800 dark:text-white truncate">${voluntario.nome}</h4>

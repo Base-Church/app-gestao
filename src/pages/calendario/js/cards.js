@@ -4,10 +4,10 @@ const Cards = {
             <div class="card-voluntario transition-all duration-200 ${isSelected ? 'card-selected' : ''}" 
                  data-id="${voluntario.id}">
                 <div class="flex items-center p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer">
-                    <img src="${voluntario.foto || window.USER.baseUrl + '/assets/img/placeholder.jpg'}" 
+                    <img src="${voluntario.foto || window.APP_CONFIG.baseUrl + '/assets/img/placeholder.jpg'}" 
                          alt="${voluntario.nome}" 
                          class="w-10 h-10 rounded-full"
-                         onerror="this.src='${window.USER.baseUrl}/assets/img/placeholder.jpg';">
+                         onerror="this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg';">
                     <div class="ml-3 flex-1">
                         <p class="text-sm font-medium text-gray-900 dark:text-white">${voluntario.nome}</p>
                         ${voluntario.observacoes ? `

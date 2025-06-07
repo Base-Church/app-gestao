@@ -6,27 +6,19 @@ require_once __DIR__ . '/../../../config/auth/session.service.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
 $dotenv->load();
 
-// Verificar se o usuário está logado
-if (!SessionService::isLoggedIn()) {
+// Forçar redirecionamento se não estiver logado
+if (!SessionService::isLoggedIn() && $_SERVER['REQUEST_URI'] !== '/login') {
     header('Location: ' . $_ENV['URL_BASE'] . '/login');
     exit;
 }
 
-// Verificar se o usuário tem ministérios
-if (!SessionService::hasMinisterios()) {
+// Forçar redirecionamento se não tiver ministério e não estiver na página sem-ministerio
+if (SessionService::isLoggedIn() && 
+    !SessionService::hasMinisterios() && 
+    strpos($_SERVER['REQUEST_URI'], 'sem-ministerio') === false) {
     header('Location: ' . $_ENV['URL_BASE'] . '/sem-ministerio');
     exit;
 }
-
-// Informações globais do usuário
-$user = SessionService::getUser();
-$organizacao_id = SessionService::getOrganizacaoId();
-$ministerios = SessionService::getMinisterios();
-$nivel = SessionService::getNivel();
-
-// Parâmetros globais de paginação
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR" class="h-full">
@@ -67,12 +59,34 @@ $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
 </style>
 
     <script>
-        // Variáveis globais do usuário para uso no JavaScript
-        window.USER = {
-            organizacao_id: <?php echo $organizacao_id; ?>,
-            ministerios: <?php echo json_encode($ministerios); ?>,
-            nivel: <?php echo json_encode($nivel); ?>
-        };
+    // Configuração global padronizada
+    window.APP_CONFIG = {
+        baseUrl: '<?php echo $_ENV['URL_BASE']; ?>',
+        apiBaseUrl: '<?php echo $_ENV['API_BASE_URL']; ?>',
+        apiKey: '<?php echo $_ENV['API_KEY']; ?>'
+    };
+
+    window.USER = {
+        ministerios: <?php echo json_encode(SessionService::getMinisterios()); ?>,
+        ministerio_atual: <?php echo json_encode(SessionService::getMinisterioAtual()); ?>,
+        organizacao_id: <?php echo json_encode(SessionService::getOrganizacaoId()); ?>,
+        nivel: <?php echo json_encode(SessionService::getNivel()); ?>,
+        permissoes: <?php echo json_encode(SessionService::getPermissoes()); ?>
+    };
+
+    // Função auxiliar para validação de ministério
+    window.validateMinisterio = function() {
+        if (!window.USER?.ministerio_atual) {
+            const message = 'Selecione um ministério para continuar';
+            console.error(message);
+            if (document.getElementById('error-message')) {
+                document.getElementById('error-message').textContent = message;
+                document.getElementById('error-container')?.classList.remove('hidden');
+            }
+            return false;
+        }
+        return true;
+    };
 
         // Inicialização do tema - mais simples e direta
         if (localStorage.getItem('theme') === 'dark' || 
@@ -96,5 +110,3 @@ $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
         require_once __DIR__ . '/navbar.php';
         ?>
     </div>
-</body>
-</html>

@@ -1,10 +1,7 @@
 class EventosAPI {
-    constructor(baseUrl) {
-        if (!baseUrl) {
-            throw new Error('baseUrl é obrigatório');
-        }
-        this.baseUrl = baseUrl;
-        this.apiPath = `${baseUrl}/src/services/api/eventos`; // Caminho base para os endpoints
+    constructor() {
+        this.baseUrl = window.APP_CONFIG.baseUrl;
+        this.apiPath = `${this.baseUrl}/src/services/api/eventos`; // Caminho base para os endpoints
     }
 
     async list(page = 1, limit = 50, search = '') {

@@ -67,21 +67,6 @@ require_once __DIR__ . '/../../components/layout/header.php';
     </div>
 </main>
 
-<script type="module">
-    window.USER = {
-        ministerios: <?= json_encode(SessionService::getMinisterios()) ?>,
-        organizacao_id: <?= SessionService::getOrganizacaoId() ?>,
-        nivel: <?= json_encode(SessionService::getNivel()) ?>,
-        ministerio_atual: <?= SessionService::getMinisterioAtual() ?>
-    };
-    
-    window.ENV = {
-        API_BASE_URL: '<?= $_ENV['API_BASE_URL'] ?>',
-        API_KEY: '<?= $_ENV['API_KEY'] ?>',
-        URL_BASE: '<?= $_ENV['URL_BASE'] ?>'
-    };
-</script>
-
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/orden-culto/js/api.js"></script>

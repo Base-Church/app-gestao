@@ -87,21 +87,12 @@ require_once __DIR__ . '/componentes/modal-share.php';
 require_once __DIR__ . '/componentes/modal-criar.php';
 ?>
 
-<script type="module">
-    window.USER = {
-        ministerios: <?= json_encode(SessionService::getMinisterios()) ?>,
-        organizacao_id: <?= SessionService::getOrganizacaoId() ?>,
-        nivel: <?= json_encode(SessionService::getNivel()) ?>,
-        ministerio_atual: <?= SessionService::getMinisterioAtual() ?> // Adicionar ministério atual
-    };
-    
-    window.ENV = {
-        API_BASE_URL: '<?= $_ENV['API_BASE_URL'] ?>',
-        API_KEY: '<?= $_ENV['API_KEY'] ?>',
-        VER_ESCALA_URL: '<?= $_ENV['VER_ESCALA_URL'] ?>',
-        URL_BASE: '<?= $_ENV['URL_BASE'] ?>'
-    };
-</script>
+
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/js/api.js"></script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/js/share-escala.js"></script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/js/main-list.js"></script>
+
+<?php
+// Incluir o footer
+require_once __DIR__ . '/../../components/layout/footer.php';
+?>

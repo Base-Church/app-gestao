@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (resultado.code === 200) {
                     alert('Escala criada com sucesso!');
-                    window.location.href = `${URL_BASE}/escalas`;
+                    window.location.href = `${window.APP_CONFIG.baseUrl}/escalas`;
                 }
 
             } catch (error) {
@@ -314,8 +314,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// ...existing code...
-
 async function initializeEvento(eventoElement) {
     // ...existing code...
     
@@ -329,5 +327,3 @@ async function initializeEvento(eventoElement) {
     
     // ...existing code...
 }
-
-// ...existing code...

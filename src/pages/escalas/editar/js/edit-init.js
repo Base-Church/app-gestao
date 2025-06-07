@@ -1,5 +1,5 @@
 function getImageUrl(tipo, foto) {
-    if (!foto) return `${URL_BASE}/assets/img/placeholder.jpg`;
+    if (!foto) return `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`;
     
     // Se a foto já for uma URL completa (começa com http/https)
     if (foto.startsWith('http')) {
@@ -9,11 +9,11 @@ function getImageUrl(tipo, foto) {
     // Caso contrário, construir URL baseada no tipo
     switch (tipo) {
         case 'evento':
-            return `${URL_BASE}/assets/img/eventos/${foto}`;
+            return `${window.APP_CONFIG.baseUrl}/assets/img/eventos/${foto}`;
         case 'atividade':
-            return `${URL_BASE}/assets/img/atividades/${foto}`;
+            return `${window.APP_CONFIG.baseUrl}/assets/img/atividades/${foto}`;
         default:
-            return `${URL_BASE}/assets/img/placeholder.jpg`;
+            return `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`;
     }
 }
 
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (!escalaId) {
         alert('ID da escala não fornecido');
-        window.location.href = `${URL_BASE}/src/pages/escalas/`;
+        window.location.href = `${window.APP_CONFIG.baseUrl}/src/pages/escalas/`;
         return;
     }
 
@@ -238,9 +238,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 if (voluntarioSelector) {
                                     voluntarioSelector.innerHTML = `
                                         <img 
-                                            src="${atividade.voluntario_foto || `${URL_BASE}/assets/img/placeholder.jpg`}" 
+                                            src="${atividade.voluntario_foto || `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`}" 
                                             class="w-12 h-12 rounded-full object-cover"
-                                            onerror="this.onerror=null; this.src='${URL_BASE}/assets/img/placeholder.jpg';"
+                                            onerror="this.onerror=null; this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg';"
                                             alt="${atividade.voluntario_nome}"
                                         >
                                         <div class="flex-1 text-left">
@@ -367,7 +367,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 
                 if (resultado.code === 200) {
                     alert('Escala atualizada com sucesso!');
-                    window.location.href = `${URL_BASE}/src/pages/escalas/`;
+                    window.location.href = `${window.APP_CONFIG.baseUrl}/src/pages/escalas/`;
                 }
 
             } catch (error) {

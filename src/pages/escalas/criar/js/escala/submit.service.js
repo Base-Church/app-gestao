@@ -18,7 +18,7 @@ class SubmitEscalaService {
      */
     async confirmarESalvarEscala() {
         try {
-            const response = await fetch(`${window.URL_BASE}/src/pages/escalas/criar/components/salvar-escala-modal.php`);
+            const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/pages/escalas/criar/components/salvar-escala-modal.php`);
             const html = await response.text();
             
             const modalDiv = document.createElement('div');
@@ -69,18 +69,18 @@ class SubmitEscalaService {
      */
     async salvarEscala(estado) {
         try {
-            const response = await fetch(`${window.URL_BASE}/src/services/api/escalas/create.php`, {
+            const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/escalas/create.php`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'ministerio-id': window.ministerio_atual,
-                    'organizacao-id': window.ORGANIZACAO_ID || '1'
+                    'ministerio-id': window.USER.ministerio_atual,
+                    'organizacao-id': window.USER.organizacao_id || '1'
                 },
                 body: JSON.stringify({
                     ...estado,
-                    ministerio_id: window.ministerio_atual,
-                    organizacao_id: window.ORGANIZACAO_ID || '1'
+                    ministerio_id: window.USER.ministerio_atual,
+                    organizacao_id: window.USER.organizacao_id || '1'
                 })
             });
 

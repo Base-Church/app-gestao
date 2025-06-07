@@ -8,8 +8,8 @@ class App {
             return;
         }
 
-        // Usa o baseUrl do elemento meta
-        const baseUrl = document.querySelector('meta[name="base-url"]')?.content;
+        // Usa o baseUrl do footer
+        const baseUrl = window.APP_CONFIG.baseUrl;
         if (!baseUrl) {
             throw new Error('Base URL não encontrada');
         }
@@ -19,7 +19,7 @@ class App {
                                      localStorage.getItem('ministerio_atual') || 
                                      window.USER.ministerios[0];
 
-        this.api = new AtividadesAPI(baseUrl);
+        this.api = new AtividadesAPI();
         this.ui = new UI();
         this.state = new State();
         this.isEditing = false;

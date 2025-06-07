@@ -108,7 +108,7 @@ export async function updatePermissions(userId, data) {
     console.log('Dados enviados para API:', data);
 
     try {
-        const response = await fetch(`${window.BASE_URL}/src/services/api/usuarios/update.php?id=${userId}`, {
+        const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/usuarios/update.php?id=${userId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -136,7 +136,7 @@ export async function updatePermissions(userId, data) {
 // Remove a referência ao toggleMinisterioSelection antigo
 async function loadMinisteriosForPermissions() {
     try {
-        const response = await fetch(`${window.BASE_URL}/src/services/api/ministerios/get.php`);
+        const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/ministerios/get.php`);
         const result = await response.json();
         
         if (result.data) {
@@ -146,7 +146,7 @@ async function loadMinisteriosForPermissions() {
                      data-id="${ministerio.id}">
                     <div class="flex items-center">
                         ${ministerio.foto 
-                            ? `<img src="${window.BASE_URL}/${ministerio.foto}" alt="${ministerio.nome}" class="w-8 h-8 rounded-full object-cover">`
+                            ? `<img src="${window.APP_CONFIG.baseUrl}/${ministerio.foto}" alt="${ministerio.nome}" class="w-8 h-8 rounded-full object-cover">`
                             : `<div class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center">
                                    <span class="text-primary-700 dark:text-primary-300 font-medium text-sm">
                                        ${ministerio.nome.charAt(0).toUpperCase()}

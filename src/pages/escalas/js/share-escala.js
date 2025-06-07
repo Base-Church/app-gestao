@@ -39,7 +39,9 @@ export class ShareManager {
             confirmButton.textContent = 'Enviando...';
             confirmButton.disabled = true;
 
-            const response = await fetch('https://webhook.basechurchbr.com/webhook/EnviarGrupo', {
+            const webhookUrl = window.APP_CONFIG?.webhookUrl || 'https://webhook.basechurchbr.com/webhook/EnviarGrupo';
+
+            const response = await fetch(webhookUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

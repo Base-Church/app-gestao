@@ -123,3 +123,7 @@ class DynamicFieldsManager {
 
 // Exportar para uso global
 window.DynamicFieldsManager = DynamicFieldsManager;
+
+// Manter referência da URL base para uso futuro
+window.APP_CONFIG = window.APP_CONFIG || {};
+window.APP_CONFIG.baseUrl = window.APP_CONFIG.baseUrl || '';

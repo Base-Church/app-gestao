@@ -21,7 +21,7 @@ class EscalaEditarService {
     async carregarEscala(escalaId) {
         try {
             // Monta a URL conforme o endpoint espera: /get.php/239?organizacao_id=1
-            const url = `${window.URL_BASE}/src/services/api/escalas/get.php/${escalaId}?organizacao_id=${window.ORGANIZACAO_ID}`;
+            const url = `${window.APP_CONFIG.baseUrl}/src/services/api/escalas/get.php/${escalaId}?organizacao_id=${window.USER.organizacao_id}`;
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
@@ -110,13 +110,13 @@ class EscalaEditarService {
                             id: atv.atividade_id,
                             nome: atv.atividade_nome,
                             img: atv.atividade_foto
-                                ? `${window.URL_BASE}/assets/img/atividades/${atv.atividade_foto}`
-                                : `${window.URL_BASE}/assets/img/placeholder.jpg`
+                                ? `${window.APP_CONFIG.baseUrl}/assets/img/atividades/${atv.atividade_foto}`
+                                : `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`
                         },
                         voluntario: atv.voluntario_id ? {
                             id: atv.voluntario_id,
                             nome: atv.voluntario_nome,
-                            img: atv.voluntario_foto || `${window.URL_BASE}/assets/img/placeholder.jpg`
+                            img: atv.voluntario_foto || `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`
                         } : null
                     });
                 }

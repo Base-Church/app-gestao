@@ -103,3 +103,22 @@ class EscalaManagerService {
 document.addEventListener('DOMContentLoaded', () => {
     window.escalaManagerService = new EscalaManagerService();
 });
+
+function getImageUrl(item, tipo = 'evento') {
+    const placeholder = `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`;
+    
+    if (!item || !item.foto) return placeholder;
+    
+    if (item.foto.startsWith('http')) return item.foto;
+    
+    try {
+        if (tipo === 'evento') {
+            return `${window.APP_CONFIG.baseUrl}/assets/img/eventos/${item.foto}`;
+        } else {
+            return item.foto;
+        }
+    } catch (error) {
+        console.warn('Erro ao montar URL da imagem:', error);
+        return placeholder;
+    }
+}

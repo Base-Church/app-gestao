@@ -113,7 +113,7 @@ const ui = {
                     ${diaIndisponivel ? `
                         <div class="absolute bottom-2 left-2 flex items-center space-x-1">
                             ${diaIndisponivel.voluntarios.slice(0, 3).map(v => `
-                                <img src="${v.voluntario.foto || window.USER.baseUrl + '/assets/img/placeholder.jpg'}" alt="${v.voluntario.nome}" class="w-6 h-6 rounded-full" onerror="this.onerror=null;this.src='${window.USER.baseUrl}/assets/img/placeholder.jpg';">
+                                <img src="${v.voluntario.foto || window.APP_CONFIG.baseUrl + '/assets/img/placeholder.jpg'}" alt="${v.voluntario.nome}" class="w-6 h-6 rounded-full" onerror="this.onerror=null;this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg';">
                             `).join('')}
                             ${diaIndisponivel.voluntarios.length > 3 ? `
                                 <div class="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs text-gray-600 dark:text-gray-300">
@@ -154,7 +154,7 @@ const ui = {
                 <div class="space-y-4">
                     ${diaIndisponivel.voluntarios.map(v => `
                         <div class="flex items-center space-x-4">
-                            <img src="${v.voluntario.foto || window.USER.baseUrl + '/assets/img/placeholder.jpg'}" alt="${v.voluntario.nome}" class="w-12 h-12 rounded-full" onerror="this.onerror=null;this.src='${window.USER.baseUrl}/assets/img/placeholder.jpg';">
+                            <img src="${v.voluntario.foto || window.APP_CONFIG.baseUrl + '/assets/img/placeholder.jpg'}" alt="${v.voluntario.nome}" class="w-12 h-12 rounded-full" onerror="this.onerror=null;this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg';">
                             <div>
                                 <p class="text-sm font-medium text-gray-900 dark:text-white">${v.voluntario.nome}</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">${v.observacoes}</p>

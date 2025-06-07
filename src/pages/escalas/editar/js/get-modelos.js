@@ -9,7 +9,7 @@ async function carregarModelos(ministerio_id) {
         console.group('📥 Requisição de Modelos');
         console.log('🎯 Ministério ID:', ministerio_id);
 
-        const response = await fetch(`${URL_BASE}/src/services/api/modelos/get.php?ministerio_id=${ministerio_id}`, {
+        const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/modelos/get.php?ministerio_id=${ministerio_id}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json'
@@ -84,7 +84,7 @@ function adicionarSeletorModelo(eventoContainer, headerElement) {
             console.log('🔍 Buscando atividades para o ministério:', modelo.ministerio_id);
 
             while (hasMore) {
-                const response = await fetch(`${URL_BASE}/src/services/api/atividades/get.php?ministerio_id=${modelo.ministerio_id}&page=${page}&limit=20`);
+                const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/atividades/get.php?ministerio_id=${modelo.ministerio_id}&page=${page}&limit=20`);
                 const resultado = await response.json();
                 
                 console.log(`📦 Página ${page} - Resultado:`, resultado);
@@ -118,8 +118,8 @@ function adicionarSeletorModelo(eventoContainer, headerElement) {
                     if (ultimaAtividade) {
                         const atividadeSelector = ultimaAtividade.querySelector('.atividade-selector');
                         const fotoUrl = atividade.foto 
-                            ? `${URL_BASE}/assets/img/atividades/${atividade.foto}` 
-                            : `${URL_BASE}/assets/img/placeholder.jpg`;
+                            ? `${window.APP_CONFIG.baseUrl}/assets/img/atividades/${atividade.foto}` 
+                            : `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`;
 
                         // Atualizar conteúdo mantendo a estrutura existente
                         const seletorConteudo = atividadeSelector.querySelector('.cursor-pointer');

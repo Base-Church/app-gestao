@@ -7,7 +7,7 @@ class EventosUI {
         this.eventosGrid = document.getElementById('eventos-grid');
         this.eventosList = document.getElementById('eventos-list');
         this.paginationContainer = document.getElementById('pagination-container');
-        this.baseUrl = window.USER?.baseUrl || '';
+        this.baseUrl = window.APP_CONFIG.baseUrl;
     }
 
     showToast(message, type = 'success') {

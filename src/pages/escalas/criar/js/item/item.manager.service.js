@@ -29,7 +29,7 @@ class ItemManagerService {
         // Popular o select de modelos (mas manter desabilitado até selecionar evento)
         const selectModelo = novoItem.querySelector('.select-modelo');
         if (selectModelo) {
-            window.modelosService.buscarModelos(window.ministerio_atual).then(modelos => {
+            window.modelosService.buscarModelos(window.USER.ministerio_atual).then(modelos => {
                 modelos.forEach(modelo => {
                     const opt = document.createElement('option');
                     opt.value = modelo.id;
@@ -159,7 +159,7 @@ class ItemManagerService {
                         conjunto.atividade
                         ? `<div class="w-full flex items-center gap-3 p-2">
                             <div class="w-15 h-15 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center">
-                                <img src="${conjunto.atividade.img || (window.URL_BASE + '/assets/img/placeholder.jpg')}" alt="${conjunto.atividade.nome}" class="w-12 h-12 object-cover rounded-full">
+                                <img src="${conjunto.atividade.img || (window.APP_CONFIG.baseUrl + '/assets/img/placeholder.jpg')}" alt="${conjunto.atividade.nome}" class="w-12 h-12 object-cover rounded-full">
                             </div>
                             <div class="flex-1 min-w-0 pl-1">
                                 <h4 class="font-medium text-gray-900 dark:text-white text-sm truncate">${conjunto.atividade.nome}</h4>
@@ -176,7 +176,7 @@ class ItemManagerService {
                         conjunto.voluntario
                         ? `<div class="w-full flex items-center gap-3 p-2">
                             <div class="w-15 h-15 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center">
-                                <img src="${conjunto.voluntario.img || (window.URL_BASE + '/assets/img/placeholder.jpg')}" alt="${conjunto.voluntario.nome}" class="w-9 h-9 object-cover rounded-full">
+                                <img src="${conjunto.voluntario.img || (window.APP_CONFIG.baseUrl + '/assets/img/placeholder.jpg')}" alt="${conjunto.voluntario.nome}" class="w-9 h-9 object-cover rounded-full">
                             </div>
                             <div class="flex-1 min-w-0 pl-1">
                                 <h4 class="font-medium text-gray-900 dark:text-white text-sm truncate">${conjunto.voluntario.nome}</h4>
@@ -244,8 +244,8 @@ class ItemManagerService {
                     }
                 }
                 await window.voluntariosService.abrirSidebarVoluntarios({
-                    organizacao_id: window.ORGANIZACAO_ID,
-                    ministerio_id: window.ministerio_atual,
+                    organizacao_id: window.USER.organizacao_id,
+                    ministerio_id: window.USER.ministerio_atual,
                     atividade_id: conjunto.atividade.id,
                     data: dataISO,
                     data_evento: dataISO,

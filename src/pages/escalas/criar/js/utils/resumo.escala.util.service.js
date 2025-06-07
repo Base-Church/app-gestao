@@ -59,7 +59,7 @@
 
     // Abre o modal de resumo e popula os dados
     function abrirModalResumo() {
-        fetch(window.URL_BASE + '/src/pages/escalas/criar/components/resumo-escala-modal.php')
+        fetch(window.APP_CONFIG.baseUrl + '/src/pages/escalas/criar/components/resumo-escala-modal.php')
             .then(r => r.text())
             .then(html => {
                 const modalDiv = document.createElement('div');
@@ -123,7 +123,7 @@
 
     // Função auxiliar para tratar URLs de imagem com fallback para placeholder
     function getImageUrl(item, tipo = 'evento') {
-        const placeholder = `${window.URL_BASE}/assets/img/placeholder.jpg`;
+        const placeholder = `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`;
         
         if (!item || !item.foto) return placeholder;
         
@@ -133,7 +133,7 @@
         // Monta URL baseado no tipo
         try {
             if (tipo === 'evento') {
-                return `${window.URL_BASE}/assets/img/eventos/${item.foto}`;
+                return `${window.APP_CONFIG.baseUrl}/assets/img/eventos/${item.foto}`;
             } else {
                 return item.foto; // Voluntário já vem com caminho completo
             }
@@ -175,8 +175,8 @@
         // Busca todos eventos e voluntários disponíveis (enviando todos os parâmetros obrigatórios)
         const [todosEventos, voluntariosResp] = await Promise.all([
             window.apiService.buscarEventos({
-                organizacao_id: window.ORGANIZACAO_ID,
-                ministerio_id: window.ministerio_atual,
+                organizacao_id: window.USER.organizacao_id,
+                ministerio_id: window.USER.ministerio_atual,
                 data: dataPadrao,
                 page: 1,
                 limit: 100
@@ -184,8 +184,8 @@
             window.apiService.buscarVoluntariosSugestoes({
                 page: 1,
                 limit: 100,
-                organizacao_id: window.ORGANIZACAO_ID,
-                ministerio_id: window.ministerio_atual,
+                organizacao_id: window.USER.organizacao_id,
+                ministerio_id: window.USER.ministerio_atual,
                 atividade_id: atividadePadrao,
                 data: dataPadrao,
                 data_evento: dataPadrao,
@@ -227,10 +227,10 @@
                     const tooltipContent = v.eventos.map(ev => `<div>${ev.nome || '-'} <span class="text-gray-400">(${ev.data_evento || '-'})</span></div>`).join('');
                     return `
                     <li class="voluntario-card flex items-center gap-3 p-2 rounded bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 relative">
-                        <img src="${v.foto || v.img || `${window.URL_BASE}/assets/img/placeholder.jpg`}" 
+                        <img src="${v.foto || v.img || `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`}" 
                              class="w-10 h-10 rounded-full object-cover" 
                              alt="${v.nome || 'Voluntário'}"
-                             onerror="this.src='${window.URL_BASE}/assets/img/placeholder.jpg'">
+                             onerror="this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
                         <div class="flex-1 min-w-0 flex items-center">
                             <div>
                                 <div class="font-semibold flex items-center gap-1">
@@ -262,7 +262,7 @@
                         <img src="${getImageUrl(ev, 'evento')}" 
                              class="w-10 h-10 rounded-full object-cover" 
                              alt="${ev.nome || 'Evento'}"
-                             onerror="this.src='${window.URL_BASE}/assets/img/placeholder.jpg'">
+                             onerror="this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
                         <div class="flex-1 min-w-0">
                             <div class="font-semibold">${ev.nome || '-'}</div>
                             <div class="flex flex-wrap items-center text-xs text-gray-500 gap-2">
@@ -294,7 +294,7 @@
                         <img src="${getImageUrl(ev, 'evento')}" 
                              class="w-10 h-10 rounded-full object-cover" 
                              alt="${ev.nome || 'Evento'}"
-                             onerror="this.src='${window.URL_BASE}/assets/img/placeholder.jpg'">
+                             onerror="this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
                         <div>
                             <div class="font-semibold text-gray-900 dark:text-gray-100">${ev.nome || '-'}</div>
                             <div class="text-xs text-gray-500 dark:text-gray-400">${ev.dia_semana || ''} • ${ev.hora ? ev.hora.substring(0,5) : ''} • ${ev.tipo || ''}</div>
@@ -312,10 +312,10 @@
             foraVoluntariosList.innerHTML = voluntariosFora.length
                 ? voluntariosFora.map(v => `
                     <div class="voluntario-card flex items-center gap-3 p-2 rounded bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
-                        <img src="${v.foto || v.img || `${window.URL_BASE}/assets/img/placeholder.jpg`}" 
+                        <img src="${v.foto || v.img || `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`}" 
                              class="w-10 h-10 rounded-full object-cover" 
                              alt="${v.nome || 'Voluntário'}"
-                             onerror="this.src='${window.URL_BASE}/assets/img/placeholder.jpg'">
+                             onerror="this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
                         <div>
                             <div class="font-semibold text-gray-900 dark:text-gray-100">${v.nome}</div>
                         </div>

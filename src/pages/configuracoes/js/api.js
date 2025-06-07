@@ -81,8 +81,8 @@ function formatWhatsApp(numero) {
 export async function loadUsuarios() {
     try {
         const [response, ministeriosResponse] = await Promise.all([
-            fetch(`${window.BASE_URL}/src/services/api/usuarios/get.php`),
-            fetch(`${window.BASE_URL}/src/services/api/ministerios/get.php`)
+            fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/usuarios/get.php`),
+            fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/ministerios/get.php`)
         ]);
         
         const data = await response.json();
@@ -101,7 +101,7 @@ export async function loadUsuarios() {
                         if (!ministerio) return '';
                         
                         const imageUrl = ministerio.foto 
-                            ? `${window.BASE_URL}/${ministerio.foto}`
+                            ? `${window.APP_CONFIG.baseUrl}/${ministerio.foto}`
                             : null;
                             
                         return `
@@ -124,7 +124,7 @@ export async function loadUsuarios() {
 // Criar usuário
 export async function createUsuario(userData) {
     try {
-        const response = await fetch(`${window.BASE_URL}/src/services/api/usuarios/registro.php`, {
+        const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/usuarios/registro.php`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -149,26 +149,13 @@ require_once __DIR__ . '/../../components/layout/header.php';
     </div>
 </div>
 
-<?php
-require_once __DIR__ . '/../../components/layout/footer.php';
-?>
 
-<script type="module">
-    window.USER = {
-        ministerios: <?= json_encode(SessionService::getMinisterios()) ?>,
-        ministerio_atual: <?= json_encode(SessionService::getMinisterioAtual()) ?>,
-        organizacao_id: <?= SessionService::getOrganizacaoId() ?>,
-        nivel: <?= json_encode(SessionService::getNivel()) ?>
-    };
-
-    window.ENV = {
-        API_BASE_URL: '<?= $_ENV['API_BASE_URL'] ?>',
-        API_KEY: '<?= $_ENV['API_KEY'] ?>',
-        URL_BASE: '<?= $_ENV['URL_BASE'] ?>'
-    };
-</script>
 
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/solicitacoes/js/api.js"></script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/solicitacoes/js/ui.js"></script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/solicitacoes/js/state.js"></script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/solicitacoes/js/main.js"></script>
+
+<?php
+require_once __DIR__ . '/../../components/layout/footer.php';
+?>

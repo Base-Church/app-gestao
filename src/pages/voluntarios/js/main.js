@@ -6,33 +6,30 @@ export class VoluntariosPage {
     constructor() {
         this.currentPage = 1;
         this.search = '';
-        this.status = 'todos'; // Alterado valor inicial
+        this.status = 'todos';
         this.atividades = [];
         this.categorias = [];
-        this.currentVoluntario = null; // Adiciona estado para o voluntário atual
+        this.currentVoluntario = null;
         this.syncService = new SyncService();
 
-        // Adicionar listener para mudanças no ministério
         window.addEventListener('ministerio-changed', () => {
             this.loadDependencies();
             this.loadVoluntarios();
         });
 
-        // Verificar ministério atual
         if (!window.USER?.ministerio_atual) {
             this.showError('Selecione um ministério para continuar');
             return;
         }
 
-        // Alteramos a ordem de inicialização para garantir que as dependências sejam carregadas primeiro
         this.initializeApp();
     }
 
     async initializeApp() {
         try {
-            await this.loadDependencies(); // Carrega atividades primeiro
+            await this.loadDependencies();
             this.initializeEventListeners();
-            this.loadVoluntarios(); // Carrega voluntários depois
+            this.loadVoluntarios();
             this.initializeFormListener();
         } catch (error) {
             this.showError('Erro ao carregar dados necessários');
@@ -50,7 +47,6 @@ export class VoluntariosPage {
 
     async loadDependencies() {
         try {
-            // Verificar ministério atual
             if (!window.USER?.ministerio_atual) {
                 throw new Error('Nenhum ministério selecionado');
             }
@@ -113,7 +109,6 @@ export class VoluntariosPage {
     }
 
     async loadVoluntarios() {
-        // Verificar ministério atual antes de carregar
         if (!window.USER?.ministerio_atual) {
             this.showError('Selecione um ministério para continuar');
             return;
@@ -134,16 +129,14 @@ export class VoluntariosPage {
                 page: this.currentPage,
                 search: this.search,
                 status: this.status,
-                ministerio_id: window.USER.ministerio_atual // Adicionar ministério atual
+                ministerio_id: window.USER.ministerio_atual
             };
 
             const data = await VoluntariosAPI.getVoluntarios(params);
 
-            // Salva a lista de voluntários
             this.voluntarios = data.data;
 
             this.renderVoluntarios(data);
-            // Removida a chamada do renderPagination que causava o erro
 
         } catch (err) {
             this.showError(err.message || 'Erro ao carregar voluntários');
@@ -236,7 +229,7 @@ export class VoluntariosPage {
             if (fotoPreview) {
                 fotoPreview.innerHTML = voluntario.foto 
                     ? `<img src="${voluntario.foto}" class="h-full w-full object-cover">`
-                    : `<img src="${window.BASE_URL}/assets/img/placeholder.jpg" class="h-full w-full object-cover">`;
+                    : `<img src="${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg" class="h-full w-full object-cover">`;
             }
 
             // Atualiza ministérios
@@ -334,7 +327,7 @@ export class VoluntariosPage {
                                     <div class="flex items-center space-x-3">
                                         <div class="flex-shrink-0 h-10 w-10">
                                             <img class="h-10 w-10 rounded-lg object-cover" 
-                                                 src="${window.BASE_URL + (atividade.foto || '/assets/img/placeholder.jpg')}" 
+                                                 src="${window.APP_CONFIG.baseUrl + (atividade.foto || '/assets/img/placeholder.jpg')}" 
                                                  alt="${atividade.nome}">
                                         </div>
                                         <div class="flex-1 min-w-0">
@@ -596,9 +589,9 @@ export class VoluntariosPage {
                                 <!-- Foto e Informações Principais -->
                                 <div class="flex-shrink-0">
                                     <img class="h-16 w-16 rounded-lg object-cover" 
-                                         src="${voluntario.foto || `${window.BASE_URL}/assets/img/placeholder.jpg`}" 
+                                         src="${voluntario.foto || `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`}" 
                                          alt="${voluntario.nome}"
-                                         onerror="this.src='${window.BASE_URL}/assets/img/placeholder.jpg'">
+                                         onerror="this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
                                 </div>
                                 
                                 <div class="flex-1 min-w-0">
@@ -707,7 +700,7 @@ export class VoluntariosPage {
     }
 
     renderVoluntarioImage(foto) {
-        return foto || `${window.BASE_URL}/assets/img/placeholder.jpg`;
+        return foto || `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`;
     }
 
     renderPagination(meta) {

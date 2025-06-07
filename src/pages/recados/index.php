@@ -73,14 +73,7 @@ require_once __DIR__ . '/../../components/layout/header.php';
     <?php require_once __DIR__ . '/components/modal.php'; ?>
 </main>
 
-<script>
-    window.USER = {
-        ...window.USER,
-        baseUrl: '<?= $_ENV['URL_BASE'] ?>',
-        ministerio_atual: <?= json_encode(SessionService::getMinisterioAtual()) ?>, // Corrigido de ministerioAtual para ministerio_atual
-        organizacao_id: <?= SessionService::getOrganizacaoId() ?>
-    };
-</script>
+
 
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/recados/js/api.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/recados/js/ui.js"></script>

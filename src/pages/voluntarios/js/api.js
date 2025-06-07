@@ -1,21 +1,27 @@
 class VoluntariosAPI {
     static async getVoluntarios(params = {}) {
-        if (!window.USER.ministerio_atual) {
+        if (!window.USER?.ministerio_atual) {
             throw new Error('Nenhum ministério selecionado');
         }
 
-        const queryParams = new URLSearchParams({
-            ministerio_id: window.USER.ministerio_atual,
-            organizacao_id: window.USER.organizacao_id,
-            limit: 100 // Aumentado para pegar todos os voluntários
-        });
-
         try {
-            const response = await fetch(`${window.BASE_URL}/src/services/api/voluntarios/get.php?${queryParams}`);
-            
+            const queryParams = new URLSearchParams({
+                ministerio_id: window.USER.ministerio_atual,
+                organizacao_id: window.USER.organizacao_id,
+                limit: 100
+            });
+
+            const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/voluntarios/get.php?${queryParams}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Cache-Control': 'no-cache'
+                },
+                credentials: 'include'
+            });
+
             if (!response.ok) {
                 const error = await response.json();
-                throw new Error(error.error || 'Erro ao carregar voluntários');
+                throw new Error(error.message || 'Erro ao carregar voluntários');
             }
 
             const data = await response.json();
@@ -31,7 +37,7 @@ class VoluntariosAPI {
                 meta: data.meta || {}
             };
         } catch (error) {
-            console.error('Erro ao carregar voluntários:', error.message);
+            console.error('Erro ao carregar voluntários:', error);
             throw error;
         }
     }
@@ -40,7 +46,7 @@ class VoluntariosAPI {
         try {
             console.log('Dados enviados para atualização:', data);
 
-            const response = await fetch(`${window.BASE_URL}/src/services/api/voluntarios/update.php`, {
+            const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/voluntarios/update.php`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -66,12 +72,12 @@ class VoluntariosAPI {
         try {
             console.log('Dados enviados:', dados);
             
-            const response = await fetch(`${window.BASE_URL}/src/services/api/notificacoes/disparos/preenchimento.php`, {
+            const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/notificacoes/disparos/preenchimento.php`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'x-api-key': window.API_KEY
+                    'x-api-key': window.APP_CONFIG.apiKey
                 },
                 body: JSON.stringify(dados)
             });

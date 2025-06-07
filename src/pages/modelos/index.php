@@ -97,21 +97,12 @@ require_once __DIR__ . '/../../components/layout/header.php';
     </div>
 </main>
 
-<?php
-// Incluir o footer com os scripts
-require_once __DIR__ . '/../../components/layout/footer.php';
-?>
-
-<script type="module">
-    window.USER = {
-        ministerios: <?= json_encode(SessionService::getMinisterios()) ?>,
-        ministerio_atual: <?= json_encode(SessionService::getMinisterioAtual()) ?>,
-        organizacao_id: <?= SessionService::getOrganizacaoId() ?>,
-        nivel: <?= json_encode(SessionService::getNivel()) ?>
-    };
-</script>
-
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/modelos/js/api.js"></script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/modelos/js/ui.js"></script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/modelos/js/state.js"></script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/modelos/js/main.js"></script>
+
+<?php
+// Incluir o footer com os scripts
+require_once __DIR__ . '/../../components/layout/footer.php';
+?>
