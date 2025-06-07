@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../config/auth/auth.service.php';
 require_once __DIR__ . '/../../../config/auth/session.service.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
@@ -14,31 +13,8 @@ if (SessionService::isLoggedIn()) {
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $whatsapp = $_POST['whatsapp'] ?? '';
-    $senha = $_POST['senha'] ?? '';
-
-    $authService = new AuthService();
-    $result = $authService->login($whatsapp, $senha);
-
-    if ($result['status'] === 200 && isset($result['data'])) {
-        // Cria a sessão do usuário
-        SessionService::createUserSession($result['data']);
-        
-        // Verifica se o usuário tem ministérios
-        if (!SessionService::hasMinisterios()) {
-            header('Location: ' . $_ENV['URL_BASE'] . '/src/pages/sem-ministerio');
-            exit;
-        }
-        
-        header('Location: ' . $_ENV['URL_BASE'] . '/inicio');
-        exit;
-    } else {
-        $error = $result['data']['message'] ?? 'Erro ao fazer login';
-    }
-}
+// Removido o processamento PHP do POST
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -87,7 +63,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="flex-shrink-0">
                             <svg class="h-5 w-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
                         </div>
                         <div class="ml-3">
                             <p class="text-sm text-green-700">
@@ -98,24 +73,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
 
-            <?php if (isset($error)): ?>
-                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm text-red-700">
-                                <?php echo htmlspecialchars($error); ?>
-                            </p>
-                        </div>
+            <div id="login-error" style="display:none;" class="bg-red-50 border-l-4 border-red-500 p-4 rounded mb-2">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-red-700" id="login-error-msg"></p>
                     </div>
                 </div>
-            <?php endif; ?>
+            </div>
 
-            <form method="POST" class="space-y-6">
+            <form id="login-form" class="space-y-6" autocomplete="off">
                 <div class="form-group">
                     <input type="text" 
                            id="whatsapp" 
@@ -123,7 +94,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                            class="form-input peer" 
                            placeholder="WhatsApp"
                            inputmode="numeric"
-
                            required>
                     <label for="whatsapp" class="form-label">WhatsApp</label>
                 </div>
@@ -139,8 +109,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <button type="submit" 
-                        class="w-full bg-primary-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transform transition-all duration-150 hover:scale-[1.02]">
-                    Entrar
+                        id="login-btn"
+                        class="w-full bg-primary-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transform transition-all duration-150 hover:scale-[1.02] flex items-center justify-center gap-2">
+                    <span id="login-btn-text">Entrar</span>
+                    <svg id="login-btn-spinner" class="animate-spin h-5 w-5 text-white" style="display:none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
                 </button>
             </form>
 
@@ -152,12 +127,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <span class="px-2 bg-white text-gray-500">ou</span>
                 </div>
             </div>
-
             <p class="text-center text-sm text-gray-600">
                 Não tem uma conta? 
                 <a href="<?php echo $_ENV['URL_BASE']; ?>/src/pages/cadastro" 
                    class="font-medium text-primary-600 hover:text-primary-700 hover:underline">
                     Cadastre-se
+                </a>
+            </p>
+            <p class="text-center text-sm text-gray-600">
+                <a href="<?php echo $_ENV['URL_BASE']; ?>/recuperar" 
+                   class="font-medium text-primary-600 hover:text-primary-700 hover:underline">
+                    Esqueceu sua senha?
                 </a>
             </p>
         </div>
@@ -173,11 +153,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           
         </p>
     </div>
-
     <script>
         // Adiciona máscara ao campo WhatsApp
         const whatsappInput = document.getElementById('whatsapp');
-        const form = document.querySelector('form');
+        const senhaInput = document.getElementById('senha');
+        const form = document.getElementById('login-form');
+        const errorDiv = document.getElementById('login-error');
+        const errorMsg = document.getElementById('login-error-msg');
+        const loginBtn = document.getElementById('login-btn');
+        const loginBtnText = document.getElementById('login-btn-text');
+        const loginBtnSpinner = document.getElementById('login-btn-spinner');
 
         whatsappInput.addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
@@ -193,24 +178,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             e.target.value = value;
         });
 
-        // Formata o número antes do envio
         form.addEventListener('submit', function(e) {
             e.preventDefault();
+            errorDiv.style.display = 'none';
+            loginBtn.disabled = true;
+            loginBtnSpinner.style.display = '';
+            loginBtnText.textContent = 'Entrando...';
+
             const whatsapp = whatsappInput.value.replace(/\D/g, '');
             const formattedWhatsapp = '55' + whatsapp;
-            
-            // Cria um campo oculto para enviar o número formatado
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = 'whatsapp';
-            hiddenInput.value = formattedWhatsapp;
-            
-            // Remove o campo original e adiciona o campo oculto
-            whatsappInput.removeAttribute('name');
-            form.appendChild(hiddenInput);
-            
-            // Envia o formulário
-            form.submit();
+            const senha = senhaInput.value;
+
+            fetch('<?php echo $_ENV['URL_BASE']; ?>/config/auth/auth.service.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ whatsapp: formattedWhatsapp, senha: senha })
+            })
+            .then(res => res.json())
+            .then(data => {
+                loginBtn.disabled = false;
+                loginBtnSpinner.style.display = 'none';
+                loginBtnText.textContent = 'Entrar';
+                if (data.success) {
+                    window.location.href = "<?php echo $_ENV['URL_BASE']; ?>/inicio";
+                } else {
+                    errorMsg.textContent = data.message || 'Erro ao fazer login';
+                    errorDiv.style.display = 'block';
+                }
+            })
+            .catch(() => {
+                loginBtn.disabled = false;
+                loginBtnSpinner.style.display = 'none';
+                loginBtnText.textContent = 'Entrar';
+                errorMsg.textContent = 'Erro de conexão com o servidor.';
+                errorDiv.style.display = 'block';
+            });
         });
     </script>
 </body>
