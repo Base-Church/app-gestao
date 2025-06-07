@@ -1,0 +1,56 @@
+<?php
+require_once __DIR__ . '/../../../../vendor/autoload.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
+$dotenv->load();
+
+require_once __DIR__ . '/../../../../config/auth/session.service.php';
+
+header('Content-Type: application/json');
+
+function returnError($message, $code = 400) {
+    http_response_code($code);
+    echo json_encode(['error' => $message]);
+    exit;
+}
+
+// Verifica autenticação
+SessionService::start();
+if (!SessionService::isLoggedIn()) {
+    returnError('Não autorizado', 401);
+}
+
+// Verifica método
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+    returnError('Método não permitido', 405);
+}
+
+// Busca o ministério atual da sessão
+$ministerioAtual = SessionService::getMinisterioAtual();
+if (!$ministerioAtual || !isset($ministerioAtual['id'])) {
+    returnError('Nenhum ministério selecionado', 404);
+}
+
+// Configura requisição para API
+$apiUrl = $_ENV['API_BASE_URL'] . '/api/ministerios/' . $ministerioAtual['id'];
+$ch = curl_init();
+curl_setopt_array($ch, [
+    CURLOPT_URL => $apiUrl,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_HTTPHEADER => [
+        'Accept: application/json',
+        'Authorization: ' . $_ENV['API_KEY']
+    ]
+]);
+
+$response = curl_exec($ch);
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+if (curl_errno($ch)) {
+    returnError('Erro ao conectar com API: ' . curl_error($ch), 500);
+}
+
+curl_close($ch);
+
+// Retorna resposta da API
+http_response_code($httpCode);
+echo $response;
