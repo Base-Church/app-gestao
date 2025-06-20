@@ -193,7 +193,7 @@ $dotenv->load();
                 })
             })
             .then(res => res.json())
-            .then data => {
+            .then((data) => {
                 if (data.message === 'Senha atualizada com sucesso' || data.success) {
                     successMsg.textContent = 'Senha alterada com sucesso! Redirecionando...';
                     successDiv.style.display = 'block';

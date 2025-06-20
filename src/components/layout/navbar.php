@@ -7,7 +7,7 @@ $pageTitle = isset($pageTitle) ? $pageTitle : 'Início';
     <div class="h-16 px-4 flex items-center justify-between relative">
         <!-- Versão -->
         <div class="flex items-center space-x-4">
-            <span class="px-2 py-1 text-xs font-medium bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-300 rounded-full">Beta - v1.0.0</span>
+            <span class="px-2 py-1 text-xs font-medium bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-300 rounded-full">By: TecnoTriks</span>
         </div>
         
         <div class="flex items-center space-x-4">
