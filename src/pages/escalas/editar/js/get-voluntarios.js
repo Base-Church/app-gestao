@@ -57,16 +57,16 @@ async function carregarVoluntarios(atividadeContainer) {
         }
 
         // Forçar definição de MINISTERIO_ATUAL se não estiver definido
-        if (!MINISTERIO_ATUAL) {
+        if (!window.USER.ministerio_atual) {
             const ministerioSelect = document.querySelector('select[name="ministerio_id"]');
             if (ministerioSelect) {
-                MINISTERIO_ATUAL = ministerioSelect.value;
+                window.USER.ministerio_atual = ministerioSelect.value;
             }
         }
 
         const params = new URLSearchParams();
-        params.append('organizacao_id', ORGANIZACAO_ID);
-        params.append('ministerio_id', MINISTERIO_ATUAL);
+        params.append('organizacao_id', window.USER.organizacao_id);
+        params.append('ministerio_id', window.USER.ministerio_atual);
         params.append('data', dataEvento);  
         params.append('data_evento', dataEvento);
         params.append('atividade_id', atividadeId);

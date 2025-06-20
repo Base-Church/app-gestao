@@ -1,12 +1,11 @@
-let MINISTERIO_ATUAL = '';
 let loadingAtividades = false;
 let categorias = [];
 
 async function carregarCategorias() {
     try {
         const params = new URLSearchParams();
-        params.append('organizacao_id', ORGANIZACAO_ID);
-        params.append('ministerio_id', MINISTERIO_ATUAL);
+        params.append('organizacao_id', window.USER.organizacao_id);
+        params.append('ministerio_id', window.USER.ministerio_atual);
 
         const response = await fetch(`${window.APP_CONFIG.apiUrl}/api/categoria-atividade?${params}`, {
             method: 'GET',
@@ -38,18 +37,12 @@ async function carregarAtividades(atividadeContainer) {
     const notification = window.notificationManager.show();
     
     try {
-        if (!MINISTERIO_ATUAL) {
-            MINISTERIO_ATUAL = sessionStorage.getItem('ministerio_atual') || 
-                               localStorage.getItem('ministerio_atual');
-            if (!MINISTERIO_ATUAL) return;
-        }
-
         // Carregar categorias primeiro
         await carregarCategorias();
 
         const params = new URLSearchParams();
-        params.append('organizacao_id', ORGANIZACAO_ID);
-        params.append('ministerio_id', MINISTERIO_ATUAL);
+        params.append('organizacao_id', window.USER.organizacao_id);
+        params.append('ministerio_id', window.USER.ministerio_atual);
         params.append('page', '1');
         params.append('limit', '100');
 
@@ -242,6 +235,6 @@ function toggleSelector(element, type) {
 document.addEventListener('DOMContentLoaded', () => {
     // Adicionar event listener para mudança de ministério
     window.addEventListener('ministerio-changed', function(event) {
-        MINISTERIO_ATUAL = event.detail.ministerio_id;
+        window.USER.ministerio_atual = event.detail.ministerio_id;
     });
 });

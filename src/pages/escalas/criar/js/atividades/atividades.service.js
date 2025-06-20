@@ -46,8 +46,8 @@ class AtividadesService {
 
         try {
             const atividades = await window.apiService.buscarAtividades({
-                organizacao_id: window.ORGANIZACAO_ID,
-                ministerio_id: window.ministerio_atual
+                organizacao_id: window.USER.organizacao_id,
+                ministerio_id: window.USER.ministerio_atual
             });
 
             // Obter largura do conjunto todo (incluindo área de atividade e voluntário)

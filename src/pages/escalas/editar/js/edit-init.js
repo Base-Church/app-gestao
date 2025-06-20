@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const { escala, eventos } = resultado.data;
 
             // Definir MINISTERIO_ATUAL com o valor da escala
-            window.MINISTERIO_ATUAL = escala.ministerio_id;
+            window.USER.ministerio_atual = escala.ministerio_id;
 
             // Preencher dados do cabeçalho
             document.querySelector('input[type="text"]').value = escala.nome;
@@ -313,8 +313,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     tipo: form.querySelector('select').value,
                     data_inicio: form.querySelectorAll('input[type="date"]')[0].value,
                     data_fim: form.querySelectorAll('input[type="date"]')[1].value,
-                    ministerio_id: parseInt(MINISTERIO_ATUAL),
-                    organizacao_id: parseInt(ORGANIZACAO_ID),
+                    ministerio_id: parseInt(window.USER.ministerio_atual),
+                    organizacao_id: parseInt(window.USER.organizacao_id),
                     eventos: []
                 };
 

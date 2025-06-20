@@ -148,8 +148,8 @@ class EscalaService {
                 tipo: dadosEscala.tipo,
                 data_inicio: dadosEscala.data_inicio,
                 data_fim: dadosEscala.data_fim,
-                organizacao_id: parseInt(ORGANIZACAO_ID),
-                ministerio_id: parseInt(MINISTERIO_ATUAL),
+                organizacao_id: parseInt(window.USER.organizacao_id),
+                ministerio_id: parseInt(window.USER.ministerio_atual),
                 eventos: eventosProcessados
             };
 

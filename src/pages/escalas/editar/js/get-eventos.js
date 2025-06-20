@@ -7,7 +7,7 @@ async function carregarEventos(eventoContainer) {
     
     try {
         const params = new URLSearchParams();
-        params.append('organizacao_id', ORGANIZACAO_ID);
+        params.append('organizacao_id', window.USER.organizacao_id);
         params.append('page', '1');
         params.append('limit', '100');
 
