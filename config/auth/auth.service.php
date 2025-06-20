@@ -37,15 +37,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $responseData = json_decode($response, true);
 
-    if ($httpCode === 200 && isset($responseData['nome'])) {
+    // Verifica se a resposta foi bem-sucedida e se contém os dados necessários
+    if ($httpCode === 200 && isset($responseData['data']['nome'])) {
         // Garantir que todos os dados necessários estejam na sessão
         $sessionData = [
-            'nome' => $responseData['nome'],
-            'ministerios' => $responseData['ministerios'] ?? [],
-            'ministerio_atual' => $responseData['ministerios'][0]['id'] ?? null,
-            'organizacao_id' => $responseData['organizacao_id'],
-            'nivel' => $responseData['nivel'],
-            'permissoes' => $responseData['permissoes'] ?? []
+            'nome' => $responseData['data']['nome'],
+            'ministerios' => $responseData['data']['ministerios'] ?? [],
+            'ministerio_atual' => $responseData['data']['ministerios'][0]['id'] ?? null,
+            'organizacao_id' => $responseData['data']['organizacao_id'],
+            'nivel' => $responseData['data']['nivel'],
+            'permissoes' => $responseData['data']['permissoes'] ?? []
         ];
 
         // Cria a sessão do usuário com os dados completos
@@ -53,11 +54,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         echo json_encode([
             'success' => true,
-            'data' => $responseData
+            'data' => $responseData['data']
         ]);
     } else {
-        $message = $responseData['error']
-            ?? (isset($responseData['data']['message']) ? $responseData['data']['message'] : null);
+        $message = $responseData['message'] ?? 'Erro ao fazer login';
         echo json_encode([
             'success' => false,
             'message' => $message
