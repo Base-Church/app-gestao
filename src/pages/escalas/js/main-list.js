@@ -1,4 +1,4 @@
-import { getEscalas } from './api.js';
+import { EscalasAPI } from './api.js';
 import { deleteEscala as deleteEscalaApi } from './delete-escala.js';
 import { shareEscala } from './share-escala.js';
 
@@ -9,12 +9,21 @@ class EscalasListManager {
             tipo: '',
             page: 1
         };
-        
+        this.escalasApi = new EscalasAPI();
         this.initializeElements();
         this.addEventListeners();
         this.loadEscalas();
         this.currentEscalas = []; // Add this line
         this.showAllEscalas = false; // Novo estado para controle de exibição
+
+        // Adiciona listener para mudança de ministério
+        window.addEventListener('ministerio-changed', (event) => {
+            if (event.detail?.ministerio_id) {
+                window.USER.ministerio_atual = event.detail.ministerio_id;
+                localStorage.setItem('ministerio_atual', event.detail.ministerio_id);
+                this.loadEscalas();
+            }
+        });
     }
 
     initializeElements() {
@@ -55,8 +64,15 @@ class EscalasListManager {
     async loadEscalas() {
         try {
             this.showLoading();
-            const response = await getEscalas(this.currentFilters);
-            
+            const organizacao_id = window.USER.organizacao_id;
+            const ministerio_id = window.USER.ministerio_atual;
+            const response = await this.escalasApi.list({
+                organizacao_id,
+                ministerio_id,
+                search: this.currentFilters.search,
+                tipo: this.currentFilters.tipo,
+                page: this.currentFilters.page
+            });
             if (response.code === 200) {
                 this.renderEscalas(response.data);
                 this.renderPagination(response.meta);

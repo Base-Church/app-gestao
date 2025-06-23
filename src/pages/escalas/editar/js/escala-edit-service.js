@@ -1,10 +1,9 @@
 class EscalaEditService {
     static async buscarEscala(id) {
         try {
-            const params = new URLSearchParams();
-            params.append('organizacao_id', window.USER.organizacao_id);
-
-            const response = await fetch(`${window.APP_CONFIG.apiUrl}/api/escalas/${id}?${params}`, {
+            const organizacao_id = window.USER.organizacao_id;
+            const url = `${window.APP_CONFIG.apiBaseUrl}/api/escalas/${id}?organizacao_id=${organizacao_id}`;
+            const response = await fetch(url, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',

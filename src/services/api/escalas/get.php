@@ -1,9 +1,10 @@
 <?php
 require_once __DIR__ . '/../../../../vendor/autoload.php';
+require_once __DIR__ . '/../../../../config/auth/session.service.php';
+
+// Carrega as variáveis de ambiente
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
 $dotenv->load();
-
-require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 header('Content-Type: application/json');
 
@@ -19,32 +20,43 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
-// Verifica método
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    returnError('Método não permitido', 405);
+// Pega os parâmetros necessários
+$organizacao_id = SessionService::getOrganizacaoId();
+$ministerio_id = $_GET['ministerio_id'] ?? null;
+$escala_id = $_GET['escala_id'] ?? null;
+
+if (!$organizacao_id) {
+    returnError('Organização não encontrada');
+}
+if (!$ministerio_id) {
+    returnError('Ministério não informado');
 }
 
-// Extrai o ID da URL usando expressão regular
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-preg_match('/\/get\.php\/(\d+)/', $uri, $matches);
-$escalaId = $matches[1] ?? null;
+$apiUrl = $_ENV['API_BASE_URL'] . '/api/escalas';
 
-if (!$escalaId) {
-    returnError('ID da escala não informado');
+// Monta os parâmetros da query
+$params = [
+    'organizacao_id' => $organizacao_id,
+    'ministerio_id' => $ministerio_id
+];
+
+// Se for busca de uma escala específica, adiciona o id
+if ($escala_id) {
+    $params['escala_id'] = $escala_id;
 }
 
-$organizacaoId = $_GET['organizacao_id'] ?? null;
-if (!$organizacaoId) {
-    returnError('Organização não informada');
+// Adiciona outros parâmetros de GET (paginação, search, etc)
+foreach ($_GET as $key => $value) {
+    if (!isset($params[$key])) {
+        $params[$key] = $value;
+    }
 }
 
-// Monta URL da API principal
-$apiUrl = $_ENV['API_BASE_URL'] . "/api/escalas/{$escalaId}?organizacao_id={$organizacaoId}";
+$url = $apiUrl . '?' . http_build_query($params);
 
-// Faz requisição para API principal
 $ch = curl_init();
 curl_setopt_array($ch, [
-    CURLOPT_URL => $apiUrl,
+    CURLOPT_URL => $url,
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [
         'Accept: application/json',
@@ -56,10 +68,18 @@ $response = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
 if (curl_errno($ch)) {
-    returnError('Erro ao conectar com API: ' . curl_error($ch), 500);
+    curl_close($ch);
+    returnError('Erro na conexão com a API: ' . curl_error($ch));
 }
 
 curl_close($ch);
 
+// Processa a resposta
+$data = json_decode($response, true);
+if (json_last_error() !== JSON_ERROR_NONE) {
+    returnError('Resposta inválida da API');
+}
+
+// Retorna a resposta
 http_response_code($httpCode);
 echo $response;

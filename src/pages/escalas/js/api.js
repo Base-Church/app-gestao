@@ -1,46 +1,32 @@
-export async function getEscalas(params = {}) {
-    const searchParams = new URLSearchParams({
-        organizacao_id: window.USER.organizacao_id,
-        ministerio_id: window.USER.ministerio_atual,
-        search: params.search || '',
-        tipo: params.tipo || '',
-        page: params.page || 1,
-        per_page: params.per_page || 10,
-        sort: params.sort || 'created_at',
-        order: params.order || 'desc',
-        ...params
-    });
-
-    try {
-        const response = await fetch(`${window.APP_CONFIG.apiUrl}/api/escalas?${searchParams}`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${window.APP_CONFIG.apiKey}`
-            },
-            mode: 'cors',
-            credentials: 'omit'
-        });
-
-        const text = await response.text();
-        let json;
-        try {
-            json = JSON.parse(text);
-        } catch (e) {
-            // Se a resposta não for JSON, provavelmente é HTML de erro
-            if (text.startsWith('<!DOCTYPE') || text.startsWith('<html')) {
-                throw new Error('A resposta da API não é JSON. Verifique a URL da API ou se o backend está online.');
-            }
-            throw new Error('Erro ao processar resposta da API: ' + e.message);
-        }
-
-        if (!response.ok) {
-            throw new Error(json.message || 'Erro ao carregar escalas');
-        }
-
-        return json;
-    } catch (error) {
-        console.error('Erro na requisição:', error);
-        throw error;
+export class EscalasAPI {
+    constructor() {
+        this.baseUrl = window.APP_CONFIG.baseUrl;
+        this.apiPath = `${this.baseUrl}/src/services/api/escalas`;
     }
+
+    async list({ organizacao_id, ministerio_id, search = '', tipo = '', page = 1, per_page = 10, sort = 'created_at', order = 'desc' } = {}) {
+        try {
+            const params = new URLSearchParams({
+                organizacao_id,
+                ministerio_id,
+                search,
+                tipo,
+                page,
+                per_page,
+                sort,
+                order
+            });
+            const response = await fetch(`${this.apiPath}/get.php?${params}`);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || `Erro ${response.status} ao buscar escalas`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Erro na API:', error);
+            throw new Error(error.message || 'Erro ao buscar escalas');
+        }
+    }
+
+    // Métodos para create, update, delete podem ser adicionados conforme necessidade
 }
