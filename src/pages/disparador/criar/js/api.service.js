@@ -55,9 +55,20 @@ class ApiService {
         return await this.makeRequest('/send/media', 'POST', mediaData);
     }
 
-    // Enviar cartão de contato (vCard)
-    async sendContact(contactData) {
-        return await this.makeRequest('/send/contact', 'POST', contactData);
+    // Upload de arquivo para o servidor
+    async uploadFile(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        const url = (window.APP_CONFIG && window.APP_CONFIG.URL_BASE ? window.APP_CONFIG.URL_BASE : '') + '/src/services/api/upload_whatsapp.php';
+        const response = await fetch(url, {
+            method: 'POST',
+            body: formData
+        });
+        const result = await response.json();
+        if (!result.success) {
+            throw new Error(result.message || 'Falha no upload');
+        }
+        return result.url;
     }
 }
 

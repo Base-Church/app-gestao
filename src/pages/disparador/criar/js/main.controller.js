@@ -2,6 +2,7 @@ class MainController {
     constructor() {
         this.gruposService = new GruposService();
         this.messageService = window.messageService || new MessageService();
+        this.apiService = window.apiService || new ApiService();
         this.selectedGroups = [];
         this.init();
     }
@@ -11,6 +12,17 @@ class MainController {
         setTimeout(() => {
             this.openGroupsModal();
         }, 100);
+
+        // Adicionar listener para o seletor de agendamento
+        const scheduleTypeSelector = document.getElementById('scheduleType');
+        if (scheduleTypeSelector) {
+            scheduleTypeSelector.addEventListener('change', (e) => this.toggleScheduleInput(e.target.value));
+        }
+
+        const scheduleTimeInput = document.getElementById('scheduleTime');
+        if (scheduleTimeInput) {
+            scheduleTimeInput.addEventListener('input', () => this.updateScheduleWarning());
+        }
     }
 
     // Modal de Grupos
@@ -297,6 +309,36 @@ class MainController {
         modal.classList.add('hidden');
     }
 
+    toggleScheduleInput(value) {
+        const container = document.getElementById('scheduleInputContainer');
+        const warningText = document.getElementById('warningText');
+        
+        if (value === 'schedule') {
+            container.classList.remove('hidden');
+            this.updateScheduleWarning();
+        } else {
+            container.classList.add('hidden');
+            warningText.textContent = 'A campanha será enviada imediatamente para todos os grupos selecionados.';
+        }
+    }
+
+    updateScheduleWarning() {
+        const scheduleTimeInput = document.getElementById('scheduleTime');
+        const warningText = document.getElementById('warningText');
+        if (!scheduleTimeInput || !warningText) return;
+
+        const scheduleDate = scheduleTimeInput.value ? new Date(scheduleTimeInput.value) : null;
+
+        if (scheduleDate && !isNaN(scheduleDate)) {
+            const [datePart, timePart] = scheduleTimeInput.value.split('T');
+            const [year, month, day] = datePart.split('-');
+            const formattedDate = `${day}/${month}/${year} às ${timePart}`;
+            warningText.textContent = `A campanha será agendada para ${formattedDate} (Horário de Brasília).`;
+        } else {
+            warningText.textContent = 'Por favor, selecione uma data e hora para o agendamento.';
+        }
+    }
+
     async enviarCampanha() {
         const btnEnviar = document.getElementById('btnEnviarCampanha');
         const btnCancelar = document.getElementById('btnCancelarEnvio');
@@ -304,49 +346,94 @@ class MainController {
         btnEnviar.disabled = true;
         btnCancelar.disabled = true;
         btnEnviar.innerHTML = `
-            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mx-auto"></div>
-            Enviando...
+            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white inline-block mr-2"></div>
+            Preparando...
         `;
 
         try {
-            const messages = this.messageService.getMessages();
-            let successCount = 0;
-            let errorCount = 0;
+            // 1. Obter dados do modal e definir delays fixos
+            const delayMin = 3;
+            const delayMax = 6;
+            const info = document.getElementById('campaignInfo').value;
+            const scheduleType = document.getElementById('scheduleType').value;
+            const scheduleTimeValue = document.getElementById('scheduleTime').value;
 
+            let scheduled_for = 0;
+            if (scheduleType === 'schedule' && scheduleTimeValue) {
+                // Força a interpretação da data como sendo no fuso UTC-3 (Brasília)
+                const scheduleDateString = `${scheduleTimeValue}:00-03:00`;
+                const scheduleDate = new Date(scheduleDateString);
+                
+                const now = new Date();
+                
+                if (scheduleDate <= now) {
+                    throw new Error('A data de agendamento deve ser no futuro.');
+                }
+                scheduled_for = scheduleDate.getTime();
+            }
+
+            // 2. Validar dados
+            if (this.selectedGroups.length === 0) throw new Error('Nenhum grupo selecionado.');
+            if (this.messageService.messages.length === 0) throw new Error('Nenhuma mensagem criada.');
+
+            // 3. Construir o payload final
+            btnEnviar.innerHTML = `
+                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white inline-block mr-2"></div>
+                Construindo campanha...
+            `;
+            
+            const finalMessages = [];
             for (const groupId of this.selectedGroups) {
-                for (const message of messages) {
-                    try {
-                        // Aqui você implementaria o envio real
-                        // Por enquanto, vamos simular
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                        successCount++;
-                    } catch (error) {
-                        console.error('Erro ao enviar mensagem:', error);
-                        errorCount++;
-                    }
+                for (const msg of this.messageService.messages) {
+                    const messagePayload = this.messageService.buildAdvancedPayload(msg);
+                    messagePayload.number = groupId;
+                    finalMessages.push(messagePayload);
                 }
             }
 
-            this.closeSendModal();
+            const campaignPayload = {
+                delayMin,
+                delayMax,
+                info,
+                messages: finalMessages,
+            };
             
-            if (errorCount === 0) {
-                alert(`Campanha enviada com sucesso!\n${successCount} mensagens enviadas.`);
-                // Limpar dados
-                this.selectedGroups = [];
-                this.messageService.messages = [];
-                this.messageService.showEmptyMessage();
-                document.getElementById('gruposInfo').classList.add('hidden');
-            } else {
-                alert(`Campanha enviada com ${successCount} sucessos e ${errorCount} erros.`);
+            if (scheduled_for > 0) {
+                campaignPayload.scheduled_for = scheduled_for;
             }
+
+            // 4. Enviar para a API
+            btnEnviar.innerHTML = `
+                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white inline-block mr-2"></div>
+                Enviando...
+            `;
+
+            const response = await this.apiService.sendAdvancedCampaign(campaignPayload);
+
+            // 5. Lidar com a resposta
+            this.closeSendModal();
+            alert(`Campanha adicionada à fila com sucesso! Total de ${response.count} mensagens.`);
+            
+            // 6. Resetar estado
+            this.selectedGroups = [];
+            this.messageService.messages = [];
+            this.messageService.showEmptyMessage();
+            const gruposInfo = document.getElementById('gruposInfo');
+            if (gruposInfo) gruposInfo.classList.add('hidden');
+            this.renderGroupsList();
 
         } catch (error) {
             console.error('Erro ao enviar campanha:', error);
-            alert('Erro ao enviar campanha. Tente novamente.');
+            alert(`Erro ao enviar campanha: ${error.message}`);
         } finally {
             btnEnviar.disabled = false;
             btnCancelar.disabled = false;
-            btnEnviar.innerHTML = 'Enviar Campanha';
+            btnEnviar.innerHTML = `
+                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                </svg>
+                Enviar Campanha
+            `;
         }
     }
 }

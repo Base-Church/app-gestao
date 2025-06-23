@@ -123,7 +123,27 @@ include_once __DIR__ . '/../../../components/layout/header.php';
 <!-- Scripts -->
 <script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/api.service.js"></script>
 <script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/grupos.service.js"></script>
+
+<!-- Módulos de tipos de mensagem (ordem importa!) -->
+<script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/messages/text.message.js"></script>
+<script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/messages/image.message.js"></script>
+<script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/messages/video.message.js"></script>
+<script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/messages/document.message.js"></script>
+<script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/messages/ptt.message.js"></script>
+<script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/messages/sticker.message.js"></script>
+<script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/messages/contact.message.js"></script>
+<script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/messages/button.message.js"></script>
+<script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/messages/list.message.js"></script>
+<script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/messages/poll.message.js"></script>
+<script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/messages/carousel.message.js"></script>
+
+<!-- Service principal deve vir depois dos módulos -->
 <script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/message.service.js"></script>
 <script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/main.controller.js"></script>
+
+<script>
+window.APP_CONFIG = window.APP_CONFIG || {};
+window.APP_CONFIG.URL_BASE = '<?php echo $_ENV['URL_BASE']; ?>';
+</script>
 
 <?php include_once __DIR__ . '/../../../components/layout/footer.php'; ?> 

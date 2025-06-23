@@ -2,32 +2,62 @@
 require_once __DIR__ . '/../../../vendor/autoload.php';
 require_once __DIR__ . '/../../../config/auth/session.service.php';
 
+// Carrega as variáveis de ambiente
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
+$dotenv->load();
+
+// Verifica a autenticação
+SessionService::start();
+if (!SessionService::isLoggedIn()) {
+    http_response_code(401);
+    echo json_encode(['error' => 'Não autorizado']);
+    exit;
+}
+
 header('Content-Type: application/json');
 
 try {
-    $data = json_decode(file_get_contents('php://input'), true);
-    if (!isset($data['url']) || !isset($data['whatsapp'])) {
-        throw new Exception('Dados inválidos');
+    if (!isset($_FILES['file'])) {
+        throw new Exception('Nenhum arquivo enviado. O campo deve se chamar "file".');
     }
 
-    // Download da imagem
-    $imageContent = file_get_contents($data['url']);
-    if (!$imageContent) {
-        throw new Exception('Erro ao baixar imagem');
+    $file = $_FILES['file'];
+    $fileName = $file['name'];
+    $fileType = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+    
+    // Verifica o tipo de arquivo
+    $allowedTypes = [
+        'jpg', 'jpeg', 'png', 'gif', // Imagens
+        'mp4', 'mov', 'avi', 'mkv', 'webm', // Vídeos
+        'mp3', 'ogg', 'wav', 'm4a', 'aac' // Áudios
+    ];
+
+    if (!in_array($fileType, $allowedTypes)) {
+        throw new Exception('Tipo de arquivo não permitido. Use apenas: ' . implode(', ', $allowedTypes));
     }
-
-    // Gera nome único
-    $filename = uniqid() . '_' . $data['whatsapp'] . '.jpg';
-    $path = __DIR__ . '/../../../assets/img/lideres/' . $filename;
-
-    // Salva a imagem
-    if (!file_put_contents($path, $imageContent)) {
-        throw new Exception('Erro ao salvar imagem');
+    
+    // Gera um nome único para o arquivo
+    $newFileName = uniqid('disparo_', true) . '.' . $fileType;
+    $uploadDir = __DIR__ . '/../../../assets/disparos/';
+    $uploadPath = $uploadDir . $newFileName;
+    
+    // Garante que o diretório de upload existe
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0775, true);
     }
-
+    
+    // Move o arquivo para o diretório de destino
+    if (!move_uploaded_file($file['tmp_name'], $uploadPath)) {
+        throw new Exception('Erro ao mover o arquivo para o destino.');
+    }
+    
+    // Constrói a URL completa
+    $fileUrl = $_ENV['URL_BASE'] . '/assets/disparos/' . $newFileName;
+    
+    // Retorna a URL completa do arquivo
     echo json_encode([
         'success' => true,
-        'filename' => $filename
+        'url' => $fileUrl
     ]);
 
 } catch (Exception $e) {

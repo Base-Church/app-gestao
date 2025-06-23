@@ -11,20 +11,38 @@ class MessageService {
 
     createMessage(type) {
         const messageId = `msg_${++this.messageIdCounter}`;
-        const message = {
-            id: messageId,
-            type: type,
-            content: '',
-            caption: '',
-            file: null,
-            fileName: '',
-            fileSize: 0
-        };
-
+        let message;
+        // Usar o módulo correto para criar a mensagem
+        switch (type) {
+            case 'text':
+                message = window.TextMessage.create(); break;
+            case 'image':
+                message = window.ImageMessage.create(); break;
+            case 'video':
+                message = window.VideoMessage.create(); break;
+            case 'document':
+                message = window.DocumentMessage.create(); break;
+            case 'ptt':
+                message = window.PTTMessage.create(); break;
+            case 'sticker':
+                message = window.StickerMessage.create(); break;
+            case 'contact':
+                message = window.ContactMessage.create(); break;
+            case 'button':
+                message = window.ButtonMessage.create(); break;
+            case 'list':
+                message = window.ListMessage.create(); break;
+            case 'poll':
+                message = window.PollMessage.create(); break;
+            case 'carousel':
+                message = window.CarouselMessage.create(); break;
+            default:
+                message = { type };
+        }
+        message.id = messageId;
         this.messages.push(message);
         this.renderMessage(message);
         this.updateMessageCount();
-        
         return message;
     }
 
@@ -60,487 +78,111 @@ class MessageService {
         `;
 
         container.appendChild(messageElement);
+
+        // Conectar eventos de upload/caption para tipos de mídia
+        if (message.type === 'image' && window.ImageMessage.connectEvents) {
+            window.ImageMessage.connectEvents(
+                message,
+                (fileInput) => this.handleFileUpload(message.id, fileInput, 'image'),
+                (value) => this.updateMessageContent(message.id, 'caption', value)
+            );
+        }
+        if (message.type === 'video' && window.VideoMessage.connectEvents) {
+            window.VideoMessage.connectEvents(
+                message,
+                (fileInput) => this.handleFileUpload(message.id, fileInput, 'video'),
+                (value) => this.updateMessageContent(message.id, 'caption', value)
+            );
+        }
+        if (message.type === 'document' && window.DocumentMessage.connectEvents) {
+            window.DocumentMessage.connectEvents(
+                message,
+                (fileInput) => this.handleFileUpload(message.id, fileInput, 'document'),
+                (value) => this.updateMessageContent(message.id, 'caption', value)
+            );
+        }
+        if (message.type === 'ptt' && window.PTTMessage.connectEvents) {
+            window.PTTMessage.connectEvents(
+                message,
+                (fileInput) => this.handleFileUpload(message.id, fileInput, 'ptt'),
+                (value) => this.updateMessageContent(message.id, 'caption', value)
+            );
+        }
     }
 
     getMessageForm(message) {
+        // Delegar para o módulo correto
         switch (message.type) {
             case 'text':
-                return `
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Mensagem *
-                            </label>
-                            <textarea 
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                rows="3"
-                                placeholder="Digite sua mensagem..."
-                                onchange="updateMessageContent('${message.id}', 'content', this.value)"
-                                required></textarea>
-                        </div>
-                    </div>
-                `;
-            
+                return window.TextMessage.renderForm(
+                    message,
+                    (value) => `updateMessageContent('${message.id}', 'content', ${JSON.stringify(value)})`
+                );
             case 'image':
-                return `
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Imagem *
-                            </label>
-                            <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center">
-                                <input type="file" 
-                                       class="hidden" 
-                                       accept="image/*"
-                                       onchange="handleFileUpload('${message.id}', this, 'image')">
-                                <div class="file-upload-area cursor-pointer" onclick="this.previousElementSibling.click()">
-                                    <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                    </svg>
-                                    <p class="text-sm text-gray-500">Clique para selecionar uma imagem</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Legenda (opcional)
-                            </label>
-                            <textarea 
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                rows="2"
-                                placeholder="Descrição da imagem..."
-                                onchange="updateMessageContent('${message.id}', 'caption', this.value)"></textarea>
-                        </div>
-                    </div>
-                `;
-            
+                return window.ImageMessage.renderForm(
+                    message,
+                    (input) => `handleFileUpload('${message.id}', ${input}, 'image')`,
+                    (value) => `updateMessageContent('${message.id}', 'caption', ${JSON.stringify(value)})`
+                );
             case 'video':
-                return `
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Vídeo *
-                            </label>
-                            <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center">
-                                <input type="file" 
-                                       class="hidden" 
-                                       accept="video/*"
-                                       onchange="handleFileUpload('${message.id}', this, 'video')">
-                                <div class="file-upload-area cursor-pointer" onclick="this.previousElementSibling.click()">
-                                    <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                    </svg>
-                                    <p class="text-sm text-gray-500">Clique para selecionar um vídeo</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Legenda (opcional)
-                            </label>
-                            <textarea 
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                rows="2"
-                                placeholder="Descrição do vídeo..."
-                                onchange="updateMessageContent('${message.id}', 'caption', this.value)"></textarea>
-                        </div>
-                    </div>
-                `;
-            
+                return window.VideoMessage.renderForm(
+                    message,
+                    (input) => `handleFileUpload('${message.id}', ${input}, 'video')`,
+                    (value) => `updateMessageContent('${message.id}', 'caption', ${JSON.stringify(value)})`
+                );
             case 'document':
-                return `
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Documento *
-                            </label>
-                            <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center">
-                                <input type="file" 
-                                       class="hidden" 
-                                       accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx"
-                                       onchange="handleFileUpload('${message.id}', this, 'document')">
-                                <div class="file-upload-area cursor-pointer" onclick="this.previousElementSibling.click()">
-                                    <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                    </svg>
-                                    <p class="text-sm text-gray-500">Clique para selecionar um documento</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Descrição (opcional)
-                            </label>
-                            <textarea 
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                rows="2"
-                                placeholder="Descrição do documento..."
-                                onchange="updateMessageContent('${message.id}', 'caption', this.value)"></textarea>
-                        </div>
-                    </div>
-                `;
-            
+                return window.DocumentMessage.renderForm(
+                    message,
+                    (input) => `handleFileUpload('${message.id}', ${input}, 'document')`,
+                    (value) => `updateMessageContent('${message.id}', 'caption', ${JSON.stringify(value)})`
+                );
             case 'ptt':
-                return `
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Mensagem de Voz (PTT) *
-                            </label>
-                            <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center">
-                                <input type="file" 
-                                       class="hidden" 
-                                       accept="audio/*"
-                                       onchange="handleFileUpload('${message.id}', this, 'ptt')">
-                                <div class="file-upload-area cursor-pointer" onclick="this.previousElementSibling.click()">
-                                    <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                    </svg>
-                                    <p class="text-sm text-gray-500">Clique para selecionar uma mensagem de voz</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Descrição (opcional)
-                            </label>
-                            <textarea 
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                rows="2"
-                                placeholder="Descrição da mensagem de voz..."
-                                onchange="updateMessageContent('${message.id}', 'caption', this.value)"></textarea>
-                        </div>
-                    </div>
-                `;
-            
+                return window.PTTMessage.renderForm(
+                    message,
+                    (input) => `handleFileUpload('${message.id}', ${input}, 'ptt')`,
+                    (value) => `updateMessageContent('${message.id}', 'caption', ${JSON.stringify(value)})`
+                );
             case 'sticker':
-                return `
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Figurinha *
-                            </label>
-                            <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center">
-                                <input type="file" 
-                                       class="hidden" 
-                                       accept="image/*"
-                                       onchange="handleFileUpload('${message.id}', this, 'sticker')">
-                                <div class="file-upload-area cursor-pointer" onclick="this.previousElementSibling.click()">
-                                    <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                    </svg>
-                                    <p class="text-sm text-gray-500">Clique para selecionar uma figurinha</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Descrição (opcional)
-                            </label>
-                            <textarea 
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                rows="2"
-                                placeholder="Descrição da figurinha..."
-                                onchange="updateMessageContent('${message.id}', 'caption', this.value)"></textarea>
-                        </div>
-                    </div>
-                `;
-            
+                return window.StickerMessage.renderForm(
+                    message,
+                    (input) => `handleFileUpload('${message.id}', ${input}, 'sticker')`,
+                    (value) => `updateMessageContent('${message.id}', 'caption', ${JSON.stringify(value)})`
+                );
             case 'contact':
-                return `
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Nome Completo *
-                            </label>
-                            <input type="text" 
-                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                   placeholder="Ex: João Silva"
-                                   onchange="updateMessageContent('${message.id}', 'fullName', this.value)"
-                                   required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Números de Telefone *
-                            </label>
-                            <input type="tel" 
-                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                   placeholder="Ex: 5511999999999,5511888888888"
-                                   onchange="updateMessageContent('${message.id}', 'phoneNumber', this.value)"
-                                   required>
-                            <p class="text-xs text-gray-500 mt-1">Separe múltiplos números por vírgula (inclua o código 55)</p>
-                        </div>
-                    </div>
-                `;
-            
+                return window.ContactMessage.renderForm(
+                    message,
+                    (value) => `updateMessageContent('${message.id}', 'fullName', ${JSON.stringify(value)})`,
+                    (value) => `updateMessageContent('${message.id}', 'phoneNumber', ${JSON.stringify(value)})`
+                );
             case 'button':
-                return `
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Texto Principal *
-                            </label>
-                            <textarea 
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                rows="3"
-                                placeholder="Ex: Como podemos ajudar?"
-                                onchange="window.messageService?.updateMessageContent('${message.id}', 'text', this.value)"
-                                required></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Texto do Rodapé
-                            </label>
-                            <input type="text" 
-                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                   placeholder="Ex: Escolha uma das opções abaixo"
-                                   onchange="window.messageService?.updateMessageContent('${message.id}', 'footerText', this.value)">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Botões *
-                            </label>
-                            <div id="buttons-container-${message.id}" class="space-y-2">
-                                <div class="flex items-center space-x-2">
-                                    <input type="text" 
-                                           class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                           placeholder="Texto do botão"
-                                           onchange="updateButtonText('${message.id}', 0, this.value)">
-                                    <select class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                            onchange="updateButtonType('${message.id}', 0, this.value)">
-                                        <option value="url">Link</option>
-                                        <option value="call">Ligação</option>
-                                        <option value="copy">Copiar</option>
-                                    </select>
-                                    <input type="text" 
-                                           class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                           placeholder="URL/Número"
-                                           onchange="updateButtonValue('${message.id}', 0, this.value)">
-                                </div>
-                            </div>
-                            <button type="button" 
-                                    class="mt-2 px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                                    onclick="addButton('${message.id}')">
-                                + Adicionar Botão
-                            </button>
-                        </div>
-                    </div>
-                `;
-            
+                return window.ButtonMessage.renderForm(
+                    message,
+                    (value) => `updateMessageContent('${message.id}', 'text', ${JSON.stringify(value)})`,
+                    (value) => `updateMessageContent('${message.id}', 'footerText', ${JSON.stringify(value)})`,
+                    () => `addButton('${message.id}')`,
+                    () => '' // placeholder para edição de botões
+                );
             case 'list':
-                return `
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Texto Principal *
-                            </label>
-                            <textarea 
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                rows="3"
-                                placeholder="Ex: Catálogo de Produtos"
-                                onchange="window.messageService?.updateMessageContent('${message.id}', 'text', this.value)"
-                                required></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Texto do Botão da Lista *
-                            </label>
-                            <input type="text" 
-                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                   placeholder="Ex: Ver Catálogo"
-                                   onchange="window.messageService?.updateMessageContent('${message.id}', 'listButton', this.value)"
-                                   required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Texto do Rodapé
-                            </label>
-                            <input type="text" 
-                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                   placeholder="Ex: Preços sujeitos a alteração"
-                                   onchange="window.messageService?.updateMessageContent('${message.id}', 'footerText', this.value)">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Seções e Itens *
-                            </label>
-                            <div id="list-container-${message.id}" class="space-y-3">
-                                <div class="border border-gray-300 dark:border-gray-600 rounded-lg p-3">
-                                    <input type="text" 
-                                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white mb-2"
-                                           placeholder="Nome da Seção"
-                                           onchange="updateSectionName('${message.id}', 0, this.value)">
-                                    <div class="space-y-2">
-                                        <div class="flex items-center space-x-2">
-                                            <input type="text" 
-                                                   class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                                   placeholder="Nome do item"
-                                                   onchange="updateListItemName('${message.id}', 0, 0, this.value)">
-                                            <input type="text" 
-                                                   class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                                   placeholder="Descrição (opcional)"
-                                                   onchange="updateListItemDesc('${message.id}', 0, 0, this.value)">
-                                        </div>
-                                    </div>
-                                    <button type="button" 
-                                            class="mt-2 px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-                                            onclick="addListItem('${message.id}', 0)">
-                                        + Adicionar Item
-                                    </button>
-                                </div>
-                            </div>
-                            <button type="button" 
-                                    class="mt-2 px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                                    onclick="addSection('${message.id}')">
-                                + Adicionar Seção
-                            </button>
-                        </div>
-                    </div>
-                `;
-            
+                return window.ListMessage.renderForm(
+                    message,
+                    (value) => `updateMessageContent('${message.id}', 'text', ${JSON.stringify(value)})`,
+                    (value) => `updateMessageContent('${message.id}', 'footerText', ${JSON.stringify(value)})`,
+                    (value) => `updateMessageContent('${message.id}', 'listButton', ${JSON.stringify(value)})`,
+                    () => `addSection('${message.id}')`
+                );
             case 'poll':
-                return `
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Pergunta *
-                            </label>
-                            <textarea 
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                rows="3"
-                                placeholder="Ex: Qual horário prefere para atendimento?"
-                                onchange="window.messageService?.updateMessageContent('${message.id}', 'text', this.value)"
-                                required></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Tipo de Seleção
-                            </label>
-                            <div class="flex space-x-4">
-                                <label class="flex items-center">
-                                    <input type="radio" 
-                                           name="poll-type-${message.id}" 
-                                           value="1" 
-                                           checked
-                                           onchange="window.messageService?.updateMessageContent('${message.id}', 'selectableCount', this.value)"
-                                           class="mr-2">
-                                    <span class="text-sm">Marcar uma</span>
-                                </label>
-                                <label class="flex items-center">
-                                    <input type="radio" 
-                                           name="poll-type-${message.id}" 
-                                           value="2"
-                                           onchange="window.messageService?.updateMessageContent('${message.id}', 'selectableCount', this.value)"
-                                           class="mr-2">
-                                    <span class="text-sm">Marcar várias</span>
-                                </label>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Opções de Voto *
-                            </label>
-                            <div id="poll-options-${message.id}" class="space-y-2">
-                                <input type="text" 
-                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                       placeholder="Opção 1"
-                                       onchange="updatePollOption('${message.id}', 0, this.value)">
-                                <input type="text" 
-                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                       placeholder="Opção 2"
-                                       onchange="updatePollOption('${message.id}', 1, this.value)">
-                            </div>
-                            <button type="button" 
-                                    class="mt-2 px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                                    onclick="addPollOption('${message.id}')">
-                                + Adicionar Opção
-                            </button>
-                        </div>
-                    </div>
-                `;
-            
+                return window.PollMessage.renderForm(
+                    message,
+                    (value) => `updateMessageContent('${message.id}', 'text', ${JSON.stringify(value)})`,
+                    (count) => `updateMessageContent('${message.id}', 'selectableCount', ${count})`,
+                    () => `addPollOption('${message.id}')`
+                );
             case 'carousel':
-                return `
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Texto Principal *
-                            </label>
-                            <textarea 
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                rows="3"
-                                placeholder="Ex: Conheça nossos produtos"
-                                onchange="window.messageService?.updateMessageContent('${message.id}', 'text', this.value)"
-                                required></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Cartões do Carrossel *
-                            </label>
-                            <div id="carousel-cards-${message.id}" class="space-y-4">
-                                <div class="border border-gray-300 dark:border-gray-600 rounded-lg p-3">
-                                    <div class="space-y-2">
-                                        <input type="text" 
-                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                               placeholder="Título do cartão"
-                                               onchange="updateCarouselCardTitle('${message.id}', 0, this.value)">
-                                        <textarea 
-                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                               rows="2"
-                                               placeholder="Descrição do cartão"
-                                               onchange="updateCarouselCardDesc('${message.id}', 0, this.value)"></textarea>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                Imagem do Cartão
-                                            </label>
-                                            <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center">
-                                                <input type="file" 
-                                                       class="hidden" 
-                                                       accept="image/*"
-                                                       onchange="handleCarouselImageUpload('${message.id}', 0, this)">
-                                                <div class="file-upload-area cursor-pointer" onclick="this.previousElementSibling.click()">
-                                                    <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                                    </svg>
-                                                    <p class="text-sm text-gray-500">Clique para selecionar uma imagem</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="space-y-2">
-                                            <div class="flex items-center space-x-2">
-                                                <input type="text" 
-                                                       class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                                       placeholder="Texto do botão"
-                                                       onchange="updateCarouselButtonText('${message.id}', 0, 0, this.value)">
-                                                <select class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                                        onchange="updateCarouselButtonType('${message.id}', 0, 0, this.value)">
-                                                    <option value="url">Link</option>
-                                                    <option value="call">Ligação</option>
-                                                    <option value="copy">Copiar</option>
-                                                </select>
-                                                <input type="text" 
-                                                       class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                                       placeholder="URL/Número"
-                                                       onchange="updateCarouselButtonValue('${message.id}', 0, 0, this.value)">
-                                            </div>
-                                        </div>
-                                        <button type="button" 
-                                                class="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-                                                onclick="addCarouselButton('${message.id}', 0)">
-                                            + Adicionar Botão
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <button type="button" 
-                                    class="mt-2 px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                                    onclick="addCarouselCard('${message.id}')">
-                                + Adicionar Cartão
-                            </button>
-                        </div>
-                    </div>
-                `;
-            
+                return window.CarouselMessage.renderForm(
+                    message,
+                    (value) => `updateMessageContent('${message.id}', 'text', ${JSON.stringify(value)})`,
+                    () => `addCarouselCard('${message.id}')`
+                );
             default:
                 return '<p class="text-red-500">Tipo de mensagem não suportado</p>';
         }
@@ -587,14 +229,14 @@ class MessageService {
         }
     }
 
-    handleFileUpload(messageId, input, type) {
+    async handleFileUpload(messageId, input, type) {
         const file = input.files[0];
         if (!file) return;
 
         const message = this.messages.find(m => m.id === messageId);
         if (!message) return;
 
-        // Validar tamanho do arquivo (máximo 16MB)
+        // Validar tamanho do arquivo
         const maxSize = 16 * 1024 * 1024; // 16MB
         if (file.size > maxSize) {
             alert('Arquivo muito grande. Tamanho máximo: 16MB');
@@ -602,31 +244,68 @@ class MessageService {
             return;
         }
 
-        message.file = file;
-        message.fileName = file.name;
-        message.fileSize = file.size;
+        const messageElement = document.getElementById(`message-${message.id}`);
+        if (!messageElement) return;
 
-        // Mostrar preview do arquivo
-        this.showFilePreview(messageId, file, type);
+        const uploadAreaContainer = messageElement.querySelector('.border-2.border-dashed');
+        
+        if (uploadAreaContainer) {
+             uploadAreaContainer.innerHTML = `
+                <div class="flex items-center justify-center space-x-3 p-4">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <div class="text-left">
+                        <p class="text-sm font-medium text-gray-900 dark:text-white">Enviando ${file.name}...</p>
+                        <p class="text-xs text-gray-500">Aguarde...</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        try {
+            const url = await window.apiService.uploadFile(file);
+
+            message.file = null;
+            message.fileName = file.name;
+            message.fileSize = file.size;
+            message.fileUrl = url; // Store the URL returned by the API
+
+            this.showFilePreview(messageId, file);
+
+        } catch (error) {
+            console.error('Erro no upload:', error);
+            alert(`Falha no upload do arquivo ${file.name}: ${error.message}`);
+            
+            if (uploadAreaContainer) {
+                 const originalUploadArea = `
+                    <input type="file" class="hidden" accept="${input.accept}" onchange="handleFileUpload('${message.id}', '${type}', this)">
+                    <div class="file-upload-area cursor-pointer" onclick="this.previousElementSibling.click()">
+                        <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                        <p class="text-sm text-gray-500 text-red-500">Falha no envio. Clique para tentar novamente.</p>
+                    </div>
+                `;
+                uploadAreaContainer.innerHTML = originalUploadArea;
+            }
+        }
     }
 
-    showFilePreview(messageId, file, type) {
+    showFilePreview(messageId, file) {
         const messageElement = document.getElementById(`message-${messageId}`);
         if (!messageElement) return;
 
-        const uploadArea = messageElement.querySelector('.file-upload-area');
-        if (!uploadArea) return;
+        const uploadAreaContainer = messageElement.querySelector('.border-2.border-dashed');
+        if (!uploadAreaContainer) return;
 
         const fileSize = (file.size / 1024 / 1024).toFixed(2);
         
-        uploadArea.innerHTML = `
-            <div class="flex items-center space-x-3">
+        uploadAreaContainer.className = uploadAreaContainer.className.replace('border-dashed', '');
+        uploadAreaContainer.innerHTML = `
+            <div class="flex items-center justify-center space-x-3 p-4 bg-green-50 dark:bg-green-900/20">
                 <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 <div class="text-left">
-                    <p class="text-sm font-medium text-gray-900 dark:text-white">${file.name}</p>
-                    <p class="text-xs text-gray-500">${fileSize} MB</p>
+                    <p class="text-sm font-medium text-gray-900 dark:text-white truncate" title="${file.name}">${file.name}</p>
+                    <p class="text-xs text-gray-500">${fileSize} MB - Carregado!</p>
                 </div>
             </div>
         `;
@@ -711,6 +390,80 @@ class MessageService {
 
             return baseMessage;
         });
+    }
+
+    buildAdvancedPayload(message) {
+        const payload = {
+            type: message.type,
+        };
+
+        switch (message.type) {
+            case 'text':
+                payload.text = message.content;
+                // Lógica de link preview pode ser adicionada aqui se necessário
+                break;
+
+            case 'image':
+            case 'video':
+            case 'document':
+            case 'ptt': // Assuming API uses 'audio' or 'ptt'
+            case 'sticker':
+                payload.file = message.fileUrl;
+                payload.caption = message.caption;
+                if (message.type === 'document') {
+                    payload.docName = message.fileName;
+                }
+                if (message.type === 'ptt') {
+                    payload.type = 'audio'; // Ajustar para o tipo que a API espera
+                }
+                break;
+
+            case 'contact':
+                payload.fullName = message.fullName;
+                payload.phoneNumber = message.phoneNumber;
+                // outros campos de contato como organization, email, url podem ser adicionados
+                break;
+            
+            // Outros tipos como poll, list, button, etc. precisam ser implementados
+            // com base na estrutura exata que a API espera para 'choices', etc.
+            // O código abaixo é uma suposição e pode precisar de ajustes.
+            
+            case 'button':
+                payload.text = message.text;
+                payload.footerText = message.footerText;
+                payload.choices = message.buttons.map(b => {
+                    if (b.type === 'url' || b.type === 'copy') {
+                        return `${b.text}|${b.value}`;
+                    } else if (b.type === 'call') {
+                         return `${b.text}|call:${b.value}`;
+                    }
+                    return b.text; // fallback
+                });
+                break;
+
+            case 'list':
+                payload.text = message.text;
+                payload.footerText = message.footerText;
+                payload.buttonText = message.listButton;
+                payload.choices = [];
+                message.sections.forEach(s => {
+                    payload.choices.push(`[${s.name}]`);
+                    s.items.forEach(i => {
+                        payload.choices.push(`${i.name}|${i.description || ''}`);
+                    });
+                });
+                break;
+            
+            case 'poll':
+                payload.name = message.text || '';
+                payload.selectableCount = message.selectableCount || 1;
+                payload.choices = message.options;
+                break;
+
+            // Carousel não está na documentação do /sender/advanced, ignorando por agora.
+        }
+
+        return payload;
     }
 
     buildMessagePayload(message) {
@@ -926,36 +679,6 @@ class MessageService {
         }
     }
 
-    async sendMessage(message) {
-        try {
-            const payload = this.buildMessagePayload(message);
-            
-            const response = await fetch('/src/services/api/send-message.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const result = await response.json();
-            
-            if (result.success) {
-                console.log('Mensagem enviada com sucesso:', result);
-                return { success: true, data: result };
-            } else {
-                console.error('Erro ao enviar mensagem:', result.error);
-                return { success: false, error: result.error };
-            }
-        } catch (error) {
-            console.error('Erro ao enviar mensagem:', error);
-            return { success: false, error: error.message };
-        }
-    }
 }
 
 // Funções globais
