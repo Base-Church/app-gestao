@@ -1144,6 +1144,10 @@ select {
   z-index: 6000;
 }
 
+.col-span-1 {
+  grid-column: span 1 / span 1;
+}
+
 .col-span-full {
   grid-column: 1 / -1;
 }
@@ -1322,6 +1326,10 @@ select {
   display: grid;
 }
 
+.list-item {
+  display: list-item;
+}
+
 .hidden {
   display: none;
 }
@@ -1488,6 +1496,10 @@ select {
 
 .max-h-\[calc\(90vh-140px\)\] {
   max-height: calc(90vh - 140px);
+}
+
+.max-h-32 {
+  max-height: 8rem;
 }
 
 .min-h-\[120px\] {
@@ -2771,6 +2783,10 @@ select {
 
 .leading-none {
   line-height: 1;
+}
+
+.leading-4 {
+  line-height: 1rem;
 }
 
 .tracking-wider {

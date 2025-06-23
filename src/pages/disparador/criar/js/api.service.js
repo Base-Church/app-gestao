@@ -55,6 +55,16 @@ class ApiService {
         return await this.makeRequest('/send/media', 'POST', mediaData);
     }
 
+    // Enviar menu interativo (botões, carrossel, lista ou enquete)
+    async sendMenu(menuData) {
+        return await this.makeRequest('/send/menu', 'POST', menuData);
+    }
+
+    // Enviar carrossel de mídia com botões
+    async sendCarousel(carouselData) {
+        return await this.makeRequest('/send/carousel', 'POST', carouselData);
+    }
+
     // Upload de arquivo para o servidor
     async uploadFile(file) {
         const formData = new FormData();

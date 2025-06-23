@@ -1,6 +1,6 @@
 class MessageService {
     constructor() {
-        this.messages = [];
+        this.messages = new Map();
         this.messageIdCounter = 0;
         this.init();
     }
@@ -10,37 +10,48 @@ class MessageService {
     }
 
     createMessage(type) {
-        const messageId = `msg_${++this.messageIdCounter}`;
+        this.messageIdCounter++;
+        const messageId = `msg_${this.messageIdCounter}`;
         let message;
         // Usar o módulo correto para criar a mensagem
         switch (type) {
             case 'text':
-                message = window.TextMessage.create(); break;
+                message = { id: messageId, ...window.TextMessage.create() };
+                break;
             case 'image':
-                message = window.ImageMessage.create(); break;
+                message = { id: messageId, ...window.ImageMessage.create() };
+                break;
             case 'video':
-                message = window.VideoMessage.create(); break;
+                message = { id: messageId, ...window.VideoMessage.create() };
+                break;
             case 'document':
-                message = window.DocumentMessage.create(); break;
+                message = { id: messageId, ...window.DocumentMessage.create() };
+                break;
             case 'ptt':
-                message = window.PTTMessage.create(); break;
+                message = { id: messageId, ...window.PTTMessage.create() };
+                break;
             case 'sticker':
-                message = window.StickerMessage.create(); break;
+                message = { id: messageId, ...window.StickerMessage.create() };
+                break;
             case 'contact':
-                message = window.ContactMessage.create(); break;
+                message = { id: messageId, ...window.ContactMessage.create() };
+                break;
             case 'button':
-                message = window.ButtonMessage.create(); break;
+                message = { id: messageId, ...window.ButtonMessage.create() };
+                break;
             case 'list':
-                message = window.ListMessage.create(); break;
+                message = { id: messageId, ...window.ListMessage.create() };
+                break;
             case 'poll':
-                message = window.PollMessage.create(); break;
+                message = { id: messageId, ...window.PollMessage.create() };
+                break;
             case 'carousel':
-                message = window.CarouselMessage.create(); break;
+                message = { id: messageId, ...window.CarouselMessage.create() };
+                break;
             default:
-                message = { type };
+                throw new Error(`Tipo de mensagem '${type}' não suportado`);
         }
-        message.id = messageId;
-        this.messages.push(message);
+        this.messages.set(messageId, message);
         this.renderMessage(message);
         this.updateMessageCount();
         return message;
@@ -66,7 +77,7 @@ class MessageService {
                     <span class="px-2 py-1 text-xs font-medium rounded-full ${this.getTypeColor(message.type)}">
                         ${this.getTypeLabel(message.type)}
                     </span>
-                    <span class="text-sm text-gray-500">Mensagem ${this.messages.length}</span>
+                    <span class="text-sm text-gray-500">Mensagem ${this.messages.size}</span>
                 </div>
                 <button class="text-red-500 hover:text-red-700" onclick="deleteMessage('${message.id}')">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -223,7 +234,7 @@ class MessageService {
     }
 
     updateMessageContent(messageId, field, value) {
-        const message = this.messages.find(m => m.id === messageId);
+        const message = this.messages.get(messageId);
         if (message) {
             message[field] = value;
         }
@@ -233,7 +244,7 @@ class MessageService {
         const file = input.files[0];
         if (!file) return;
 
-        const message = this.messages.find(m => m.id === messageId);
+        const message = this.messages.get(messageId);
         if (!message) return;
 
         // Validar tamanho do arquivo
@@ -312,21 +323,19 @@ class MessageService {
     }
 
     deleteMessage(messageId) {
-        const messageIndex = this.messages.findIndex(m => m.id === messageId);
-        if (messageIndex > -1) {
-            this.messages.splice(messageIndex, 1);
-            
-            const messageElement = document.getElementById(`message-${messageId}`);
-            if (messageElement) {
-                messageElement.remove();
-            }
-            
-            this.updateMessageCount();
-            
-            // Se não há mais mensagens, mostrar mensagem de "nenhuma mensagem"
-            if (this.messages.length === 0) {
-                this.showEmptyMessage();
-            }
+        this.messages.delete(messageId);
+        console.log('Total de mensagens:', this.messages.size);
+        
+        const messageElement = document.getElementById(`message-${messageId}`);
+        if (messageElement) {
+            messageElement.remove();
+        }
+        
+        this.updateMessageCount();
+        
+        // Se não há mais mensagens, mostrar mensagem de "nenhuma mensagem"
+        if (this.messages.size === 0) {
+            this.showEmptyMessage();
         }
     }
 
@@ -346,12 +355,12 @@ class MessageService {
     }
 
     updateMessageCount() {
-        const count = this.messages.length;
+        const count = this.messages.size;
         console.log(`Total de mensagens: ${count}`);
     }
 
     getMessages() {
-        return this.messages.map(message => {
+        return Array.from(this.messages.values()).map(message => {
             const baseMessage = {
                 type: message.type
             };
@@ -393,80 +402,18 @@ class MessageService {
     }
 
     buildAdvancedPayload(message) {
-        const payload = {
-            type: message.type,
-        };
-
-        switch (message.type) {
-            case 'text':
-                payload.text = message.content;
-                // Lógica de link preview pode ser adicionada aqui se necessário
-                break;
-
-            case 'image':
-            case 'video':
-            case 'document':
-            case 'ptt': // Assuming API uses 'audio' or 'ptt'
-            case 'sticker':
-                payload.file = message.fileUrl;
-                payload.caption = message.caption;
-                if (message.type === 'document') {
-                    payload.docName = message.fileName;
-                }
-                if (message.type === 'ptt') {
-                    payload.type = 'audio'; // Ajustar para o tipo que a API espera
-                }
-                break;
-
-            case 'contact':
-                payload.fullName = message.fullName;
-                payload.phoneNumber = message.phoneNumber;
-                // outros campos de contato como organization, email, url podem ser adicionados
-                break;
-            
-            // Outros tipos como poll, list, button, etc. precisam ser implementados
-            // com base na estrutura exata que a API espera para 'choices', etc.
-            // O código abaixo é uma suposição e pode precisar de ajustes.
-            
-            case 'button':
-                payload.text = message.text;
-                payload.footerText = message.footerText;
-                payload.choices = message.buttons.map(b => {
-                    if (b.type === 'url' || b.type === 'copy') {
-                        return `${b.text}|${b.value}`;
-                    } else if (b.type === 'call') {
-                         return `${b.text}|call:${b.value}`;
-                    }
-                    return b.text; // fallback
-                });
-                break;
-
-            case 'list':
-                payload.text = message.text;
-                payload.footerText = message.footerText;
-                payload.buttonText = message.listButton;
-                payload.choices = [];
-                message.sections.forEach(s => {
-                    payload.choices.push(`[${s.name}]`);
-                    s.items.forEach(i => {
-                        payload.choices.push(`${i.name}|${i.description || ''}`);
-                    });
-                });
-                break;
-            
-            case 'poll':
-                payload.name = message.text || '';
-                payload.selectableCount = message.selectableCount || 1;
-                payload.choices = message.options;
-                break;
-
-            // Carousel não está na documentação do /sender/advanced, ignorando por agora.
+        const isInteractiveType = ['button', 'list', 'poll', 'carousel'].includes(message.type);
+        
+        if (isInteractiveType) {
+            const menuPayload = this.buildMessagePayload(message);
+            return {
+                ...menuPayload,
+                delay: 1000,
+                readchat: true
+            };
         }
 
-        return payload;
-    }
-
-    buildMessagePayload(message) {
+        // Para outros tipos de mensagem, manter o comportamento existente
         const basePayload = {
             number: message.number,
             options: {
@@ -486,7 +433,7 @@ class MessageService {
                 return {
                     ...basePayload,
                     image: {
-                        link: message.content
+                        link: message.fileUrl
                     },
                     caption: message.caption || ''
                 };
@@ -495,24 +442,26 @@ class MessageService {
                 return {
                     ...basePayload,
                     video: {
-                        link: message.content
+                        link: message.fileUrl
                     },
                     caption: message.caption || ''
-                };
-
-            case 'audio':
-                return {
-                    ...basePayload,
-                    audio: {
-                        link: message.content
-                    }
                 };
 
             case 'document':
                 return {
                     ...basePayload,
                     document: {
-                        link: message.content
+                        link: message.fileUrl
+                    },
+                    caption: message.caption || '',
+                    fileName: message.fileName || ''
+                };
+
+            case 'ptt':
+                return {
+                    ...basePayload,
+                    audio: {
+                        link: message.fileUrl
                     },
                     caption: message.caption || ''
                 };
@@ -521,7 +470,7 @@ class MessageService {
                 return {
                     ...basePayload,
                     sticker: {
-                        link: message.content
+                        link: message.fileUrl
                     }
                 };
 
@@ -529,149 +478,11 @@ class MessageService {
                 return {
                     ...basePayload,
                     contacts: [{
-                        name: message.contactName,
-                        phones: message.phones.map(phone => ({
-                            phone: phone.startsWith('55') ? phone : `55${phone}`
+                        name: message.fullName,
+                        phones: message.phoneNumber.split(',').map(phone => ({
+                            phone: phone.trim().startsWith('55') ? phone.trim() : `55${phone.trim()}`
                         }))
                     }]
-                };
-
-            case 'button':
-                // Montar botões no formato da API
-                const buttonChoices = [];
-                if (message.buttons && message.buttons.length > 0) {
-                    message.buttons.forEach(button => {
-                        if (button.text && button.type && button.value) {
-                            let choice = button.text;
-                            switch (button.type) {
-                                case 'response':
-                                    choice += `|${button.value}`;
-                                    break;
-                                case 'url':
-                                    choice += `|${button.value}`;
-                                    break;
-                                case 'call':
-                                    choice += `|call:${button.value}`;
-                                    break;
-                                case 'copy':
-                                    choice += `|copy:${button.value}`;
-                                    break;
-                            }
-                            buttonChoices.push(choice);
-                        }
-                    });
-                }
-                
-                return {
-                    ...basePayload,
-                    text: message.text || '',
-                    footer: message.footerText || '',
-                    buttons: {
-                        title: message.text || '',
-                        footer: message.footerText || '',
-                        choices: buttonChoices
-                    }
-                };
-
-            case 'list':
-                // Montar lista no formato da API
-                const listChoices = [];
-                if (message.sections && message.sections.length > 0) {
-                    message.sections.forEach(section => {
-                        if (section.name) {
-                            listChoices.push(`[${section.name}]`);
-                            if (section.items && section.items.length > 0) {
-                                section.items.forEach(item => {
-                                    if (item.name) {
-                                        let choice = item.name;
-                                        if (item.id) choice += `|${item.id}`;
-                                        if (item.description) choice += `|${item.description}`;
-                                        listChoices.push(choice);
-                                    }
-                                });
-                            }
-                        }
-                    });
-                }
-                
-                return {
-                    ...basePayload,
-                    text: message.text || '',
-                    footer: message.footerText || '',
-                    list: {
-                        title: message.text || '',
-                        footer: message.footerText || '',
-                        buttonText: message.listButton || 'Ver Opções',
-                        choices: listChoices
-                    }
-                };
-
-            case 'poll':
-                // Montar enquete no formato da API
-                const pollChoices = [];
-                if (message.options && message.options.length > 0) {
-                    message.options.forEach(option => {
-                        if (option) {
-                            pollChoices.push(option);
-                        }
-                    });
-                }
-                
-                return {
-                    ...basePayload,
-                    poll: {
-                        title: message.text || '',
-                        choices: pollChoices,
-                        selectableCount: message.selectableCount || 1
-                    }
-                };
-
-            case 'carousel':
-                // Montar carrossel no formato da API
-                const carouselChoices = [];
-                if (message.cards && message.cards.length > 0) {
-                    message.cards.forEach(card => {
-                        if (card.title) {
-                            let choice = `[${card.title}`;
-                            if (card.description) choice += `\n${card.description}`;
-                            choice += ']';
-                            
-                            if (card.image) {
-                                choice += `\n{${card.image}}`;
-                            }
-                            
-                            if (card.buttons && card.buttons.length > 0) {
-                                card.buttons.forEach(button => {
-                                    if (button.text && button.type && button.value) {
-                                        let buttonChoice = button.text;
-                                        switch (button.type) {
-                                            case 'url':
-                                                buttonChoice += `|${button.value}`;
-                                                break;
-                                            case 'call':
-                                                buttonChoice += `|call:${button.value}`;
-                                                break;
-                                            case 'copy':
-                                                buttonChoice += `|copy:${button.value}`;
-                                                break;
-                                        }
-                                        choice += `\n${buttonChoice}`;
-                                    }
-                                });
-                            }
-                            
-                            carouselChoices.push(choice);
-                        }
-                    });
-                }
-                
-                return {
-                    ...basePayload,
-                    text: message.text || '',
-                    carousel: {
-                        title: message.text || '',
-                        choices: carouselChoices
-                    }
                 };
 
             default:
@@ -679,6 +490,195 @@ class MessageService {
         }
     }
 
+    buildMessagePayload(message) {
+        const isInteractiveType = ['button', 'list', 'poll'].includes(message.type);
+        
+        if (isInteractiveType) {
+            const menuPayload = this.buildInteractivePayload(message);
+            return {
+                ...menuPayload,
+                delay: 1000,
+                readchat: true
+            };
+        }
+
+        // Payload específico para carrossel
+        if (message.type === 'carousel') {
+            return this.buildCarouselPayload(message);
+        }
+
+        // Para outros tipos de mensagem, manter o comportamento existente
+        const basePayload = {
+            number: message.number,
+            options: {
+                delay: 1200,
+                presence: "composing"
+            }
+        };
+
+        switch (message.type) {
+            case 'text':
+                return {
+                    ...basePayload,
+                    text: message.content
+                };
+
+            case 'image':
+                return {
+                    ...basePayload,
+                    image: {
+                        link: message.fileUrl
+                    },
+                    caption: message.caption || ''
+                };
+
+            case 'video':
+                return {
+                    ...basePayload,
+                    video: {
+                        link: message.fileUrl
+                    },
+                    caption: message.caption || ''
+                };
+
+            case 'document':
+                return {
+                    ...basePayload,
+                    document: {
+                        link: message.fileUrl
+                    },
+                    caption: message.caption || '',
+                    fileName: message.fileName || ''
+                };
+
+            case 'ptt':
+                return {
+                    ...basePayload,
+                    audio: {
+                        link: message.fileUrl
+                    },
+                    caption: message.caption || ''
+                };
+
+            case 'sticker':
+                return {
+                    ...basePayload,
+                    sticker: {
+                        link: message.fileUrl
+                    }
+                };
+
+            case 'contact':
+                return {
+                    ...basePayload,
+                    contacts: [{
+                        name: message.fullName,
+                        phones: message.phoneNumber.split(',').map(phone => ({
+                            phone: phone.trim().startsWith('55') ? phone.trim() : `55${phone.trim()}`
+                        }))
+                    }]
+                };
+
+            default:
+                return basePayload;
+        }
+    }
+
+    buildCarouselPayload(message) {
+        return {
+            text: message.text,
+            carousel: message.cards.map(card => ({
+                text: `${card.title}\n${card.description}`,
+                image: card.imageUrl,
+                buttons: card.buttons.map(btn => {
+                    let type = 'REPLY';
+                    let id = btn.value;
+
+                    switch (btn.type) {
+                        case 'url':
+                            type = 'URL';
+                            break;
+                        case 'copy':
+                            type = 'COPY';
+                            break;
+                        case 'call':
+                            type = 'CALL';
+                            break;
+                    }
+
+                    return {
+                        id: id,
+                        text: btn.text,
+                        type: type
+                    };
+                })
+            })),
+            delay: 1000,
+            readchat: true
+        };
+    }
+
+    buildInteractivePayload(message) {
+        switch (message.type) {
+            case 'button':
+                return {
+                    type: 'button',
+                    text: message.text,
+                    footerText: message.footerText || '',
+                    choices: message.buttons.map(btn => {
+                        if (btn.type === 'reply') return `${btn.text}|${btn.value}`;
+                        if (btn.type === 'copy') return `${btn.text}|copy:${btn.value}`;
+                        if (btn.type === 'call') return `${btn.text}|call:${btn.value}`;
+                        if (btn.type === 'url') return `${btn.text}|${btn.value}`;
+                        return btn.text;
+                    })
+                };
+
+            case 'list':
+                return {
+                    type: 'list',
+                    text: message.text,
+                    footerText: message.footerText || '',
+                    listButton: message.listButton,
+                    choices: message.sections.reduce((acc, section) => {
+                        acc.push(`[${section.title}]`);
+                        section.items.forEach(item => {
+                            acc.push(`${item.title}|${item.id}|${item.description || ''}`);
+                        });
+                        return acc;
+                    }, [])
+                };
+
+            case 'poll':
+                return {
+                    type: 'poll',
+                    text: message.text,
+                    selectableCount: message.selectableCount || 1,
+                    choices: message.options.map(opt => opt.text)
+                };
+
+            default:
+                return {};
+        }
+    }
+
+    getMessage(messageId) {
+        const message = this.messages.get(messageId);
+        if (!message) {
+            throw new Error(`Mensagem com ID '${messageId}' não encontrada`);
+        }
+        return message;
+    }
+
+    getAllMessages() {
+        return Array.from(this.messages.values());
+    }
+
+    clearMessages() {
+        this.messages.clear();
+        this.messageIdCounter = 0;
+        console.log('Total de mensagens:', this.messages.size);
+    }
 }
 
 // Funções globais

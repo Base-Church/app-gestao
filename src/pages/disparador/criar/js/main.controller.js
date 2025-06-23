@@ -7,6 +7,15 @@ class MainController {
         this.init();
     }
 
+    getValuePlaceholder(type) {
+        switch(type) {
+            case 'URL': return 'https://exemplo.com';
+            case 'CALL': return '+5511999999999';
+            case 'COPY': return 'Texto para copiar';
+            default: return '';
+        }
+    }
+
     init() {
         // Abrir modal de grupos automaticamente ao carregar a página
         setTimeout(() => {
@@ -360,7 +369,6 @@ class MainController {
 
             let scheduled_for = 0;
             if (scheduleType === 'schedule' && scheduleTimeValue) {
-                // Força a interpretação da data como sendo no fuso UTC-3 (Brasília)
                 const scheduleDateString = `${scheduleTimeValue}:00-03:00`;
                 const scheduleDate = new Date(scheduleDateString);
                 
@@ -387,19 +395,14 @@ class MainController {
                 for (const msg of this.messageService.messages) {
                     const messagePayload = this.messageService.buildAdvancedPayload(msg);
                     messagePayload.number = groupId;
+                    
+                    // Adicionar informações de agendamento se necessário
+                    if (scheduled_for > 0) {
+                        messagePayload.scheduled_for = scheduled_for;
+                    }
+                    
                     finalMessages.push(messagePayload);
                 }
-            }
-
-            const campaignPayload = {
-                delayMin,
-                delayMax,
-                info,
-                messages: finalMessages,
-            };
-            
-            if (scheduled_for > 0) {
-                campaignPayload.scheduled_for = scheduled_for;
             }
 
             // 4. Enviar para a API
@@ -408,11 +411,29 @@ class MainController {
                 Enviando...
             `;
 
-            const response = await this.apiService.sendAdvancedCampaign(campaignPayload);
+            let totalSent = 0;
+            for (const message of finalMessages) {
+                if (message.type === 'carousel') {
+                    // Usar endpoint específico para carrossel
+                    await this.apiService.sendCarousel(message);
+                } else if (['button', 'list', 'poll'].includes(message.type)) {
+                    // Usar endpoint de menu para outros tipos interativos
+                    await this.apiService.sendMenu(message);
+                } else {
+                    // Usar endpoint padrão para outros tipos
+                    await this.apiService.sendAdvancedCampaign({
+                        delayMin,
+                        delayMax,
+                        info,
+                        messages: [message]
+                    });
+                }
+                totalSent++;
+            }
 
             // 5. Lidar com a resposta
             this.closeSendModal();
-            alert(`Campanha adicionada à fila com sucesso! Total de ${response.count} mensagens.`);
+            alert(`Campanha adicionada à fila com sucesso! Total de ${totalSent} mensagens.`);
             
             // 6. Resetar estado
             this.selectedGroups = [];
@@ -492,4 +513,184 @@ function closeSendModal() {
 
 function enviarCampanha() {
     window.mainController.enviarCampanha();
-} 
+}
+
+// Funções para Botões
+window.addButton = function(messageId) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    if (message.buttons.length >= 3) {
+        alert('Máximo de 3 botões permitido');
+        return;
+    }
+    message.buttons.push({ type: 'reply', text: '', value: '' });
+    const container = document.getElementById(`buttons-container-${messageId}`);
+    container.innerHTML += ButtonMessage.renderButton(messageId, message.buttons[message.buttons.length - 1], message.buttons.length - 1);
+};
+
+window.updateButtonText = function(messageId, index, value) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.buttons[index].text = value;
+};
+
+window.updateButtonType = function(messageId, index, value) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.buttons[index].type = value;
+    // Atualizar placeholder do valor baseado no tipo
+    const valueInput = document.querySelector(`#buttons-container-${messageId} .button-item:nth-child(${index + 1}) input:last-child`);
+    if (valueInput) {
+        valueInput.placeholder = window.mainController.getValuePlaceholder(value);
+    }
+};
+
+window.updateButtonValue = function(messageId, index, value) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.buttons[index].value = value;
+};
+
+window.removeButton = function(messageId, index) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.buttons.splice(index, 1);
+    const container = document.getElementById(`buttons-container-${messageId}`);
+    container.innerHTML = message.buttons.map((btn, idx) => ButtonMessage.renderButton(messageId, btn, idx)).join('');
+};
+
+// Funções para Enquete
+window.addPollOption = function(messageId) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    if (message.options.length >= 12) {
+        alert('Máximo de 12 opções permitido');
+        return;
+    }
+    message.options.push({ text: '' });
+    const container = document.getElementById(`poll-options-${messageId}`);
+    container.innerHTML += PollMessage.renderOption(messageId, message.options[message.options.length - 1], message.options.length - 1);
+};
+
+window.updatePollOption = function(messageId, index, value) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.options[index].text = value;
+};
+
+window.removePollOption = function(messageId, index) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.options.splice(index, 1);
+    const container = document.getElementById(`poll-options-${messageId}`);
+    container.innerHTML = message.options.map((opt, idx) => PollMessage.renderOption(messageId, opt, idx)).join('');
+};
+
+// Funções para Lista
+window.addListSection = function(messageId) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.sections.push({ title: '', items: [] });
+    const container = document.getElementById(`list-sections-${messageId}`);
+    container.innerHTML += ListMessage.renderSection(messageId, message.sections[message.sections.length - 1], message.sections.length - 1);
+};
+
+window.updateSectionTitle = function(messageId, sectionIndex, value) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.sections[sectionIndex].title = value;
+};
+
+window.removeListSection = function(messageId, sectionIndex) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.sections.splice(sectionIndex, 1);
+    const container = document.getElementById(`list-sections-${messageId}`);
+    container.innerHTML = message.sections.map((section, idx) => ListMessage.renderSection(messageId, section, idx)).join('');
+};
+
+window.addListItem = function(messageId, sectionIndex) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.sections[sectionIndex].items.push({ text: '', id: '', description: '' });
+    const container = document.getElementById(`list-items-${messageId}-${sectionIndex}`);
+    const items = message.sections[sectionIndex].items;
+    container.innerHTML += ListMessage.renderItem(messageId, sectionIndex, items[items.length - 1], items.length - 1);
+};
+
+window.updateListItemText = function(messageId, sectionIndex, itemIndex, value) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.sections[sectionIndex].items[itemIndex].text = value;
+};
+
+window.updateListItemId = function(messageId, sectionIndex, itemIndex, value) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.sections[sectionIndex].items[itemIndex].id = value;
+};
+
+window.updateListItemDescription = function(messageId, sectionIndex, itemIndex, value) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.sections[sectionIndex].items[itemIndex].description = value;
+};
+
+window.removeListItem = function(messageId, sectionIndex, itemIndex) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.sections[sectionIndex].items.splice(itemIndex, 1);
+    const container = document.getElementById(`list-items-${messageId}-${sectionIndex}`);
+    container.innerHTML = message.sections[sectionIndex].items
+        .map((item, idx) => ListMessage.renderItem(messageId, sectionIndex, item, idx))
+        .join('');
+};
+
+// Funções para Carrossel
+window.addCarouselCard = function(messageId) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    if (message.carousel.length >= 10) {
+        alert('Máximo de 10 cartões permitido');
+        return;
+    }
+    message.carousel.push({ text: '', image: '', buttons: [] });
+    const container = document.getElementById(`carousel-cards-${messageId}`);
+    container.innerHTML += CarouselMessage.renderCard(messageId, message.carousel[message.carousel.length - 1], message.carousel.length - 1);
+};
+
+window.updateCardText = function(messageId, cardIndex, value) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.carousel[cardIndex].text = value;
+};
+
+window.updateCardImage = function(messageId, cardIndex, value) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.carousel[cardIndex].image = value;
+};
+
+window.removeCarouselCard = function(messageId, cardIndex) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.carousel.splice(cardIndex, 1);
+    const container = document.getElementById(`carousel-cards-${messageId}`);
+    container.innerHTML = message.carousel.map((card, idx) => CarouselMessage.renderCard(messageId, card, idx)).join('');
+};
+
+window.addCardButton = function(messageId, cardIndex) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    const card = message.carousel[cardIndex];
+    if (card.buttons.length >= 3) {
+        alert('Máximo de 3 botões por cartão permitido');
+        return;
+    }
+    card.buttons.push({ type: 'REPLY', text: '', id: '' });
+    const container = document.getElementById(`card-buttons-${messageId}-${cardIndex}`);
+    container.innerHTML += CarouselMessage.renderButton(messageId, cardIndex, card.buttons[card.buttons.length - 1], card.buttons.length - 1);
+};
+
+window.updateCardButtonText = function(messageId, cardIndex, buttonIndex, value) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.carousel[cardIndex].buttons[buttonIndex].text = value;
+};
+
+window.updateCardButtonType = function(messageId, cardIndex, buttonIndex, value) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.carousel[cardIndex].buttons[buttonIndex].type = value;
+};
+
+window.updateCardButtonId = function(messageId, cardIndex, buttonIndex, value) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.carousel[cardIndex].buttons[buttonIndex].id = value;
+};
+
+window.removeCardButton = function(messageId, cardIndex, buttonIndex) {
+    const message = window.mainController.messageService.getMessage(messageId);
+    message.carousel[cardIndex].buttons.splice(buttonIndex, 1);
+    const container = document.getElementById(`card-buttons-${messageId}-${cardIndex}`);
+    container.innerHTML = message.carousel[cardIndex].buttons
+        .map((button, idx) => CarouselMessage.renderButton(messageId, cardIndex, button, idx))
+        .join('');
+}; 
