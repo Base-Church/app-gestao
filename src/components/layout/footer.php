@@ -4,13 +4,6 @@ SessionService::start();
 ?>
 
 <script>
-// Configurações globais - Single source of truth
-window.APP_CONFIG = {
-    baseUrl: '<?php echo $_ENV['URL_BASE']; ?>',
-    apiUrl: '<?php echo $_ENV['API_BASE_URL']; ?>',
-    apiKey: '<?php echo $_ENV['API_KEY']; ?>'
-};
-
 // Dados do usuário
 window.USER = {
     ministerios: <?php echo json_encode(SessionService::getMinisterios()); ?>,

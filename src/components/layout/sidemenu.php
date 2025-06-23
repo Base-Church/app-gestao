@@ -178,6 +178,14 @@ $voluntariosActive = strpos($currentPath, '/voluntarios') !== false || strpos($c
                     </svg>
                     <span class="font-medium">Orden de culto</span>
                 </a>
+                <!-- Disparador de Mensagens -->
+                <a href="<?php echo $_ENV['URL_BASE']; ?>/disparador" 
+                   class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
+                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                    <span class="font-medium">Disparador</span>
+                </a>
                 <!-- Configurações -->
                 <a href="<?php echo $_ENV['URL_BASE']; ?>/configuracoes" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
                     <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

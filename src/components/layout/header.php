@@ -63,7 +63,9 @@ if (SessionService::isLoggedIn() &&
     window.APP_CONFIG = {
         baseUrl: '<?php echo $_ENV['URL_BASE']; ?>',
         apiBaseUrl: '<?php echo $_ENV['API_BASE_URL']; ?>',
-        apiKey: '<?php echo $_ENV['API_KEY']; ?>'
+        apiKey: '<?php echo $_ENV['API_KEY']; ?>',
+        apiWhatsapp: '<?php echo $_ENV['API_WHATSAPP']; ?>',
+        apiTokenWhatsapp: '<?php echo $_ENV['API_TOKEN_WHATSAPP']; ?>'
     };
 
     window.USER = {

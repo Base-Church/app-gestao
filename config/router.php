@@ -42,6 +42,11 @@ return [
     // Ordem de culto
     '/orden-culto' => '/src/pages/orden-culto/index.php',
 
+    // Disparador de Mensagens
+    '/disparador' => '/src/pages/disparador/index.php',
+    '/disparador/criar' => '/src/pages/disparador/criar/index.php',
+    '/disparador/historico' => '/src/pages/disparador/historico.php',
+
     // Configurações
     '/configuracoes' => '/src/pages/configuracoes/index.php',
 
