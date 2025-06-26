@@ -51,10 +51,6 @@ export class UI {
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div class="flex justify-end items-center space-x-2">
-                        <a href="editar.php?id=${modelo.id}" 
-                           class="text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 transition-colors">
-                            Editar
-                        </a>
                         <button onclick="app.deleteModelo(${modelo.id}, '${nomeEscapado}')" 
                                 class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition-colors">
                             Excluir
