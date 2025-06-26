@@ -39,9 +39,6 @@ class MessageService {
             case 'button':
                 message = { id: messageId, ...window.ButtonMessage.create() };
                 break;
-            case 'list':
-                message = { id: messageId, ...window.ListMessage.create() };
-                break;
             case 'poll':
                 message = { id: messageId, ...window.PollMessage.create() };
                 break;
@@ -152,13 +149,6 @@ class MessageService {
                     `updateMessageContent('${message.id}', 'text', this.value)`,
                     `updateMessageContent('${message.id}', 'footerText', this.value)`
                 );
-            case 'list':
-                return window.ListMessage.renderForm(
-                    message,
-                    `updateMessageContent('${message.id}', 'text', this.value)`,
-                    `updateMessageContent('${message.id}', 'listButton', this.value)`,
-                    `updateMessageContent('${message.id}', 'footerText', this.value)`
-                );
             case 'poll':
                 return window.PollMessage.renderForm(
                     message,
@@ -180,7 +170,6 @@ class MessageService {
             sticker: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
             contact: 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200',
             button: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200',
-            list: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200',
             poll: 'bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200'
         };
         return colors[type] || 'bg-gray-100 text-gray-800';
@@ -196,7 +185,6 @@ class MessageService {
             sticker: 'Figurinha',
             contact: 'Contato',
             button: 'Botões',
-            list: 'Lista',
             poll: 'Enquete'
         };
         return labels[type] || 'Desconhecido';
@@ -352,13 +340,11 @@ class MessageService {
                     baseMessage.phoneNumber = message.phoneNumber;
                     break;
                 case 'button':
-                case 'list':
                 case 'poll':
                     baseMessage.type = message.type;
                     baseMessage.text = message.text;
                     baseMessage.footerText = message.footerText;
                     baseMessage.choices = message.choices ? message.choices.split('\n').filter(choice => choice.trim()) : [];
-                    if (message.listButton) baseMessage.listButton = message.listButton;
                     if (message.selectableCount) baseMessage.selectableCount = message.selectableCount;
                     break;
             }
@@ -435,22 +421,6 @@ class MessageService {
                     text: message.text,
                     footerText: message.footerText,
                     choices: message.buttons.map(btn => btn.text)
-                };
-
-            case 'list':
-                return {
-                    ...basePayload,
-                    type: 'list',
-                    text: message.text,
-                    footerText: message.footerText,
-                    buttonText: message.listButton,
-                    choices: message.sections.reduce((acc, section) => {
-                        acc.push(`[${section.title}]`);
-                        section.items.forEach(item => {
-                            acc.push(`${item.text}|${item.text}|${item.description}`);
-                        });
-                        return acc;
-                    }, [])
                 };
 
             case 'poll':
@@ -567,135 +537,6 @@ function updateButtonValue(messageId, buttonIndex, value) {
     if (!message.buttons) message.buttons = [];
     if (!message.buttons[buttonIndex]) message.buttons[buttonIndex] = {};
     message.buttons[buttonIndex].value = value;
-}
-
-// Funções para gerenciar listas
-function addSection(messageId) {
-    const container = document.getElementById(`list-container-${messageId}`);
-    const sectionCount = container.children.length;
-    
-    const sectionDiv = document.createElement('div');
-    sectionDiv.className = 'border border-gray-300 dark:border-gray-600 rounded-lg p-3';
-    sectionDiv.innerHTML = `
-        <input type="text" 
-               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white mb-2"
-               placeholder="Nome da Seção"
-               onchange="updateSectionName('${messageId}', ${sectionCount}, this.value)">
-        <div class="space-y-2">
-            <div class="flex items-center space-x-2">
-                <input type="text" 
-                       class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                       placeholder="Nome do item"
-                       onchange="updateListItemName('${messageId}', ${sectionCount}, 0, this.value)">
-                <input type="text" 
-                       class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                       placeholder="Descrição (opcional)"
-                       onchange="updateListItemDesc('${messageId}', ${sectionCount}, 0, this.value)">
-            </div>
-        </div>
-        <button type="button" 
-                class="mt-2 px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-                onclick="addListItem('${messageId}', ${sectionCount})">
-            + Adicionar Item
-        </button>
-        <button type="button" 
-                class="mt-2 ml-2 px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-                onclick="removeSection('${messageId}', ${sectionCount})">
-            Remover Seção
-        </button>
-    `;
-    
-    container.appendChild(sectionDiv);
-}
-
-function removeSection(messageId, sectionIndex) {
-    const container = document.getElementById(`list-container-${messageId}`);
-    const sections = container.children;
-    
-    if (sections.length > 1) {
-        container.removeChild(sections[sectionIndex]);
-        // Reindexar as seções restantes
-        for (let i = 0; i < sections.length; i++) {
-            const inputs = sections[i].querySelectorAll('input');
-            inputs[0].setAttribute('onchange', `updateSectionName('${messageId}', ${i}, this.value)`);
-            inputs[1].setAttribute('onchange', `updateListItemName('${messageId}', ${i}, 0, this.value)`);
-            inputs[2].setAttribute('onchange', `updateListItemDesc('${messageId}', ${i}, 0, this.value)`);
-            
-            const buttons = sections[i].querySelectorAll('button');
-            buttons[0].setAttribute('onclick', `addListItem('${messageId}', ${i})`);
-            buttons[1].setAttribute('onclick', `removeSection('${messageId}', ${i})`);
-        }
-    }
-}
-
-function addListItem(messageId, sectionIndex) {
-    const container = document.getElementById(`list-container-${messageId}`);
-    const section = container.children[sectionIndex];
-    const itemsContainer = section.querySelector('.space-y-2');
-    const itemCount = itemsContainer.children.length;
-    
-    const itemDiv = document.createElement('div');
-    itemDiv.className = 'flex items-center space-x-2';
-    itemDiv.innerHTML = `
-        <input type="text" 
-               class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-               placeholder="Nome do item"
-               onchange="updateListItemName('${messageId}', ${sectionIndex}, ${itemCount}, this.value)">
-        <input type="text" 
-               class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-               placeholder="Descrição (opcional)"
-               onchange="updateListItemDesc('${messageId}', ${sectionIndex}, ${itemCount}, this.value)">
-        <button type="button" 
-                class="px-2 py-2 text-red-600 hover:text-red-800 transition-colors"
-                onclick="removeListItem('${messageId}', ${sectionIndex}, ${itemCount})">
-            ✕
-        </button>
-    `;
-    
-    itemsContainer.appendChild(itemDiv);
-}
-
-function removeListItem(messageId, sectionIndex, itemIndex) {
-    const container = document.getElementById(`list-container-${messageId}`);
-    const section = container.children[sectionIndex];
-    const itemsContainer = section.querySelector('.space-y-2');
-    const items = itemsContainer.children;
-    
-    if (items.length > 1) {
-        itemsContainer.removeChild(items[itemIndex]);
-        // Reindexar os itens restantes
-        for (let i = 0; i < items.length; i++) {
-            const inputs = items[i].querySelectorAll('input');
-            inputs[0].setAttribute('onchange', `updateListItemName('${messageId}', ${sectionIndex}, ${i}, this.value)`);
-            inputs[1].setAttribute('onchange', `updateListItemDesc('${messageId}', ${sectionIndex}, ${i}, this.value)`);
-            inputs[2].setAttribute('onclick', `removeListItem('${messageId}', ${sectionIndex}, ${i})`);
-        }
-    }
-}
-
-function updateSectionName(messageId, sectionIndex, value) {
-    const message = window.messageService?.messages.find(m => m.id === messageId);
-    if (!message.sections) message.sections = [];
-    if (!message.sections[sectionIndex]) message.sections[sectionIndex] = {};
-    message.sections[sectionIndex].name = value;
-}
-
-function updateListItemName(messageId, sectionIndex, itemIndex, value) {
-    const message = window.messageService?.messages.find(m => m.id === messageId);
-    if (!message.sections) message.sections = [];
-    if (!message.sections[sectionIndex]) message.sections[sectionIndex] = {};
-    if (!message.sections[sectionIndex].items) message.sections[sectionIndex].items = [];
-    if (!message.sections[sectionIndex].items[itemIndex]) message.sections[sectionIndex].items[itemIndex] = {};
-    message.sections[sectionIndex].items[itemIndex].name = value;
-}
-
-function updateListItemDesc(messageId, sectionIndex, itemIndex, value) {
-    const message = window.messageService?.messages.find(m => m.id === messageId);
-    if (!message.sections) message.sections = [];
-    if (!message.sections[sectionIndex]) message.sections[sectionIndex] = {};
-    if (!message.sections[sectionIndex].items) message.sections[sectionIndex].items = [];
-    if (!message.sections[sectionIndex].items[itemIndex]) message.sections[sectionIndex].items[itemIndex] = {};
-    message.sections[sectionIndex].items[itemIndex].description = value;
 }
 
 // Funções para gerenciar enquetes

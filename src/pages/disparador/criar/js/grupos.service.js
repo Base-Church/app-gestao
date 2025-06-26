@@ -16,13 +16,13 @@ class GruposService {
                 </div>
             `;
 
-            // Buscar grupos com imagens da API
+            // Buscar grupos da API
             const apiService = window.apiService;
             if (!apiService) {
                 throw new Error('API Service não encontrado');
             }
             
-            const response = await apiService.getGroupsWithImages();
+            const response = await apiService.getGroups();
             
             if (response && response.groups) {
                 this.groups = response.groups;
@@ -32,10 +32,13 @@ class GruposService {
                 this.groups = [];
             }
             
-            // Renderizar usando o MainController
+            // Renderizar grupos imediatamente
             if (window.mainController) {
                 window.mainController.renderGroupsList();
             }
+            
+            // Carregar imagens em background
+            this.loadGroupImages();
             
         } catch (error) {
             const container = document.getElementById('groupsList');
@@ -49,6 +52,34 @@ class GruposService {
                         <p class="text-xs text-gray-500">${error.message}</p>
                     </div>
                 `;
+            }
+        }
+    }
+
+    async loadGroupImages() {
+        const groupCards = document.querySelectorAll('#groupsList > div');
+        
+        for (const card of groupCards) {
+            const checkbox = card.querySelector('input[type="checkbox"]');
+            if (!checkbox) continue;
+            
+            const jid = checkbox.value;
+            if (!jid) continue;
+            
+            try {
+                const apiService = window.apiService;
+                if (!apiService) continue;
+                
+                const response = await apiService.getChatNameAndImage(jid);
+                
+                if (response && response.image) {
+                    const imgContainer = card.querySelector('.w-12.h-12');
+                    if (imgContainer) {
+                        imgContainer.innerHTML = `<img src="${response.image}" alt="Grupo" class="w-12 h-12 rounded-full object-cover">`;
+                    }
+                }
+            } catch (error) {
+                // Erro silencioso ao carregar imagem do grupo
             }
         }
     }

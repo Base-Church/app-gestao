@@ -410,13 +410,8 @@ class MainController {
             this.closeSendModal();
             alert(`Campanha adicionada à fila com sucesso! Total de ${messages.length} mensagens.`);
             
-            // 7. Resetar estado
-            this.selectedGroups = [];
-            this.messageService.clearMessages();
-            this.messageService.showEmptyMessage();
-            const gruposInfo = document.getElementById('gruposInfo');
-            if (gruposInfo) gruposInfo.classList.add('hidden');
-            this.renderGroupsList();
+            // 7. Reload da página
+            window.location.reload();
 
         } catch (error) {
             alert(`Erro ao enviar campanha: ${error.message}`);
