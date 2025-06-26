@@ -16,6 +16,13 @@ if (!SessionService::isLoggedIn()) {
     exit;
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    http_response_code(401);
+    echo json_encode(['error' => 'Token de autenticação não encontrado']);
+    exit;
+}
+
 // Verifica método
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -62,13 +69,13 @@ try {
     // Faz requisição para API
     $ch = curl_init();
     curl_setopt_array($ch, [
-        CURLOPT_URL => $_ENV['API_BASE_URL'] . '/api/recados',
+        CURLOPT_URL => $_ENV['API_BASE_URL'] . '/recados',
         CURLOPT_POST => true,
         CURLOPT_POSTFIELDS => json_encode($payload),
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HTTPHEADER => [
             'Content-Type: application/json',
-            'Authorization: ' . $_ENV['API_KEY']
+            'Authorization: Bearer ' . SessionService::getToken()
         ]
     ]);
 

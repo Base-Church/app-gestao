@@ -15,7 +15,8 @@ class SessionService {
             'ministerios' => $userData['ministerios'],
             'organizacao_id' => $userData['organizacao_id'],
             'nivel' => $userData['nivel'],
-            'permissoes' => isset($userData['permissoes']) ? (array)$userData['permissoes'] : []
+            'permissoes' => isset($userData['permissoes']) ? (array)$userData['permissoes'] : [],
+            'token' => $userData['token'] ?? null
         ];
     }
 
@@ -74,5 +75,17 @@ class SessionService {
     public static function getPermissoes() {
         self::start();
         return $_SESSION['user']['permissoes'] ?? [];
+    }
+
+    // Novo método para obter o token
+    public static function getToken() {
+        self::start();
+        return $_SESSION['user']['token'] ?? null;
+    }
+
+    // Novo método para verificar se o token existe
+    public static function hasToken() {
+        self::start();
+        return !empty($_SESSION['user']['token']);
     }
 }

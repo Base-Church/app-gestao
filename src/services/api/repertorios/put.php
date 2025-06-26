@@ -20,6 +20,11 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
+}
+
 // Verifica método
 if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
     returnError('Método não permitido', 405);
@@ -31,7 +36,7 @@ if (!$data || !isset($data['id'])) {
 }
 
 // Configura a requisição para a API externa
-$apiUrl = $_ENV['API_BASE_URL'] . '/api/repertorios/' . $data['id'];
+$apiUrl = $_ENV['API_BASE_URL'] . '/repertorios/' . $data['id'];
 
 $ch = curl_init();
 curl_setopt_array($ch, [
@@ -41,7 +46,7 @@ curl_setopt_array($ch, [
     CURLOPT_POSTFIELDS => json_encode($data),
     CURLOPT_HTTPHEADER => [
         'Content-Type: application/json',
-        'Authorization: ' . $_ENV['API_KEY']
+        'Authorization: Bearer ' . SessionService::getToken()
     ]
 ]);
 

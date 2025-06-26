@@ -19,6 +19,11 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
+}
+
 // Verifica método
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     returnError('Método não permitido', 405);
@@ -31,14 +36,14 @@ if (!$ministerioAtual || !isset($ministerioAtual['id'])) {
 }
 
 // Configura requisição para API
-$apiUrl = $_ENV['API_BASE_URL'] . '/api/ministerios/' . $ministerioAtual['id'];
+$apiUrl = $_ENV['API_BASE_URL'] . '/ministerios/' . $ministerioAtual['id'];
 $ch = curl_init();
 curl_setopt_array($ch, [
     CURLOPT_URL => $apiUrl,
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [
         'Accept: application/json',
-        'Authorization: ' . $_ENV['API_KEY']
+        'Authorization: Bearer ' . SessionService::getToken()
     ]
 ]);
 

@@ -19,6 +19,11 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     returnError('Método não permitido', 405);
 }
@@ -57,7 +62,7 @@ $payload = [
 ];
 
 // Faz a requisição para a API
-$apiUrl = $_ENV['API_BASE_URL'] . '/api/usuarios/registro';
+$apiUrl = $_ENV['API_BASE_URL'] . '/usuarios/registro';
 
 $ch = curl_init();
 curl_setopt_array($ch, [
@@ -68,7 +73,7 @@ curl_setopt_array($ch, [
     CURLOPT_HTTPHEADER => [
         'Content-Type: application/json',
         'Accept: application/json',
-        'Authorization: ' . $_ENV['API_KEY']
+        'Authorization: Bearer ' . SessionService::getToken()
     ]
 ]);
 

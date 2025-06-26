@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $whatsapp = $input['whatsapp'] ?? '';
     $senha = $input['senha'] ?? '';
 
-    $url = $apiBaseUrl . '/api/usuarios/login';
+    $url = $apiBaseUrl . '/usuarios/login';
     $data = [
         'whatsapp' => $whatsapp,
         'senha' => $senha
@@ -46,7 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'ministerio_atual' => $responseData['data']['ministerios'][0]['id'] ?? null,
             'organizacao_id' => $responseData['data']['organizacao_id'],
             'nivel' => $responseData['data']['nivel'],
-            'permissoes' => $responseData['data']['permissoes'] ?? []
+            'permissoes' => $responseData['data']['permissoes'] ?? [],
+            'token' => $responseData['data']['token'] ?? null
         ];
 
         // Cria a sessão do usuário com os dados completos

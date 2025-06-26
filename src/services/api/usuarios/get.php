@@ -18,6 +18,11 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
+}
+
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
@@ -27,7 +32,7 @@ if (!$organizacao_id) {
     returnError('ID da organização não encontrado');
 }
 
-$apiUrl = $_ENV['API_BASE_URL'] . '/api/usuarios';
+$apiUrl = $_ENV['API_BASE_URL'] . '/usuarios';
 $params = http_build_query([
     'organizacao_id' => $organizacao_id,
     'page' => $page,
@@ -42,7 +47,7 @@ curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [
         'Accept: application/json',
-        'Authorization: ' . $_ENV['API_KEY']
+        'Authorization: Bearer ' . SessionService::getToken()
     ]
 ]);
 

@@ -18,6 +18,11 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
+}
+
 $organizacao_id = SessionService::getOrganizacaoId();
 $ministerio_id = isset($_GET['ministerio_id']) ? $_GET['ministerio_id'] : null;
 
@@ -28,7 +33,7 @@ if (!$organizacao_id) {
     returnError('ID da organização não encontrado');
 }
 
-$apiUrl = $_ENV['API_BASE_URL'] . '/api/voluntarios/aniversariantes';
+$apiUrl = $_ENV['API_BASE_URL'] . '/voluntarios/aniversariantes';
 $params = http_build_query([
     'organizacao_id' => $organizacao_id,
     'ministerios' => $ministerio_id
@@ -41,7 +46,7 @@ curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [
         'Accept: application/json',
-        'Authorization: ' . $_ENV['API_KEY']
+        'Authorization: Bearer ' . SessionService::getToken()
     ]
 ]);
 

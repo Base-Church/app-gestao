@@ -29,6 +29,11 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
+}
+
 // Verifica se é uma requisição POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     returnError('Método não permitido', 405);
@@ -71,7 +76,7 @@ if (!isset($data['cor'])) {
 }
 
 // Monta a URL da API
-$apiUrl = $_ENV['API_BASE_URL'] . '/api/categoria-atividade';
+$apiUrl = $_ENV['API_BASE_URL'] . '/categoria-atividade';
 error_log("URL da API: $apiUrl");
 
 // Prepara os dados para envio
@@ -95,7 +100,7 @@ curl_setopt_array($ch, [
     CURLOPT_HTTPHEADER => [
         'Content-Type: application/json',
         'Accept: application/json',
-        'Authorization: ' . $_ENV['API_KEY']
+        'Authorization: Bearer ' . SessionService::getToken()
     ]
 ]);
 

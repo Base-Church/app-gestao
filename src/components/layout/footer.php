@@ -10,7 +10,8 @@ window.USER = {
     ministerio_atual: <?php echo json_encode(SessionService::getMinisterioAtual()); ?>,
     organizacao_id: <?php echo json_encode(SessionService::getOrganizacaoId()); ?>,
     nivel: <?php echo json_encode(SessionService::getNivel()); ?>,
-    permissoes: <?php echo json_encode(SessionService::getPermissoes()); ?>
+    permissoes: <?php echo json_encode(SessionService::getPermissoes()); ?>,
+    token: <?php echo json_encode(SessionService::getToken()); ?>
 };
 
 // Função de validação de ministério

@@ -1,74 +1,63 @@
 export class SolicitacoesAPI {
     constructor() {
-        this.baseUrl = window.ENV?.API_BASE_URL;
-        if (!this.baseUrl) {
-            throw new Error('API_BASE_URL não configurado');
-        }
+        this.baseUrl = window.APP_CONFIG.baseUrl;
+        this.apiPath = `${this.baseUrl}/src/services/api/solicitacoes`; // Caminho base para os endpoints
     }
 
     async list(ministerio_id) {
         try {
-            const response = await fetch(`${this.baseUrl}/api/solicitacoes-ministerio/ministerio/${ministerio_id}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${window.ENV?.API_KEY}`
-                }
+            const params = new URLSearchParams({
+                ministerio_id
             });
+
+            const url = `${this.apiPath}/get.php?${params}`;
+            console.log('URL da requisição:', url); // Debug
+            const response = await fetch(url);
             
-            const contentType = response.headers.get("content-type");
             if (!response.ok) {
-                if (contentType && contentType.includes("application/json")) {
-                    const error = await response.json();
-                    throw new Error(error.message || 'Erro ao buscar solicitações');
-                } else {
-                    const text = await response.text();
-                    throw new Error('Erro no servidor: ' + text);
-                }
+                const errorText = await response.text();
+                console.error('Erro na resposta:', errorText); // Debug
+                throw new Error(errorText || `Erro ${response.status} ao buscar solicitações`);
             }
 
             const data = await response.json();
+            
+            if (!data || typeof data !== 'object') {
+                throw new Error('Resposta inválida da API');
+            }
+
             return data;
         } catch (error) {
-            console.error('API Error:', error);
-            throw error;
+            console.error('Erro na API:', error);
+            throw new Error(error.message || 'Erro ao buscar solicitações');
         }
     }
 
     async responder(id, { status, observacao }) {
         try {
-            const response = await fetch(`${this.baseUrl}/api/solicitacoes-ministerio/${id}/responder`, {
+            const payload = {
+                id,
+                status,
+                observacao
+            };
+
+            const response = await fetch(`${this.apiPath}/put.php`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${window.ENV?.API_KEY}`
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    status,
-                    observacao
-                })
+                body: JSON.stringify(payload)
             });
-            
-            const contentType = response.headers.get("content-type");
+
+            const responseData = await response.json();
+
             if (!response.ok) {
-                if (contentType && contentType.includes("application/json")) {
-                    const error = await response.json();
-                    throw new Error(error.message || 'Erro ao responder solicitação');
-                } else {
-                    const text = await response.text();
-                    throw new Error('Erro no servidor: ' + text);
-                }
+                throw new Error(responseData.message || 'Erro ao responder solicitação');
             }
 
-            const data = await response.json();
-            // Verifica se o retorno está no formato esperado
-            if (data.code !== 200) {
-                throw new Error(data.message || 'Erro ao responder solicitação');
-            }
-
-            return data;
+            return responseData;
         } catch (error) {
-            console.error('API Error:', error);
+            console.error('Erro completo:', error);
             throw error;
         }
     }

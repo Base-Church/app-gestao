@@ -19,6 +19,11 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
+}
+
 // Permite apenas PUT
 if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
     returnError('Método não permitido', 405);
@@ -47,7 +52,7 @@ $data['ministerio_id'] = $ministerioId;
 $data['organizacao_id'] = $organizacaoId;
 
 // Monta URL da API principal para update
-$apiUrl = $_ENV['API_BASE_URL'] . "/api/escalas/v2/{$escalaId}";
+$apiUrl = $_ENV['API_BASE_URL'] . "/escalas/v2/{$escalaId}";
 $ch = curl_init();
 curl_setopt_array($ch, [
     CURLOPT_URL => $apiUrl,
@@ -57,7 +62,7 @@ curl_setopt_array($ch, [
     CURLOPT_HTTPHEADER => [
         'Content-Type: application/json',
         'Accept: application/json',
-        'Authorization: Bearer ' . $_ENV['API_KEY']
+        'Authorization: Bearer ' . SessionService::getToken()
     ]
 ]);
 

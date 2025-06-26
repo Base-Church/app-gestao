@@ -20,9 +20,14 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
+}
+
 // Pega os parâmetros da requisição
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 100;
+$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 400;
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $organizacao_id = SessionService::getOrganizacaoId();
 $ministerio_id = isset($_GET['ministerio_id']) ? $_GET['ministerio_id'] : null; // Alterado para pegar do GET
@@ -46,7 +51,7 @@ if ($limit < 1 || $limit > 100) {
 }
 
 // Monta a URL da API
-$apiUrl = $_ENV['API_BASE_URL'] . '/api/voluntarios';
+$apiUrl = $_ENV['API_BASE_URL'] . '/voluntarios';
 $params = http_build_query([
     'organizacao_id' => $organizacao_id,
     'ministerios' => $ministerio_id,
@@ -62,7 +67,7 @@ curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [
         'Accept: application/json',
-        'Authorization: ' . $_ENV['API_KEY']
+        'Authorization: Bearer ' . SessionService::getToken()
     ]
 ]);
 

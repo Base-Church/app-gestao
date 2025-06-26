@@ -28,6 +28,11 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
+}
+
 // Verifica método HTTP
 if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
     returnError('Método não permitido', 405);
@@ -43,7 +48,7 @@ if (!$data || !isset($data['id'])) {
 
 try {
     // Monta a URL da API
-    $apiUrl = $_ENV['API_BASE_URL'] . '/api/voluntarios/' . $data['id'];
+    $apiUrl = $_ENV['API_BASE_URL'] . '/voluntarios/' . $data['id'];
 
     // Configuração do cURL
     $ch = curl_init();
@@ -55,7 +60,7 @@ try {
         CURLOPT_HTTPHEADER => [
             'Content-Type: application/json',
             'Accept: application/json',
-            'Authorization: ' . $_ENV['API_KEY']
+            'Authorization: Bearer ' . SessionService::getToken()
         ]
     ]);
 

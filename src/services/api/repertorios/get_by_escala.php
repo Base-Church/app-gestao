@@ -20,6 +20,11 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
+}
+
 // Verifica método
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     returnError('Método não permitido', 405);
@@ -35,7 +40,7 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
 
 // Monta a URL da API
-$apiUrl = $_ENV['API_BASE_URL'] . "/api/repertorios/escala/{$id_escala}";
+$apiUrl = $_ENV['API_BASE_URL'] . "/repertorios/escala/{$id_escala}";
 $params = [
     'page' => $page,
     'limit' => $limit
@@ -52,7 +57,7 @@ try {
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HTTPHEADER => [
             'Accept: application/json',
-            'Authorization: Bearer ' . $_ENV['API_KEY']
+            'Authorization: Bearer ' . SessionService::getToken()
         ]
     ]);
 

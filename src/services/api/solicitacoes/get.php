@@ -22,47 +22,34 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
-// Verifica se é uma requisição GET
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    returnError('Método não permitido', 405);
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
 }
 
 // Pega os parâmetros da requisição
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 100; // Aumentado o limite padrão
-$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$ministerio_id = $_GET['ministerio_id'] ?? null;
 
-// Validações básicas
-if ($page < 1) {
-    returnError('Página inválida');
+// Validações
+if (!$ministerio_id) {
+    returnError('ID do ministério não fornecido');
 }
 
-if ($limit < 1 || $limit > 1000) { // Aumentado o limite máximo permitido
-    returnError('Limite inválido');
+if (!is_numeric($ministerio_id)) {
+    returnError('ID do ministério inválido');
 }
 
 // Monta a URL da API
-$apiUrl = $_ENV['API_BASE_URL'] . '/api/musicas';
-$params = [
-    'page' => $page,
-    'limit' => $limit
-];
-
-if (!empty($search)) {
-    $params['search'] = $search;
-}
-
-$queryString = http_build_query($params);
-$url = "{$apiUrl}?{$queryString}";
+$apiUrl = $_ENV['API_BASE_URL'] . "/solicitacoes-ministerio/ministerio/{$ministerio_id}";
 
 // Configuração do cURL
 $ch = curl_init();
 curl_setopt_array($ch, [
-    CURLOPT_URL => $url,
+    CURLOPT_URL => $apiUrl,
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [
         'Accept: application/json',
-        'Authorization: ' . $_ENV['API_KEY']
+        'Authorization: Bearer ' . SessionService::getToken()
     ]
 ]);
 
@@ -85,14 +72,10 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     returnError('Resposta inválida da API', 500);
 }
 
-// Retorna a resposta formatada
+// Retorna a resposta
 http_response_code($httpCode);
 echo json_encode([
-    'data' => $data['data'] ?? [],
-    'meta' => [
-        'page' => $page,
-        'total' => $data['meta']['total'] ?? 0,
-        'totalPages' => $data['meta']['totalPages'] ?? 0,
-        'limit' => $limit
-    ]
-]);
+    'code' => 200,
+    'message' => 'Solicitações encontradas com sucesso',
+    'data' => $data['data'] ?? $data
+]); 

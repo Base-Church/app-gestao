@@ -20,6 +20,11 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
@@ -41,12 +46,12 @@ if (!$organizacao_id) {
 
 $ch = curl_init();
 curl_setopt_array($ch, [
-    CURLOPT_URL => $_ENV['API_BASE_URL'] . "/api/lideres/{$id}?organizacao_id={$organizacao_id}",
+    CURLOPT_URL => $_ENV['API_BASE_URL'] . "/lideres/{$id}?organizacao_id={$organizacao_id}",
     CURLOPT_CUSTOMREQUEST => 'DELETE',
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [
         'Accept: application/json',
-        'Authorization: ' . $_ENV['API_KEY']
+        'Authorization: Bearer ' . SessionService::getToken()
     ]
 ]);
 

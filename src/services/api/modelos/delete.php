@@ -19,6 +19,11 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
+}
+
 // Verifica se é DELETE
 if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
     returnError('Método não permitido', 405);
@@ -41,7 +46,7 @@ $id = intval($data['id']);
 $organizacao_id = intval($data['organizacao_id']);
 
 // Configura a URL com os parâmetros necessários
-$url = $_ENV['API_BASE_URL'] . '/api/modelos-escalas/' . $id;
+$url = $_ENV['API_BASE_URL'] . '/modelos-escalas/' . $id;
 
 // Prepara o payload
 $payload = json_encode(['organizacao_id' => $organizacao_id]);
@@ -55,7 +60,7 @@ curl_setopt_array($ch, [
     CURLOPT_HTTPHEADER => [
         'Accept: application/json',
         'Content-Type: application/json',
-        'Authorization: ' . $_ENV['API_KEY']
+        'Authorization: Bearer ' . SessionService::getToken()
     ]
 ]);
 

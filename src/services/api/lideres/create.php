@@ -20,6 +20,11 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
+}
+
 // Verifica método
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     returnError('Método não permitido', 405);
@@ -56,14 +61,14 @@ $payload = [
 // Configuração da requisição
 $ch = curl_init();
 curl_setopt_array($ch, [
-    CURLOPT_URL => $_ENV['API_BASE_URL'] . '/api/lideres',
+    CURLOPT_URL => $_ENV['API_BASE_URL'] . '/lideres',
     CURLOPT_POST => true,
     CURLOPT_POSTFIELDS => json_encode($payload),
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [
         'Content-Type: application/json',
         'Accept: application/json',
-        'Authorization: ' . $_ENV['API_KEY']
+        'Authorization: Bearer ' . SessionService::getToken()
     ]
 ]);
 

@@ -30,6 +30,11 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
+}
+
 // Verifica método HTTP
 if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
     returnError('Método não permitido', 405);
@@ -94,7 +99,7 @@ if ($visibilidade) {
 }
 
 // Monta a URL da API
-$apiUrl = $_ENV['API_BASE_URL'] . '/api/eventos/' . $id;
+$apiUrl = $_ENV['API_BASE_URL'] . '/eventos/' . $id;
 
 // Prepara os dados para envio
 $updateData = [
@@ -123,7 +128,7 @@ curl_setopt_array($ch, [
     CURLOPT_HTTPHEADER => [
         'Content-Type: application/json',
         'Accept: application/json',
-        'Authorization: ' . $_ENV['API_KEY']
+        'Authorization: Bearer ' . SessionService::getToken()
     ]
 ]);
 

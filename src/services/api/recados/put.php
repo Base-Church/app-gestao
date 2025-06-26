@@ -25,6 +25,11 @@ try {
         throw new Exception('Não autorizado');
     }
 
+    // Verifica se o token existe
+    if (!SessionService::hasToken()) {
+        throw new Exception('Token de autenticação não encontrado');
+    }
+
     // Pegar e validar ID
     $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
     if (!$id) {
@@ -63,13 +68,13 @@ try {
     // Fazer requisição para API externa
     $ch = curl_init();
     curl_setopt_array($ch, [
-        CURLOPT_URL => $_ENV['API_BASE_URL'] . '/api/recados/' . $id,
+        CURLOPT_URL => $_ENV['API_BASE_URL'] . '/recados/' . $id,
         CURLOPT_CUSTOMREQUEST => 'PUT',
         CURLOPT_POSTFIELDS => json_encode($payload),
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HTTPHEADER => [
             'Content-Type: application/json',
-            'Authorization: ' . $_ENV['API_KEY']
+            'Authorization: Bearer ' . SessionService::getToken()
         ]
     ]);
 

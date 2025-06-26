@@ -15,6 +15,13 @@ if (!SessionService::isLoggedIn()) {
     exit;
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    http_response_code(401);
+    echo json_encode(['error' => 'Token de autenticação não encontrado']);
+    exit;
+}
+
 try {
     // Se não for superadmin, ministério é obrigatório
     if (SessionService::getNivel() !== 'superadmin' || isset($_GET['ministerio_id'])) {
@@ -35,10 +42,10 @@ try {
         }
 
         // Adiciona o ministério_id na URL da API
-        $url = $_ENV['API_BASE_URL'] . '/api/recados/ministerio/' . $ministerio_id;
+        $url = $_ENV['API_BASE_URL'] . '/recados/ministerio/' . $ministerio_id;
     } else {
         // Para superadmin sem ministério específico, lista todos
-        $url = $_ENV['API_BASE_URL'] . '/api/recados';
+        $url = $_ENV['API_BASE_URL'] . '/recados';
     }
 
     // Adiciona organizacao_id como query parameter
@@ -50,7 +57,7 @@ try {
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HTTPHEADER => [
-            'Authorization: ' . $_ENV['API_KEY']
+            'Authorization: Bearer ' . SessionService::getToken()
         ]
     ]);
 

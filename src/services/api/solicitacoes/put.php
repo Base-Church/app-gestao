@@ -40,41 +40,58 @@ if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
     returnError('Método não permitido', 405);
 }
 
-// Obtém dados do corpo da requisição
+// Obtém e valida os dados da requisição
 $input = file_get_contents('php://input');
 $data = json_decode($input, true);
 
-// Validações
-if (!$data || !isset($data['id']) || !isset($data['nome']) || !isset($data['cor'])) {
-    returnError('Dados inválidos ou incompletos');
+if (!$data) {
+    returnError('Dados inválidos');
 }
 
-// Obtém dados da sessão
-$organizacao_id = SessionService::getOrganizacaoId();
-$ministerio_id = SessionService::getMinisterioAtual();
+$id = $data['id'] ?? null;
+$status = $data['status'] ?? null;
+$observacao = $data['observacao'] ?? null;
 
-if (!$organizacao_id || !$ministerio_id) {
-    returnError('Dados da sessão inválidos');
+// Validações
+if (!$id) {
+    returnError('ID da solicitação é obrigatório');
+}
+
+if (!$status) {
+    returnError('Status é obrigatório');
+}
+
+if (!$observacao) {
+    returnError('Observação é obrigatória');
+}
+
+// Validar status
+$statusPermitidos = ['APROVADO', 'REJEITADO'];
+if (!in_array($status, $statusPermitidos)) {
+    returnError('Status inválido');
+}
+
+// Validar se o ID é numérico
+if (!is_numeric($id)) {
+    returnError('ID da solicitação inválido');
 }
 
 // Monta a URL da API
-$apiUrl = $_ENV['API_BASE_URL'] . '/categoria-atividade/' . $data['id'];
+$apiUrl = $_ENV['API_BASE_URL'] . "/solicitacoes-ministerio/{$id}/responder";
 
-// Prepara os dados
-$putData = [
-    'nome' => $data['nome'],
-    'cor' => $data['cor'],
-    'organizacao_id' => intval($organizacao_id),
-    'ministerio_id' => intval($ministerio_id)
+// Prepara os dados para envio
+$updateData = [
+    'status' => $status,
+    'observacao' => $observacao
 ];
 
 // Configuração do cURL
 $ch = curl_init();
 curl_setopt_array($ch, [
     CURLOPT_URL => $apiUrl,
-    CURLOPT_CUSTOMREQUEST => 'PUT',
-    CURLOPT_POSTFIELDS => json_encode($putData),
     CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_CUSTOMREQUEST => 'PUT',
+    CURLOPT_POSTFIELDS => json_encode($updateData),
     CURLOPT_HTTPHEADER => [
         'Content-Type: application/json',
         'Accept: application/json',
@@ -82,22 +99,29 @@ curl_setopt_array($ch, [
     ]
 ]);
 
-// Executa a requisição
+// Faz a requisição
 $response = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
 // Verifica erros do cURL
 if (curl_errno($ch)) {
+    $error = curl_error($ch);
     curl_close($ch);
-    returnError('Erro ao conectar com a API');
+    returnError("Erro ao conectar com a API: {$error}", 500);
 }
 
 curl_close($ch);
 
+// Verifica se a resposta é um JSON válido
+$responseData = json_decode($response, true);
+if (json_last_error() !== JSON_ERROR_NONE) {
+    returnError('Resposta inválida da API', 500);
+}
+
 // Retorna a resposta
-http_response_code(200);
+http_response_code($httpCode);
 echo json_encode([
     'code' => 200,
-    'message' => 'Categoria atualizada com sucesso',
-    'data' => json_decode($response, true)
-]);
+    'message' => 'Solicitação respondida com sucesso',
+    'data' => $responseData
+]); 

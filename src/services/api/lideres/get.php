@@ -19,6 +19,11 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
+}
+
 // Parâmetros da requisição
 $page = $_GET['page'] ?? 1;
 $limit = $_GET['limit'] ?? 12;
@@ -40,11 +45,11 @@ $params = http_build_query([
 
 $ch = curl_init();
 curl_setopt_array($ch, [
-    CURLOPT_URL => $_ENV['API_BASE_URL'] . "/api/lideres?{$params}",
+    CURLOPT_URL => $_ENV['API_BASE_URL'] . "/lideres?{$params}",
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [
         'Accept: application/json',
-        'Authorization: ' . $_ENV['API_KEY']
+        'Authorization: Bearer ' . SessionService::getToken()
     ]
 ]);
 

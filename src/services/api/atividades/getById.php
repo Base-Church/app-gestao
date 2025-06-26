@@ -30,6 +30,11 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
+}
+
 // Pega o ID da atividade
 $id = $_GET['id'] ?? null;
 if (!$id) {
@@ -52,7 +57,7 @@ if (!$ministerio_id) {
 }
 
 // Monta a URL da API
-$apiUrl = $_ENV['API_BASE_URL'] . '/api/atividades/' . $id;
+$apiUrl = $_ENV['API_BASE_URL'] . '/atividades/' . $id;
 error_log("URL da API: $apiUrl");
 
 // Configuração do cURL
@@ -62,7 +67,7 @@ curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [
         'Accept: application/json',
-        'Authorization: ' . $_ENV['API_KEY']
+        'Authorization: Bearer ' . SessionService::getToken()
     ]
 ]);
 

@@ -28,7 +28,7 @@ if (empty($data['eventos'])) {
 }
 
 // Configura a requisição para a API externa
-$apiUrl = $_ENV['API_BASE_URL'] . '/api/repertorios';
+$apiUrl = $_ENV['API_BASE_URL'] . '/repertorios';
 
 try {
     $ch = curl_init();
@@ -39,7 +39,7 @@ try {
         CURLOPT_POSTFIELDS => json_encode($data),
         CURLOPT_HTTPHEADER => [
             'Content-Type: application/json',
-            'Authorization: ' . $_ENV['API_KEY'] // Removido o "Bearer" conforme seu teste
+            'Authorization: Bearer ' . SessionService::getToken()
         ]
     ]);
 

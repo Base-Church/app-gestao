@@ -21,6 +21,11 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
+}
+
 // Pega os parâmetros necessários
 $organizacao_id = SessionService::getOrganizacaoId();
 $ministerio_id = $_GET['ministerio_id'] ?? null;
@@ -40,7 +45,7 @@ if (!$organizacao_id) {
 }
 
 // Configura a URL da API
-$apiUrl = $_ENV['API_BASE_URL'] . '/api/modelos-escalas';
+$apiUrl = $_ENV['API_BASE_URL'] . '/modelos-escalas';
 
 // Monta os parâmetros da query
 $params = [
@@ -58,7 +63,7 @@ curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [
         'Accept: application/json',
-        'Authorization: ' . $_ENV['API_KEY']
+        'Authorization: Bearer ' . SessionService::getToken()
     ]
 ]);
 

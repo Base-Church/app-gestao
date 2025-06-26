@@ -20,6 +20,11 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
+}
+
 // Verifica método
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     returnError('Método não permitido', 405);
@@ -46,7 +51,7 @@ $data['ministerio_id'] = $ministerioId;
 $data['organizacao_id'] = $organizacaoId;
 
 // Configura requisição para API
-$apiUrl = $_ENV['API_BASE_URL'] . '/api/escalas/v2';
+$apiUrl = $_ENV['API_BASE_URL'] . '/escalas/v2';
 $ch = curl_init();
 curl_setopt_array($ch, [
     CURLOPT_URL => $apiUrl,
@@ -56,7 +61,7 @@ curl_setopt_array($ch, [
     CURLOPT_HTTPHEADER => [
         'Content-Type: application/json',
         'Accept: application/json',
-        'Authorization: Bearer ' . $_ENV['API_KEY']
+        'Authorization: Bearer ' . SessionService::getToken()
     ]
 ]);
 

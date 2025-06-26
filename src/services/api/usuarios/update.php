@@ -53,6 +53,11 @@ if (!SessionService::isLoggedIn()) {
     returnError('Não autorizado', 401);
 }
 
+// Verifica se o token existe
+if (!SessionService::hasToken()) {
+    returnError('Token de autenticação não encontrado', 401);
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
     returnError('Método não permitido', 405);
 }
@@ -130,7 +135,7 @@ $updateData = array_filter([
 });
 
 // Log da URL da API
-$apiUrl = $_ENV['API_BASE_URL'] . "/api/usuarios/{$userId}";
+$apiUrl = $_ENV['API_BASE_URL'] . "/usuarios/{$userId}";
 error_log("URL da API: " . $apiUrl);
 
 // Log dos dados que serão enviados
@@ -146,7 +151,7 @@ curl_setopt_array($ch, [
     CURLOPT_HTTPHEADER => [
         'Content-Type: application/json',
         'Accept: application/json',
-        'Authorization: ' . $_ENV['API_KEY']
+        'Authorization: Bearer ' . SessionService::getToken()
     ]
 ]);
 
