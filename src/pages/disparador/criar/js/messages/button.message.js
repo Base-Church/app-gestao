@@ -54,19 +54,12 @@
     function renderButton(messageId, button, index) {
         return `
             <div class="button-item flex items-center gap-2 p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">
-                <div class="flex-1 grid grid-cols-2 gap-2">
+                <div class="flex-1">
                     <input type="text" 
-                        class="col-span-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
                         placeholder="Texto do botão"
                         value="${button.text || ''}"
                         onchange="updateButtonText('${messageId}', ${index}, this.value)">
-                    <select
-                        class="col-span-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                        onchange="updateButtonType('${messageId}', ${index}, this.value)">
-                        <option value="URL">Link</option>
-                        <option value="COPY">Copiar Texto</option>
-                        <option value="CALL">Chamada</option>
-                    </select>
                 </div>
                 <button type="button" 
                     class="p-1 text-gray-400 hover:text-gray-500"

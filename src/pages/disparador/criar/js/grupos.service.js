@@ -16,13 +16,13 @@ class GruposService {
                 </div>
             `;
 
-            // Buscar grupos reais da API
+            // Buscar grupos com imagens da API
             const apiService = window.apiService;
             if (!apiService) {
                 throw new Error('API Service não encontrado');
             }
             
-            const response = await apiService.getGroups();
+            const response = await apiService.getGroupsWithImages();
             
             if (response && response.groups) {
                 this.groups = response.groups;
@@ -38,7 +38,6 @@ class GruposService {
             }
             
         } catch (error) {
-            console.error('Erro ao carregar grupos:', error);
             const container = document.getElementById('groupsList');
             if (container) {
                 container.innerHTML = `
@@ -50,34 +49,6 @@ class GruposService {
                         <p class="text-xs text-gray-500">${error.message}</p>
                     </div>
                 `;
-            }
-        }
-    }
-
-    async loadGroupImages() {
-        const groupCards = document.querySelectorAll('#groupsList > div');
-        
-        for (const card of groupCards) {
-            const checkbox = card.querySelector('input[type="checkbox"]');
-            if (!checkbox) continue;
-            
-            const jid = checkbox.value;
-            if (!jid) continue;
-            
-            try {
-                const apiService = window.apiService;
-                if (!apiService) continue;
-                
-                const response = await apiService.getChatNameAndImage(jid);
-                
-                if (response && response.image) {
-                    const imgContainer = card.querySelector('.w-12.h-12');
-                    if (imgContainer) {
-                        imgContainer.innerHTML = `<img src="${response.image}" alt="Grupo" class="w-12 h-12 rounded-full object-cover">`;
-                    }
-                }
-            } catch (error) {
-                console.error(`Erro ao carregar imagem do grupo ${jid}:`, error);
             }
         }
     }

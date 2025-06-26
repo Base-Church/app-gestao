@@ -45,9 +45,6 @@ class MessageService {
             case 'poll':
                 message = { id: messageId, ...window.PollMessage.create() };
                 break;
-            case 'carousel':
-                message = { id: messageId, ...window.CarouselMessage.create() };
-                break;
             default:
                 throw new Error(`Tipo de mensagem '${type}' não suportado`);
         }
@@ -127,72 +124,46 @@ class MessageService {
             case 'text':
                 return window.TextMessage.renderForm(
                     message,
-                    (value) => `updateMessageContent('${message.id}', 'content', ${JSON.stringify(value)})`
+                    `updateMessageContent('${message.id}', 'content', this.value)`
                 );
             case 'image':
-                return window.ImageMessage.renderForm(
-                    message,
-                    (input) => `handleFileUpload('${message.id}', ${input}, 'image')`,
-                    (value) => `updateMessageContent('${message.id}', 'caption', ${JSON.stringify(value)})`
-                );
+                return window.ImageMessage.renderForm(message);
             case 'video':
-                return window.VideoMessage.renderForm(
-                    message,
-                    (input) => `handleFileUpload('${message.id}', ${input}, 'video')`,
-                    (value) => `updateMessageContent('${message.id}', 'caption', ${JSON.stringify(value)})`
-                );
+                return window.VideoMessage.renderForm(message);
             case 'document':
-                return window.DocumentMessage.renderForm(
-                    message,
-                    (input) => `handleFileUpload('${message.id}', ${input}, 'document')`,
-                    (value) => `updateMessageContent('${message.id}', 'caption', ${JSON.stringify(value)})`
-                );
+                return window.DocumentMessage.renderForm(message);
             case 'ptt':
-                return window.PTTMessage.renderForm(
-                    message,
-                    (input) => `handleFileUpload('${message.id}', ${input}, 'ptt')`,
-                    (value) => `updateMessageContent('${message.id}', 'caption', ${JSON.stringify(value)})`
-                );
+                return window.PTTMessage.renderForm(message);
             case 'sticker':
                 return window.StickerMessage.renderForm(
                     message,
-                    (input) => `handleFileUpload('${message.id}', ${input}, 'sticker')`,
-                    (value) => `updateMessageContent('${message.id}', 'caption', ${JSON.stringify(value)})`
+                    `handleFileUpload('${message.id}', this, 'sticker')`,
+                    `updateMessageContent('${message.id}', 'caption', this.value)`
                 );
             case 'contact':
                 return window.ContactMessage.renderForm(
                     message,
-                    (value) => `updateMessageContent('${message.id}', 'fullName', ${JSON.stringify(value)})`,
-                    (value) => `updateMessageContent('${message.id}', 'phoneNumber', ${JSON.stringify(value)})`
+                    `updateMessageContent('${message.id}', 'fullName', this.value)`,
+                    `updateMessageContent('${message.id}', 'phoneNumber', this.value)`
                 );
             case 'button':
                 return window.ButtonMessage.renderForm(
                     message,
-                    (value) => `updateMessageContent('${message.id}', 'text', ${JSON.stringify(value)})`,
-                    (value) => `updateMessageContent('${message.id}', 'footerText', ${JSON.stringify(value)})`,
-                    () => `addButton('${message.id}')`,
-                    () => '' // placeholder para edição de botões
+                    `updateMessageContent('${message.id}', 'text', this.value)`,
+                    `updateMessageContent('${message.id}', 'footerText', this.value)`
                 );
             case 'list':
                 return window.ListMessage.renderForm(
                     message,
-                    (value) => `updateMessageContent('${message.id}', 'text', ${JSON.stringify(value)})`,
-                    (value) => `updateMessageContent('${message.id}', 'footerText', ${JSON.stringify(value)})`,
-                    (value) => `updateMessageContent('${message.id}', 'listButton', ${JSON.stringify(value)})`,
-                    () => `addSection('${message.id}')`
+                    `updateMessageContent('${message.id}', 'text', this.value)`,
+                    `updateMessageContent('${message.id}', 'listButton', this.value)`,
+                    `updateMessageContent('${message.id}', 'footerText', this.value)`
                 );
             case 'poll':
                 return window.PollMessage.renderForm(
                     message,
-                    (value) => `updateMessageContent('${message.id}', 'text', ${JSON.stringify(value)})`,
-                    (count) => `updateMessageContent('${message.id}', 'selectableCount', ${count})`,
-                    () => `addPollOption('${message.id}')`
-                );
-            case 'carousel':
-                return window.CarouselMessage.renderForm(
-                    message,
-                    (value) => `updateMessageContent('${message.id}', 'text', ${JSON.stringify(value)})`,
-                    () => `addCarouselCard('${message.id}')`
+                    `updateMessageContent('${message.id}', 'text', this.value)`,
+                    `updateMessageContent('${message.id}', 'selectableCount', this.value)`
                 );
             default:
                 return '<p class="text-red-500">Tipo de mensagem não suportado</p>';
@@ -210,8 +181,7 @@ class MessageService {
             contact: 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200',
             button: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200',
             list: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200',
-            poll: 'bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200',
-            carousel: 'bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-200'
+            poll: 'bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200'
         };
         return colors[type] || 'bg-gray-100 text-gray-800';
     }
@@ -227,8 +197,7 @@ class MessageService {
             contact: 'Contato',
             button: 'Botões',
             list: 'Lista',
-            poll: 'Enquete',
-            carousel: 'Carrossel'
+            poll: 'Enquete'
         };
         return labels[type] || 'Desconhecido';
     }
@@ -324,7 +293,6 @@ class MessageService {
 
     deleteMessage(messageId) {
         this.messages.delete(messageId);
-        console.log('Total de mensagens:', this.messages.size);
         
         const messageElement = document.getElementById(`message-${messageId}`);
         if (messageElement) {
@@ -356,7 +324,6 @@ class MessageService {
 
     updateMessageCount() {
         const count = this.messages.size;
-        console.log(`Total de mensagens: ${count}`);
     }
 
     getMessages() {
@@ -387,7 +354,6 @@ class MessageService {
                 case 'button':
                 case 'list':
                 case 'poll':
-                case 'carousel':
                     baseMessage.type = message.type;
                     baseMessage.text = message.text;
                     baseMessage.footerText = message.footerText;
@@ -402,248 +368,86 @@ class MessageService {
     }
 
     buildAdvancedPayload(message) {
-        const isInteractiveType = ['button', 'list', 'poll', 'carousel'].includes(message.type);
-        
-        if (isInteractiveType) {
-            const menuPayload = this.buildMessagePayload(message);
-            return {
-                ...menuPayload,
-                delay: 1000,
-                readchat: true
-            };
-        }
-
-        // Para outros tipos de mensagem, manter o comportamento existente
         const basePayload = {
-            number: message.number,
-            options: {
-                delay: 1200,
-                presence: "composing"
-            }
+            number: message.number
         };
 
         switch (message.type) {
             case 'text':
                 return {
                     ...basePayload,
+                    type: 'text',
                     text: message.content
                 };
 
             case 'image':
                 return {
                     ...basePayload,
-                    image: {
-                        link: message.fileUrl
-                    },
-                    caption: message.caption || ''
+                    type: 'image',
+                    file: message.fileUrl,
+                    text: message.caption
                 };
 
             case 'video':
                 return {
                     ...basePayload,
-                    video: {
-                        link: message.fileUrl
-                    },
-                    caption: message.caption || ''
+                    type: 'video',
+                    file: message.fileUrl,
+                    text: message.caption
                 };
 
             case 'document':
                 return {
                     ...basePayload,
-                    document: {
-                        link: message.fileUrl
-                    },
-                    caption: message.caption || '',
-                    fileName: message.fileName || ''
+                    type: 'document',
+                    file: message.fileUrl,
+                    text: message.caption,
+                    docName: message.fileName
                 };
 
             case 'ptt':
                 return {
                     ...basePayload,
-                    audio: {
-                        link: message.fileUrl
-                    },
-                    caption: message.caption || ''
+                    type: 'ptt',
+                    file: message.fileUrl,
+                    text: message.caption
                 };
 
             case 'sticker':
                 return {
                     ...basePayload,
-                    sticker: {
-                        link: message.fileUrl
-                    }
+                    type: 'sticker',
+                    file: message.fileUrl
                 };
 
             case 'contact':
                 return {
                     ...basePayload,
-                    contacts: [{
-                        name: message.fullName,
-                        phones: message.phoneNumber.split(',').map(phone => ({
-                            phone: phone.trim().startsWith('55') ? phone.trim() : `55${phone.trim()}`
-                        }))
-                    }]
+                    type: 'contact',
+                    fullName: message.fullName,
+                    phoneNumber: message.phoneNumber
                 };
 
-            default:
-                return basePayload;
-        }
-    }
-
-    buildMessagePayload(message) {
-        const isInteractiveType = ['button', 'list', 'poll'].includes(message.type);
-        
-        if (isInteractiveType) {
-            const menuPayload = this.buildInteractivePayload(message);
-            return {
-                ...menuPayload,
-                delay: 1000,
-                readchat: true
-            };
-        }
-
-        // Payload específico para carrossel
-        if (message.type === 'carousel') {
-            return this.buildCarouselPayload(message);
-        }
-
-        // Para outros tipos de mensagem, manter o comportamento existente
-        const basePayload = {
-            number: message.number,
-            options: {
-                delay: 1200,
-                presence: "composing"
-            }
-        };
-
-        switch (message.type) {
-            case 'text':
-                return {
-                    ...basePayload,
-                    text: message.content
-                };
-
-            case 'image':
-                return {
-                    ...basePayload,
-                    image: {
-                        link: message.fileUrl
-                    },
-                    caption: message.caption || ''
-                };
-
-            case 'video':
-                return {
-                    ...basePayload,
-                    video: {
-                        link: message.fileUrl
-                    },
-                    caption: message.caption || ''
-                };
-
-            case 'document':
-                return {
-                    ...basePayload,
-                    document: {
-                        link: message.fileUrl
-                    },
-                    caption: message.caption || '',
-                    fileName: message.fileName || ''
-                };
-
-            case 'ptt':
-                return {
-                    ...basePayload,
-                    audio: {
-                        link: message.fileUrl
-                    },
-                    caption: message.caption || ''
-                };
-
-            case 'sticker':
-                return {
-                    ...basePayload,
-                    sticker: {
-                        link: message.fileUrl
-                    }
-                };
-
-            case 'contact':
-                return {
-                    ...basePayload,
-                    contacts: [{
-                        name: message.fullName,
-                        phones: message.phoneNumber.split(',').map(phone => ({
-                            phone: phone.trim().startsWith('55') ? phone.trim() : `55${phone.trim()}`
-                        }))
-                    }]
-                };
-
-            default:
-                return basePayload;
-        }
-    }
-
-    buildCarouselPayload(message) {
-        return {
-            text: message.text,
-            carousel: message.cards.map(card => ({
-                text: `${card.title}\n${card.description}`,
-                image: card.imageUrl,
-                buttons: card.buttons.map(btn => {
-                    let type = 'REPLY';
-                    let id = btn.value;
-
-                    switch (btn.type) {
-                        case 'url':
-                            type = 'URL';
-                            break;
-                        case 'copy':
-                            type = 'COPY';
-                            break;
-                        case 'call':
-                            type = 'CALL';
-                            break;
-                    }
-
-                    return {
-                        id: id,
-                        text: btn.text,
-                        type: type
-                    };
-                })
-            })),
-            delay: 1000,
-            readchat: true
-        };
-    }
-
-    buildInteractivePayload(message) {
-        switch (message.type) {
             case 'button':
                 return {
+                    ...basePayload,
                     type: 'button',
                     text: message.text,
-                    footerText: message.footerText || '',
-                    choices: message.buttons.map(btn => {
-                        if (btn.type === 'reply') return `${btn.text}|${btn.value}`;
-                        if (btn.type === 'copy') return `${btn.text}|copy:${btn.value}`;
-                        if (btn.type === 'call') return `${btn.text}|call:${btn.value}`;
-                        if (btn.type === 'url') return `${btn.text}|${btn.value}`;
-                        return btn.text;
-                    })
+                    footerText: message.footerText,
+                    choices: message.buttons.map(btn => btn.text)
                 };
 
             case 'list':
                 return {
+                    ...basePayload,
                     type: 'list',
                     text: message.text,
-                    footerText: message.footerText || '',
-                    listButton: message.listButton,
+                    footerText: message.footerText,
+                    buttonText: message.listButton,
                     choices: message.sections.reduce((acc, section) => {
                         acc.push(`[${section.title}]`);
                         section.items.forEach(item => {
-                            acc.push(`${item.title}|${item.id}|${item.description || ''}`);
+                            acc.push(`${item.text}|${item.text}|${item.description}`);
                         });
                         return acc;
                     }, [])
@@ -651,14 +455,15 @@ class MessageService {
 
             case 'poll':
                 return {
+                    ...basePayload,
                     type: 'poll',
                     text: message.text,
-                    selectableCount: message.selectableCount || 1,
+                    selectableCount: message.selectableCount,
                     choices: message.options.map(opt => opt.text)
                 };
 
             default:
-                return {};
+                return basePayload;
         }
     }
 
@@ -677,7 +482,6 @@ class MessageService {
     clearMessages() {
         this.messages.clear();
         this.messageIdCounter = 0;
-        console.log('Total de mensagens:', this.messages.size);
     }
 }
 
@@ -939,237 +743,6 @@ function updatePollOption(messageId, optionIndex, value) {
     const message = window.messageService?.messages.find(m => m.id === messageId);
     if (!message.options) message.options = [];
     message.options[optionIndex] = value;
-}
-
-// Função para upload de imagem do carrossel
-function handleCarouselImageUpload(messageId, cardIndex, input) {
-    const file = input.files[0];
-    if (!file) return;
-
-    const message = window.messageService?.messages.find(m => m.id === messageId);
-    if (!message) return;
-
-    // Validar tamanho do arquivo (máximo 16MB)
-    const maxSize = 16 * 1024 * 1024; // 16MB
-    if (file.size > maxSize) {
-        alert('Arquivo muito grande. Tamanho máximo: 16MB');
-        input.value = '';
-        return;
-    }
-
-    // Mostrar preview do arquivo
-    const container = document.getElementById(`carousel-cards-${messageId}`);
-    const card = container.children[cardIndex];
-    const uploadArea = card.querySelector('.file-upload-area');
-    
-    if (uploadArea) {
-        const fileSize = (file.size / 1024 / 1024).toFixed(2);
-        
-        uploadArea.innerHTML = `
-            <div class="flex items-center space-x-3">
-                <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <div class="text-left">
-                    <p class="text-sm font-medium text-gray-900 dark:text-white">${file.name}</p>
-                    <p class="text-xs text-gray-500">${fileSize} MB</p>
-                </div>
-            </div>
-        `;
-    }
-
-    // Salvar arquivo no objeto da mensagem
-    if (!message.cards) message.cards = [];
-    if (!message.cards[cardIndex]) message.cards[cardIndex] = {};
-    message.cards[cardIndex].imageFile = file;
-    message.cards[cardIndex].imageName = file.name;
-}
-
-// Funções para gerenciar carrossel
-function addCarouselCard(messageId) {
-    const container = document.getElementById(`carousel-cards-${messageId}`);
-    const cardCount = container.children.length;
-    
-    const cardDiv = document.createElement('div');
-    cardDiv.className = 'border border-gray-300 dark:border-gray-600 rounded-lg p-3';
-    cardDiv.innerHTML = `
-        <div class="space-y-2">
-            <input type="text" 
-                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                   placeholder="Título do cartão"
-                   onchange="updateCarouselCardTitle('${messageId}', ${cardCount}, this.value)">
-            <textarea 
-                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                   rows="2"
-                   placeholder="Descrição do cartão"
-                   onchange="updateCarouselCardDesc('${messageId}', ${cardCount}, this.value)"></textarea>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Imagem do Cartão
-                </label>
-                <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center">
-                    <input type="file" 
-                           class="hidden" 
-                           accept="image/*"
-                           onchange="handleCarouselImageUpload('${messageId}', ${cardCount}, this)">
-                    <div class="file-upload-area cursor-pointer" onclick="this.previousElementSibling.click()">
-                        <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                        </svg>
-                        <p class="text-sm text-gray-500">Clique para selecionar uma imagem</p>
-                    </div>
-                </div>
-            </div>
-            <div class="space-y-2">
-                <div class="flex items-center space-x-2">
-                    <input type="text" 
-                           class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                           placeholder="Texto do botão"
-                           onchange="updateCarouselButtonText('${messageId}', ${cardCount}, 0, this.value)">
-                    <select class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                            onchange="updateCarouselButtonType('${messageId}', ${cardCount}, 0, this.value)">
-                        <option value="url">Link</option>
-                        <option value="call">Ligação</option>
-                        <option value="copy">Copiar</option>
-                    </select>
-                    <input type="text" 
-                           class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                           placeholder="URL/Número"
-                           onchange="updateCarouselButtonValue('${messageId}', ${cardCount}, 0, this.value)">
-                </div>
-            </div>
-            <button type="button" 
-                    class="px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-                    onclick="addCarouselButton('${messageId}', ${cardCount})">
-                + Adicionar Botão
-            </button>
-            <button type="button" 
-                    class="ml-2 px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-                    onclick="removeCarouselCard('${messageId}', ${cardCount})">
-                Remover Cartão
-            </button>
-        </div>
-    `;
-    
-    container.appendChild(cardDiv);
-}
-
-function removeCarouselCard(messageId, cardIndex) {
-    const container = document.getElementById(`carousel-cards-${messageId}`);
-    const cards = container.children;
-    
-    if (cards.length > 1) {
-        container.removeChild(cards[cardIndex]);
-        // Reindexar os cartões restantes
-        for (let i = 0; i < cards.length; i++) {
-            const inputs = cards[i].querySelectorAll('input, textarea, select');
-            inputs[0].setAttribute('onchange', `updateCarouselCardTitle('${messageId}', ${i}, this.value)`);
-            inputs[1].setAttribute('onchange', `updateCarouselCardDesc('${messageId}', ${i}, this.value)`);
-            inputs[2].setAttribute('onchange', `handleCarouselImageUpload('${messageId}', ${i}, this)`);
-            inputs[3].setAttribute('onchange', `updateCarouselButtonText('${messageId}', ${i}, 0, this.value)`);
-            inputs[4].setAttribute('onchange', `updateCarouselButtonType('${messageId}', ${i}, 0, this.value)`);
-            inputs[5].setAttribute('onchange', `updateCarouselButtonValue('${messageId}', ${i}, 0, this.value)`);
-            
-            const buttons = cards[i].querySelectorAll('button');
-            buttons[0].setAttribute('onclick', `addCarouselButton('${messageId}', ${i})`);
-            buttons[1].setAttribute('onclick', `removeCarouselCard('${messageId}', ${i})`);
-        }
-    }
-}
-
-function addCarouselButton(messageId, cardIndex) {
-    const container = document.getElementById(`carousel-cards-${messageId}`);
-    const card = container.children[cardIndex];
-    const buttonsContainer = card.querySelector('.space-y-2');
-    const buttonCount = buttonsContainer.children.length - 2; // -2 para excluir os botões de adicionar/remover
-    
-    const buttonDiv = document.createElement('div');
-    buttonDiv.className = 'flex items-center space-x-2';
-    buttonDiv.innerHTML = `
-        <input type="text" 
-               class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-               placeholder="Texto do botão"
-               onchange="updateCarouselButtonText('${messageId}', ${cardIndex}, ${buttonCount}, this.value)">
-        <select class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                onchange="updateCarouselButtonType('${messageId}', ${cardIndex}, ${buttonCount}, this.value)">
-            <option value="url">Link</option>
-            <option value="call">Ligação</option>
-            <option value="copy">Copiar</option>
-        </select>
-        <input type="text" 
-               class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-               placeholder="URL/Número"
-               onchange="updateCarouselButtonValue('${messageId}', ${cardIndex}, ${buttonCount}, this.value)">
-        <button type="button" 
-                class="px-2 py-2 text-red-600 hover:text-red-800 transition-colors"
-                onclick="removeCarouselButton('${messageId}', ${cardIndex}, ${buttonCount})">
-            ✕
-        </button>
-    `;
-    
-    // Inserir antes dos botões de adicionar/remover
-    const addButton = buttonsContainer.querySelector('button');
-    buttonsContainer.insertBefore(buttonDiv, addButton);
-}
-
-function removeCarouselButton(messageId, cardIndex, buttonIndex) {
-    const container = document.getElementById(`carousel-cards-${messageId}`);
-    const card = container.children[cardIndex];
-    const buttonsContainer = card.querySelector('.space-y-2');
-    const buttonDivs = buttonsContainer.querySelectorAll('.flex.items-center.space-x-2');
-    
-    if (buttonDivs.length > 1) {
-        buttonsContainer.removeChild(buttonDivs[buttonIndex]);
-        // Reindexar os botões restantes
-        for (let i = 0; i < buttonDivs.length; i++) {
-            const inputs = buttonDivs[i].querySelectorAll('input, select');
-            inputs[0].setAttribute('onchange', `updateCarouselButtonText('${messageId}', ${cardIndex}, ${i}, this.value)`);
-            inputs[1].setAttribute('onchange', `updateCarouselButtonType('${messageId}', ${cardIndex}, ${i}, this.value)`);
-            inputs[2].setAttribute('onchange', `updateCarouselButtonValue('${messageId}', ${cardIndex}, ${i}, this.value)`);
-            inputs[3].setAttribute('onclick', `removeCarouselButton('${messageId}', ${cardIndex}, ${i})`);
-        }
-    }
-}
-
-function updateCarouselCardTitle(messageId, cardIndex, value) {
-    const message = window.messageService?.messages.find(m => m.id === messageId);
-    if (!message.cards) message.cards = [];
-    if (!message.cards[cardIndex]) message.cards[cardIndex] = {};
-    message.cards[cardIndex].title = value;
-}
-
-function updateCarouselCardDesc(messageId, cardIndex, value) {
-    const message = window.messageService?.messages.find(m => m.id === messageId);
-    if (!message.cards) message.cards = [];
-    if (!message.cards[cardIndex]) message.cards[cardIndex] = {};
-    message.cards[cardIndex].description = value;
-}
-
-function updateCarouselButtonText(messageId, cardIndex, buttonIndex, value) {
-    const message = window.messageService?.messages.find(m => m.id === messageId);
-    if (!message.cards) message.cards = [];
-    if (!message.cards[cardIndex]) message.cards[cardIndex] = {};
-    if (!message.cards[cardIndex].buttons) message.cards[cardIndex].buttons = [];
-    if (!message.cards[cardIndex].buttons[buttonIndex]) message.cards[cardIndex].buttons[buttonIndex] = {};
-    message.cards[cardIndex].buttons[buttonIndex].text = value;
-}
-
-function updateCarouselButtonType(messageId, cardIndex, buttonIndex, value) {
-    const message = window.messageService?.messages.find(m => m.id === messageId);
-    if (!message.cards) message.cards = [];
-    if (!message.cards[cardIndex]) message.cards[cardIndex] = {};
-    if (!message.cards[cardIndex].buttons) message.cards[cardIndex].buttons = [];
-    if (!message.cards[cardIndex].buttons[buttonIndex]) message.cards[cardIndex].buttons[buttonIndex] = {};
-    message.cards[cardIndex].buttons[buttonIndex].type = value;
-}
-
-function updateCarouselButtonValue(messageId, cardIndex, buttonIndex, value) {
-    const message = window.messageService?.messages.find(m => m.id === messageId);
-    if (!message.cards) message.cards = [];
-    if (!message.cards[cardIndex]) message.cards[cardIndex] = {};
-    if (!message.cards[cardIndex].buttons) message.cards[cardIndex].buttons = [];
-    if (!message.cards[cardIndex].buttons[buttonIndex]) message.cards[cardIndex].buttons[buttonIndex] = {};
-    message.cards[cardIndex].buttons[buttonIndex].value = value;
 }
 
 // Exportar para uso global

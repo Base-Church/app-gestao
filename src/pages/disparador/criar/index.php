@@ -135,7 +135,6 @@ include_once __DIR__ . '/../../../components/layout/header.php';
 <script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/messages/button.message.js"></script>
 <script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/messages/list.message.js"></script>
 <script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/messages/poll.message.js"></script>
-<script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/messages/carousel.message.js"></script>
 
 <!-- Service principal deve vir depois dos módulos -->
 <script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/criar/js/message.service.js"></script>

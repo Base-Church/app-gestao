@@ -7,15 +7,6 @@ class MainController {
         this.init();
     }
 
-    getValuePlaceholder(type) {
-        switch(type) {
-            case 'URL': return 'https://exemplo.com';
-            case 'CALL': return '+5511999999999';
-            case 'COPY': return 'Texto para copiar';
-            default: return '';
-        }
-    }
-
     init() {
         // Abrir modal de grupos automaticamente ao carregar a página
         setTimeout(() => {
@@ -143,11 +134,6 @@ class MainController {
         });
 
         this.updateSelectedCount();
-        
-        // Carregar imagens dos grupos após renderizar
-        setTimeout(() => {
-            this.gruposService.loadGroupImages();
-        }, 100);
     }
 
     toggleGroupCard(groupId) {
@@ -299,7 +285,7 @@ class MainController {
             return;
         }
 
-        if (this.messageService.messages.length === 0) {
+        if (this.messageService.getAllMessages().length === 0) {
             alert('Crie pelo menos uma mensagem antes de enviar a campanha.');
             return;
         }
@@ -309,8 +295,8 @@ class MainController {
         
         // Atualizar informações no modal
         document.getElementById('modalTotalGrupos').textContent = this.selectedGroups.length;
-        document.getElementById('modalTotalMensagens').textContent = this.messageService.messages.length;
-        document.getElementById('modalTotalEnvio').textContent = this.selectedGroups.length * this.messageService.messages.length;
+        document.getElementById('modalTotalMensagens').textContent = this.messageService.getAllMessages().length;
+        document.getElementById('modalTotalEnvio').textContent = this.selectedGroups.length * this.messageService.getAllMessages().length;
     }
 
     closeSendModal() {
@@ -360,7 +346,7 @@ class MainController {
         `;
 
         try {
-            // 1. Obter dados do modal e definir delays fixos
+            // 1. Obter dados do modal
             const delayMin = 3;
             const delayMax = 6;
             const info = document.getElementById('campaignInfo').value;
@@ -382,7 +368,7 @@ class MainController {
 
             // 2. Validar dados
             if (this.selectedGroups.length === 0) throw new Error('Nenhum grupo selecionado.');
-            if (this.messageService.messages.length === 0) throw new Error('Nenhuma mensagem criada.');
+            if (this.messageService.getAllMessages().length === 0) throw new Error('Nenhuma mensagem criada.');
 
             // 3. Construir o payload final
             btnEnviar.innerHTML = `
@@ -390,61 +376,49 @@ class MainController {
                 Construindo campanha...
             `;
             
-            const finalMessages = [];
+            const messages = [];
             for (const groupId of this.selectedGroups) {
-                for (const msg of this.messageService.messages) {
+                for (const msg of this.messageService.getAllMessages()) {
                     const messagePayload = this.messageService.buildAdvancedPayload(msg);
                     messagePayload.number = groupId;
-                    
-                    // Adicionar informações de agendamento se necessário
-                    if (scheduled_for > 0) {
-                        messagePayload.scheduled_for = scheduled_for;
-                    }
-                    
-                    finalMessages.push(messagePayload);
+                    messages.push(messagePayload);
                 }
             }
 
-            // 4. Enviar para a API
+            // 4. Preparar payload para API /sender/advanced
+            const campaignPayload = {
+                delayMin,
+                delayMax,
+                info,
+                messages
+            };
+
+            // Adicionar agendamento se necessário
+            if (scheduled_for > 0) {
+                campaignPayload.scheduled_for = scheduled_for;
+            }
+
+            // 5. Enviar para a API
             btnEnviar.innerHTML = `
                 <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white inline-block mr-2"></div>
                 Enviando...
             `;
 
-            let totalSent = 0;
-            for (const message of finalMessages) {
-                if (message.type === 'carousel') {
-                    // Usar endpoint específico para carrossel
-                    await this.apiService.sendCarousel(message);
-                } else if (['button', 'list', 'poll'].includes(message.type)) {
-                    // Usar endpoint de menu para outros tipos interativos
-                    await this.apiService.sendMenu(message);
-                } else {
-                    // Usar endpoint padrão para outros tipos
-                    await this.apiService.sendAdvancedCampaign({
-                        delayMin,
-                        delayMax,
-                        info,
-                        messages: [message]
-                    });
-                }
-                totalSent++;
-            }
+            await this.apiService.sendAdvancedCampaign(campaignPayload);
 
-            // 5. Lidar com a resposta
+            // 6. Lidar com a resposta
             this.closeSendModal();
-            alert(`Campanha adicionada à fila com sucesso! Total de ${totalSent} mensagens.`);
+            alert(`Campanha adicionada à fila com sucesso! Total de ${messages.length} mensagens.`);
             
-            // 6. Resetar estado
+            // 7. Resetar estado
             this.selectedGroups = [];
-            this.messageService.messages = [];
+            this.messageService.clearMessages();
             this.messageService.showEmptyMessage();
             const gruposInfo = document.getElementById('gruposInfo');
             if (gruposInfo) gruposInfo.classList.add('hidden');
             this.renderGroupsList();
 
         } catch (error) {
-            console.error('Erro ao enviar campanha:', error);
             alert(`Erro ao enviar campanha: ${error.message}`);
         } finally {
             btnEnviar.disabled = false;
@@ -522,7 +496,7 @@ window.addButton = function(messageId) {
         alert('Máximo de 3 botões permitido');
         return;
     }
-    message.buttons.push({ type: 'reply', text: '', value: '' });
+    message.buttons.push({ text: '' });
     const container = document.getElementById(`buttons-container-${messageId}`);
     container.innerHTML += ButtonMessage.renderButton(messageId, message.buttons[message.buttons.length - 1], message.buttons.length - 1);
 };
@@ -530,21 +504,6 @@ window.addButton = function(messageId) {
 window.updateButtonText = function(messageId, index, value) {
     const message = window.mainController.messageService.getMessage(messageId);
     message.buttons[index].text = value;
-};
-
-window.updateButtonType = function(messageId, index, value) {
-    const message = window.mainController.messageService.getMessage(messageId);
-    message.buttons[index].type = value;
-    // Atualizar placeholder do valor baseado no tipo
-    const valueInput = document.querySelector(`#buttons-container-${messageId} .button-item:nth-child(${index + 1}) input:last-child`);
-    if (valueInput) {
-        valueInput.placeholder = window.mainController.getValuePlaceholder(value);
-    }
-};
-
-window.updateButtonValue = function(messageId, index, value) {
-    const message = window.mainController.messageService.getMessage(messageId);
-    message.buttons[index].value = value;
 };
 
 window.removeButton = function(messageId, index) {
@@ -627,70 +586,5 @@ window.removeListItem = function(messageId, sectionIndex, itemIndex) {
     const container = document.getElementById(`list-items-${messageId}-${sectionIndex}`);
     container.innerHTML = message.sections[sectionIndex].items
         .map((item, idx) => ListMessage.renderItem(messageId, sectionIndex, item, idx))
-        .join('');
-};
-
-// Funções para Carrossel
-window.addCarouselCard = function(messageId) {
-    const message = window.mainController.messageService.getMessage(messageId);
-    if (message.carousel.length >= 10) {
-        alert('Máximo de 10 cartões permitido');
-        return;
-    }
-    message.carousel.push({ text: '', image: '', buttons: [] });
-    const container = document.getElementById(`carousel-cards-${messageId}`);
-    container.innerHTML += CarouselMessage.renderCard(messageId, message.carousel[message.carousel.length - 1], message.carousel.length - 1);
-};
-
-window.updateCardText = function(messageId, cardIndex, value) {
-    const message = window.mainController.messageService.getMessage(messageId);
-    message.carousel[cardIndex].text = value;
-};
-
-window.updateCardImage = function(messageId, cardIndex, value) {
-    const message = window.mainController.messageService.getMessage(messageId);
-    message.carousel[cardIndex].image = value;
-};
-
-window.removeCarouselCard = function(messageId, cardIndex) {
-    const message = window.mainController.messageService.getMessage(messageId);
-    message.carousel.splice(cardIndex, 1);
-    const container = document.getElementById(`carousel-cards-${messageId}`);
-    container.innerHTML = message.carousel.map((card, idx) => CarouselMessage.renderCard(messageId, card, idx)).join('');
-};
-
-window.addCardButton = function(messageId, cardIndex) {
-    const message = window.mainController.messageService.getMessage(messageId);
-    const card = message.carousel[cardIndex];
-    if (card.buttons.length >= 3) {
-        alert('Máximo de 3 botões por cartão permitido');
-        return;
-    }
-    card.buttons.push({ type: 'REPLY', text: '', id: '' });
-    const container = document.getElementById(`card-buttons-${messageId}-${cardIndex}`);
-    container.innerHTML += CarouselMessage.renderButton(messageId, cardIndex, card.buttons[card.buttons.length - 1], card.buttons.length - 1);
-};
-
-window.updateCardButtonText = function(messageId, cardIndex, buttonIndex, value) {
-    const message = window.mainController.messageService.getMessage(messageId);
-    message.carousel[cardIndex].buttons[buttonIndex].text = value;
-};
-
-window.updateCardButtonType = function(messageId, cardIndex, buttonIndex, value) {
-    const message = window.mainController.messageService.getMessage(messageId);
-    message.carousel[cardIndex].buttons[buttonIndex].type = value;
-};
-
-window.updateCardButtonId = function(messageId, cardIndex, buttonIndex, value) {
-    const message = window.mainController.messageService.getMessage(messageId);
-    message.carousel[cardIndex].buttons[buttonIndex].id = value;
-};
-
-window.removeCardButton = function(messageId, cardIndex, buttonIndex) {
-    const message = window.mainController.messageService.getMessage(messageId);
-    message.carousel[cardIndex].buttons.splice(buttonIndex, 1);
-    const container = document.getElementById(`card-buttons-${messageId}-${cardIndex}`);
-    container.innerHTML = message.carousel[cardIndex].buttons
-        .map((button, idx) => CarouselMessage.renderButton(messageId, cardIndex, button, idx))
         .join('');
 }; 

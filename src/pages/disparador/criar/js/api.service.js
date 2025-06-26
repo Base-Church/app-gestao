@@ -27,9 +27,31 @@ class ApiService {
 
             return await response.json();
         } catch (error) {
-            console.error('Erro na requisição API:', error);
             throw error;
         }
+    }
+
+    // Obter lista de grupos com imagens
+    async getGroupsWithImages() {
+        const groups = await this.makeRequest('/group/list?force=false&noparticipants=true', 'GET');
+        
+        if (groups && groups.groups) {
+            for (const group of groups.groups) {
+                try {
+                    const imageData = await this.makeRequest('/chat/GetNameAndImageURL', 'POST', { 
+                        number: group.jid || group.JID,
+                        preview: false 
+                    });
+                    if (imageData && imageData.image) {
+                        group.image = imageData.image;
+                    }
+                } catch (error) {
+                    // Erro silencioso ao carregar imagem
+                }
+            }
+        }
+        
+        return groups;
     }
 
     // Obter lista de grupos
@@ -48,21 +70,6 @@ class ApiService {
     // Enviar campanha avançada
     async sendAdvancedCampaign(campaignData) {
         return await this.makeRequest('/sender/advanced', 'POST', campaignData);
-    }
-
-    // Enviar mídia (imagem, vídeo, áudio, documento, sticker, etc.)
-    async sendMedia(mediaData) {
-        return await this.makeRequest('/send/media', 'POST', mediaData);
-    }
-
-    // Enviar menu interativo (botões, carrossel, lista ou enquete)
-    async sendMenu(menuData) {
-        return await this.makeRequest('/send/menu', 'POST', menuData);
-    }
-
-    // Enviar carrossel de mídia com botões
-    async sendCarousel(carouselData) {
-        return await this.makeRequest('/send/carousel', 'POST', carouselData);
     }
 
     // Upload de arquivo para o servidor
