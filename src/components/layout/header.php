@@ -124,32 +124,25 @@ if (SessionService::isLoggedIn() &&
         ?>
     </div>
 <style>
-    
-body {
-  --sb-track-color: #232E33;
-  --sb-thumb-color: #7c3aed;
-  --sb-size: 13px;
-}
-
-body::-webkit-scrollbar {
-  width: var(--sb-size)
-}
-
-body::-webkit-scrollbar-track {
-  background: var(--sb-track-color);
-  border-radius: 1px;
-}
-
-body::-webkit-scrollbar-thumb {
-  background: var(--sb-thumb-color);
-  border-radius: 1px;
-  
-}
-
-@supports not selector(::-webkit-scrollbar) {
-  body {
-    scrollbar-color: var(--sb-thumb-color)
-                     var(--sb-track-color);
+    /* ===== Scrollbar CSS ===== */
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #894bfb #2b2b2b;
   }
-}
+
+  /* Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #2b2b2b;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #894bfb;
+    border-radius: 3px;
+    border: 1px solid #ffffff;
+  }
 </style>
