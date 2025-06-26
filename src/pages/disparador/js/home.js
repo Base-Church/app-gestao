@@ -115,6 +115,46 @@ class DisparadorHomeService {
         if (elements.falhas) elements.falhas.textContent = stats.falhas;
     }
 
+    // Calcular milissegundos para agendamento
+    calculateScheduledFor(dateTime) {
+        // Converter data/hora para milissegundos desde epoch
+        // Exemplo de uso:
+        // const scheduledFor = this.calculateScheduledFor('2024-01-15 14:30:00');
+        // Resultado: 1750953053072 (milissegundos desde epoch)
+        const targetDate = new Date(dateTime);
+        return targetDate.getTime();
+    }
+
+    // Exemplo de como usar para agendamento:
+    // Para agendar para 15 de janeiro de 2024 às 14:30:00:
+    // const scheduledFor = this.calculateScheduledFor('2024-01-15 14:30:00');
+    // 
+    // Para agendar para daqui a 1 hora:
+    // const oneHourFromNow = new Date(Date.now() + 60 * 60 * 1000);
+    // const scheduledFor = this.calculateScheduledFor(oneHourFromNow);
+    //
+    // Para agendar para amanhã às 9:00:
+    // const tomorrow = new Date();
+    // tomorrow.setDate(tomorrow.getDate() + 1);
+    // tomorrow.setHours(9, 0, 0, 0);
+    // const scheduledFor = this.calculateScheduledFor(tomorrow);
+
+    // Formatar data de agendamento
+    formatScheduledDate(scheduledFor) {
+        try {
+            const date = new Date(scheduledFor);
+            return date.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (error) {
+            return 'Data inválida';
+        }
+    }
+
     // Formatar data
     formatDate(dateString) {
         try {
@@ -193,15 +233,25 @@ class DisparadorHomeService {
                                     </svg>
                                 </div>
                             </div>
-                            <div>
-                                <h4 class="text-sm font-medium text-gray-900 dark:text-white">Campanha ${campaign.id}</h4>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-medium text-gray-900 dark:text-white">${campaign.info || 'Campanha ' + campaign.id}</h4>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">Criada em ${this.formatDate(campaign.created)}</p>
-                                ${campaign.info ? `<p class="text-xs text-gray-400 dark:text-gray-500 mt-1">${campaign.info}</p>` : ''}
+                                ${campaign.scheduled_for ? `<p class="text-xs text-blue-600 dark:text-blue-400 mt-1">📅 Agendada para: ${this.formatScheduledDate(campaign.scheduled_for)}</p>` : ''}
                             </div>
                         </div>
-                        <span class="px-2 py-1 text-xs font-medium rounded-full ${statusInfo.class}">
-                            ${statusInfo.text}
-                        </span>
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-1 text-xs font-medium rounded-full ${statusInfo.class}">
+                                ${statusInfo.text}
+                            </span>
+                            <button 
+                                onclick="window.disparadorHomeService.deleteCampaign('${campaign.id}', '${campaign.info || 'Campanha ' + campaign.id}')"
+                                class="p-1 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                                title="Excluir campanha">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     
                     <div class="ml-13">
@@ -327,6 +377,121 @@ class DisparadorHomeService {
         const refreshButton = document.querySelector('[data-refresh]');
         if (refreshButton) {
             refreshButton.addEventListener('click', () => this.loadPageData());
+        }
+    }
+
+    // Editar campanha (excluir, pausar, etc.)
+    async editCampaign(folderId, action) {
+        try {
+            const data = {
+                folder_id: folderId,
+                action: action
+            };
+            
+            const result = await this.makeRequest('/sender/edit', 'POST', data);
+            return result;
+        } catch (error) {
+            console.error('Erro ao editar campanha:', error);
+            throw error;
+        }
+    }
+
+    // Deletar campanha
+    async deleteCampaign(campaignId, campaignInfo) {
+        try {
+            const confirmed = await this.showDeleteConfirmation(campaignInfo);
+            if (!confirmed) return;
+
+            // Mostrar loading
+            this.showLoading(true);
+            
+            const result = await this.editCampaign(campaignId, 'delete');
+            console.log('Campanha deletada:', result);
+            
+            // Recarregar dados
+            await this.loadPageData();
+            
+            // Mostrar sucesso
+            this.showSuccess('Campanha deletada com sucesso!');
+            
+        } catch (error) {
+            console.error('Erro ao deletar campanha:', error);
+            this.showError('Erro ao deletar campanha. Tente novamente.');
+        } finally {
+            this.showLoading(false);
+        }
+    }
+
+    // Mostrar modal de confirmação de exclusão
+    showDeleteConfirmation(campaignInfo) {
+        return new Promise((resolve) => {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+            modal.innerHTML = `
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-lg flex items-center justify-center mr-4">
+                                <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Confirmar Exclusão</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Esta ação não pode ser desfeita</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <p class="text-gray-700 dark:text-gray-300 mb-2">
+                                Tem certeza que deseja excluir a campanha:
+                            </p>
+                            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+                                <p class="font-medium text-gray-900 dark:text-white">${campaignInfo}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex space-x-3">
+                            <button type="button" 
+                                    class="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+                                    onclick="this.closest('.fixed').remove(); window.disparadorHomeService.resolveDeleteConfirmation(false);">
+                                Cancelar
+                            </button>
+                            <button type="button" 
+                                    class="flex-1 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+                                    onclick="this.closest('.fixed').remove(); window.disparadorHomeService.resolveDeleteConfirmation(true);">
+                                Excluir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Armazenar a função de resolução
+            this.resolveDeleteConfirmation = resolve;
+        });
+    }
+
+    // Mostrar sucesso
+    showSuccess(message) {
+        const successContainer = document.querySelector('[data-success]');
+        if (successContainer) {
+            successContainer.innerHTML = `
+                <div class="text-center text-green-500 dark:text-green-400 py-4">
+                    <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p>${message}</p>
+                </div>
+            `;
+            successContainer.style.display = 'block';
+            
+            // Ocultar após 3 segundos
+            setTimeout(() => {
+                successContainer.style.display = 'none';
+            }, 3000);
         }
     }
 }

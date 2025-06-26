@@ -56,8 +56,8 @@ require_once __DIR__ . '/../../components/layout/header.php';
                         </svg>
                     </div>
                 </div>
-                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Histórico</h3>
-                <p class="text-gray-600 dark:text-gray-400 mb-4">Visualize o histórico de campanhas enviadas</p>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Envios especiais</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Domingo, notificações etc..</p>
                 <a href="<?php echo $_ENV['URL_BASE']; ?>/disparador/historico" 
                    class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,7 +82,7 @@ require_once __DIR__ . '/../../components/layout/header.php';
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                     </svg>
-                    Gerenciar Templates
+                    Gerenciar Templates (em breve)
                 </button>
             </div>
         </div>
@@ -176,6 +176,9 @@ require_once __DIR__ . '/../../components/layout/header.php';
             
             <!-- Error -->
             <div data-error class="hidden"></div>
+            
+            <!-- Success -->
+            <div data-success class="hidden"></div>
             
             <!-- Content -->
             <div class="p-6" data-campaigns-list>
