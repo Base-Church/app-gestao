@@ -123,3 +123,33 @@ if (SessionService::isLoggedIn() &&
         require_once __DIR__ . '/navbar.php';
         ?>
     </div>
+<style>
+    
+body {
+  --sb-track-color: #232E33;
+  --sb-thumb-color: #7c3aed;
+  --sb-size: 13px;
+}
+
+body::-webkit-scrollbar {
+  width: var(--sb-size)
+}
+
+body::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+  border-radius: 1px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 1px;
+  
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  body {
+    scrollbar-color: var(--sb-thumb-color)
+                     var(--sb-track-color);
+  }
+}
+</style>
