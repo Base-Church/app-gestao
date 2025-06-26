@@ -29,7 +29,8 @@ try {
     $allowedTypes = [
         'jpg', 'jpeg', 'png', 'gif', // Imagens
         'mp4', 'mov', 'avi', 'mkv', 'webm', // Vídeos
-        'mp3', 'ogg', 'wav', 'm4a', 'aac' // Áudios
+        'mp3', 'ogg', 'wav', 'm4a', 'aac', // Áudios
+        'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx' // Documentos
     ];
 
     if (!in_array($fileType, $allowedTypes)) {

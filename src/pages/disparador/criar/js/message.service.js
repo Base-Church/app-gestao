@@ -340,12 +340,18 @@ class MessageService {
                     baseMessage.phoneNumber = message.phoneNumber;
                     break;
                 case 'button':
+                    baseMessage.type = message.type;
+                    baseMessage.text = message.text;
+                    baseMessage.footerText = message.footerText;
+                    baseMessage.choices = message.choices ? message.choices.split('\n').filter(choice => choice.trim()) : [];
+                    break;
                 case 'poll':
                     baseMessage.type = message.type;
                     baseMessage.text = message.text;
                     baseMessage.footerText = message.footerText;
                     baseMessage.choices = message.choices ? message.choices.split('\n').filter(choice => choice.trim()) : [];
-                    if (message.selectableCount) baseMessage.selectableCount = message.selectableCount;
+                    // Converter selectableCount para inteiro
+                    baseMessage.selectableCount = parseInt(message.selectableCount) || 1;
                     break;
             }
 
@@ -428,7 +434,7 @@ class MessageService {
                     ...basePayload,
                     type: 'poll',
                     text: message.text,
-                    selectableCount: message.selectableCount,
+                    selectableCount: parseInt(message.selectableCount) || 1,
                     choices: message.options.map(opt => opt.text)
                 };
 
@@ -455,22 +461,33 @@ class MessageService {
     }
 }
 
-// Funções globais
-function deleteMessage(messageId) {
-    if (window.messageService) {
-        window.messageService.deleteMessage(messageId);
-    }
-}
+// Exportar para uso global
+window.messageService = new MessageService();
 
+// Função global para atualizar conteúdo da mensagem
 function updateMessageContent(messageId, field, value) {
     if (window.messageService) {
         window.messageService.updateMessageContent(messageId, field, value);
+    } else {
+        console.error('MessageService não está disponível');
     }
 }
 
+// Função global para deletar mensagem
+function deleteMessage(messageId) {
+    if (window.messageService) {
+        window.messageService.deleteMessage(messageId);
+    } else {
+        console.error('MessageService não está disponível');
+    }
+}
+
+// Função global para upload de arquivo
 function handleFileUpload(messageId, input, type) {
     if (window.messageService) {
         window.messageService.handleFileUpload(messageId, input, type);
+    } else {
+        console.error('MessageService não está disponível');
     }
 }
 
@@ -584,10 +601,4 @@ function updatePollOption(messageId, optionIndex, value) {
     const message = window.messageService?.messages.find(m => m.id === messageId);
     if (!message.options) message.options = [];
     message.options[optionIndex] = value;
-}
-
-// Exportar para uso global
-window.MessageService = MessageService;
-
-// Criar instância global
-window.messageService = new MessageService(); 
+} 
