@@ -23,7 +23,7 @@ require_once __DIR__ . '/../../components/layout/header.php';
                 <!-- Botão Criar -->
                 <div class="flex-none">
                     <button type="button"
-                        onclick="document.getElementById('modal-criador-escala').classList.remove('hidden')"
+                        onclick="window.location.href='<?= $_ENV['URL_BASE'] ?>/escalas/criar'"
                         class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800 transition-colors">
                         <svg class="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
@@ -84,7 +84,6 @@ require_once __DIR__ . '/../../components/layout/header.php';
 
 <?php
 require_once __DIR__ . '/componentes/modal-share.php';
-require_once __DIR__ . '/componentes/modal-criar.php';
 ?>
 
 
