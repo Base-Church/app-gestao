@@ -94,14 +94,13 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     returnError('Resposta inválida da API', 500);
 }
 
-// Retorna a resposta formatada
+// Retorna a resposta formatada conforme esperado pelo frontend
 http_response_code($httpCode);
 echo json_encode([
-    'data' => $data['data'] ?? [],
-    'meta' => [
-        'page' => (int)($data['meta']['page'] ?? $page),
-        'total' => (int)($data['meta']['total'] ?? 0),
-        'limit' => (int)($data['meta']['limit'] ?? $limit),
-        'totalPages' => (int)($data['meta']['totalPages'] ?? 1)
+    'code' => 200,
+    'data' => [
+        'todos' => $data['data']['todos'] ?? [],
+        'sugestoes' => $data['data']['sugestoes'] ?? [],
+        'atividades' => $data['data']['atividades'] ?? []
     ]
 ]);

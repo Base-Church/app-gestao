@@ -74,13 +74,12 @@ async function carregarVoluntarios(atividadeContainer) {
         params.append('page', '1');
         params.append('limit', '100');
 
-        const apiUrl = `${window.APP_CONFIG.apiUrl}/api/voluntarios-sugestoes?${params}`;
+        const apiUrl = `${window.APP_CONFIG.baseUrl}/src/services/api/voluntarios/get-sugestoes.php?${params}`;
       
         const response = await fetch(apiUrl, {
             method: 'GET',
             headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${window.APP_CONFIG.apiKey}`
+                'Accept': 'application/json'
             }
         });
         

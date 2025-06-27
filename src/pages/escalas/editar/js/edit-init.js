@@ -60,47 +60,100 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
+        // Garantir que window.USER.ministerio_atual existe
+        if (!window.USER.ministerio_atual) {
+            // Tentar obter do select de ministério se existir
+            const ministerioSelect = document.querySelector('select[name="ministerio_id"]');
+            if (ministerioSelect) {
+                window.USER.ministerio_atual = ministerioSelect.value;
+            } else {
+                // Se não encontrar, usar o primeiro ministério disponível
+                window.USER.ministerio_atual = window.USER.ministerios?.[0]?.id || 1;
+            }
+        }
+
         const resultado = await EscalaEditService.buscarEscala(escalaId);
         
-        if (resultado.code === 200) {
-            const { escala, eventos } = resultado.data;
+        console.log('Resposta da API:', resultado);
+        
+        // Verificar diferentes formatos de resposta
+        let escala, eventos;
+        
+        if (resultado.code === 200 && resultado.data) {
+            // Formato esperado: { code: 200, data: { escala: {...}, eventos: [...] } }
+            escala = resultado.data.escala;
+            eventos = resultado.data.eventos;
+        } else if (resultado.data && resultado.data.escala) {
+            // Formato alternativo: { data: { escala: {...}, eventos: [...] } }
+            escala = resultado.data.escala;
+            eventos = resultado.data.eventos;
+        } else if (resultado.escala) {
+            // Formato direto: { escala: {...}, eventos: [...] }
+            escala = resultado.escala;
+            eventos = resultado.eventos;
+        } else if (resultado.data && Array.isArray(resultado.data)) {
+            // Formato de lista: { data: [{ escala: {...}, eventos: [...] }] }
+            const primeiroItem = resultado.data[0];
+            if (primeiroItem) {
+                escala = primeiroItem.escala || primeiroItem;
+                eventos = primeiroItem.eventos || [];
+            }
+        } else {
+            console.error('Estrutura de resposta não reconhecida:', resultado);
+            throw new Error('Formato de resposta não suportado');
+        }
 
-            // Definir MINISTERIO_ATUAL com o valor da escala
-            window.USER.ministerio_atual = escala.ministerio_id;
+        // Verificar se a escala existe e tem os dados necessários
+        if (!escala || !escala.ministerio_id) {
+            console.error('Dados da escala:', escala);
+            throw new Error('Dados da escala incompletos ou inválidos');
+        }
 
-            // Preencher dados do cabeçalho
+        // Definir MINISTERIO_ATUAL com o valor da escala
+        window.USER.ministerio_atual = escala.ministerio_id;
+
+        // Verificar se escala.nome existe
+        if (escala.nome) {
             document.querySelector('input[type="text"]').value = escala.nome;
-            
-            // Garantir que o select correto (Tipo) receba o valor correto
-            // Busca pelo label "Tipo" e seleciona o select correspondente
-            const tipoLabel = Array.from(document.querySelectorAll('label')).find(label => label.textContent.trim().toLowerCase() === 'tipo');
-            let tipoSelect = null;
-            if (tipoLabel) {
-                // O select está no mesmo grid, logo após o label
-                tipoSelect = tipoLabel.parentElement.querySelector('select');
-            }
-            // Fallback: se não encontrar pelo label, pega o primeiro select do formulário
-            if (!tipoSelect) {
-                tipoSelect = document.querySelector('form select');
-            }
-            // Verificar se o valor existe nas opções antes de atribuir
-            if (tipoSelect) {
-                const tipoOptions = Array.from(tipoSelect.options).map(opt => opt.value);
-                if (tipoOptions.includes(escala.tipo)) {
-                    tipoSelect.value = escala.tipo;
-                } else {
-                    // Opcional: Adicionar o valor como nova opção
-                    const newOption = new Option(escala.tipo, escala.tipo);
-                    tipoSelect.add(newOption);
-                    tipoSelect.value = escala.tipo;
-                }
+        }
+        
+        // Garantir que o select correto (Tipo) receba o valor correto
+        // Busca pelo label "Tipo" e seleciona o select correspondente
+        const tipoLabel = Array.from(document.querySelectorAll('label')).find(label => label.textContent.trim().toLowerCase() === 'tipo');
+        let tipoSelect = null;
+        if (tipoLabel) {
+            // O select está no mesmo grid, logo após o label
+            tipoSelect = tipoLabel.parentElement.querySelector('select');
+        }
+        // Fallback: se não encontrar pelo label, pega o primeiro select do formulário
+        if (!tipoSelect) {
+            tipoSelect = document.querySelector('form select');
+        }
+        // Verificar se o valor existe nas opções antes de atribuir
+        if (tipoSelect && escala.tipo) {
+            const tipoOptions = Array.from(tipoSelect.options).map(opt => opt.value);
+            if (tipoOptions.includes(escala.tipo)) {
+                tipoSelect.value = escala.tipo;
             } else {
-                console.warn('Campo select de tipo não encontrado.');
+                // Opcional: Adicionar o valor como nova opção
+                const newOption = new Option(escala.tipo, escala.tipo);
+                tipoSelect.add(newOption);
+                tipoSelect.value = escala.tipo;
             }
+        } else {
+            console.warn('Campo select de tipo não encontrado ou tipo não definido.');
+        }
 
+        // Verificar se as datas existem antes de tentar acessá-las
+        if (escala.data_inicio) {
             document.querySelectorAll('input[type="date"]')[0].value = escala.data_inicio.split('T')[0];
+        }
+        if (escala.data_fim) {
             document.querySelectorAll('input[type="date"]')[1].value = escala.data_fim.split('T')[0];
+        }
 
+        // Verificar se eventos existe e é um array
+        if (eventos && Array.isArray(eventos)) {
             // Para cada evento
             for (const evento of eventos) {
                 // Simular clique no botão de adicionar evento
@@ -254,41 +307,50 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 }
             }
+        } else {
+            console.warn('Nenhum evento encontrado ou estrutura de eventos inválida');
+        }
 
-            // Remover indicador de carregamento com animação
-            const loadingEdit = document.getElementById('loading-edit');
-            if (loadingEdit) {
-                loadingEdit.classList.add('animate-fade-out');
-                setTimeout(() => loadingEdit.remove(), 500);
-            }
+        // Remover indicador de carregamento com animação
+        const loadingEdit = document.getElementById('loading-edit');
+        if (loadingEdit) {
+            loadingEdit.classList.add('animate-fade-out');
+            setTimeout(() => loadingEdit.remove(), 500);
+        }
 
-            // Notificar conclusão do carregamento
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    toast: true,
-                    position: 'bottom-end',
-                    icon: 'success',
-                    title: 'Dados carregados com sucesso!',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            } else {
-                const loadingMessage = document.createElement('div');
-                loadingMessage.innerHTML = `
-                    <div id="success-message" class="fixed bottom-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg">
-                        Dados carregados com sucesso!
-                    </div>
-                `;
-                document.body.appendChild(loadingMessage);
-                setTimeout(() => {
-                    const message = document.getElementById('success-message');
-                    if (message) message.remove();
-                }, 3000);
-            }
+        // Notificar conclusão do carregamento
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                toast: true,
+                position: 'bottom-end',
+                icon: 'success',
+                title: 'Dados carregados com sucesso!',
+                showConfirmButton: false,
+                timer: 3000
+            });
+        } else {
+            const loadingMessage = document.createElement('div');
+            loadingMessage.innerHTML = `
+                <div id="success-message" class="fixed bottom-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg">
+                    Dados carregados com sucesso!
+                </div>
+            `;
+            document.body.appendChild(loadingMessage);
+            setTimeout(() => {
+                const message = document.getElementById('success-message');
+                if (message) message.remove();
+            }, 3000);
         }
     } catch (error) {
         console.error('Erro ao carregar escala:', error);
-        alert('Erro ao carregar dados da escala');
+        
+        // Remover indicador de carregamento em caso de erro
+        const loadingEdit = document.getElementById('loading-edit');
+        if (loadingEdit) {
+            loadingEdit.remove();
+        }
+        
+        alert(`Erro ao carregar dados da escala: ${error.message}`);
     }
 
     // Adicionar evento de submit do formulário

@@ -157,21 +157,23 @@ class EscalaService {
 
             // Enviar requisição
             this.logInfo('ENVIANDO_REQUISIÇÃO', {
-                url: `${window.APP_CONFIG.apiUrl}/api/escalas`,
+                url: `${window.APP_CONFIG.baseUrl}/src/services/api/escalas/create.php`,
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ****' // Ocultando token por segurança
+                    'Ministerio-Id': window.USER.ministerio_atual,
+                    'Organizacao-Id': window.USER.organizacao_id
                 }
             });
 
-            const response = await fetch(`${window.APP_CONFIG.apiUrl}/api/escalas`, {
+            const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/escalas/create.php`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${window.APP_CONFIG.apiKey}`
+                    'Ministerio-Id': window.USER.ministerio_atual,
+                    'Organizacao-Id': window.USER.organizacao_id
                 },
                 body: JSON.stringify(payload)
             });
@@ -196,8 +198,8 @@ class EscalaService {
             }
 
             if (!response.ok) {
-                this.logError('RESPOSTA_NAO_OK', new Error(resultado.message), resultado);
-                throw new Error(resultado.message || 'Erro ao criar escala');
+                this.logError('RESPOSTA_NAO_OK', new Error(resultado.error), resultado);
+                throw new Error(resultado.error || 'Erro ao criar escala');
             }
 
             if (resultado.code === 201) {

@@ -33,8 +33,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);
 
-if (!$data || !isset($data['cabecalho']) || !isset($data['itens']) || !isset($data['id'])) {
-    returnError('Dados inválidos ou incompletos');
+// Validação da estrutura correta da escala
+if (!$data || !isset($data['id']) || !isset($data['nome']) || !isset($data['tipo']) || 
+    !isset($data['data_inicio']) || !isset($data['data_fim']) || !isset($data['eventos'])) {
+    returnError('Dados inválidos ou incompletos. Campos obrigatórios: id, nome, tipo, data_inicio, data_fim, eventos');
 }
 
 // Recebe headers específicos
@@ -47,12 +49,16 @@ if (!$ministerioId) {
 
 $escalaId = $data['id'];
 
-// Adiciona IDs ao payload
-$data['ministerio_id'] = $ministerioId;
-$data['organizacao_id'] = $organizacaoId;
+// Adiciona IDs ao payload se não estiverem presentes
+if (!isset($data['ministerio_id'])) {
+    $data['ministerio_id'] = $ministerioId;
+}
+if (!isset($data['organizacao_id'])) {
+    $data['organizacao_id'] = $organizacaoId;
+}
 
 // Monta URL da API principal para update
-$apiUrl = $_ENV['API_BASE_URL'] . "/escalas/v2/{$escalaId}";
+$apiUrl = $_ENV['API_BASE_URL'] . "/escalas/{$escalaId}";
 $ch = curl_init();
 curl_setopt_array($ch, [
     CURLOPT_URL => $apiUrl,

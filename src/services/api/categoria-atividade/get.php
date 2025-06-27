@@ -34,6 +34,14 @@ $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $organizacao_id = SessionService::getOrganizacaoId();
 $ministerio_id = SessionService::getMinisterioAtual();
 
+// Log dos parâmetros
+error_log('Parâmetros da requisição de categorias:');
+error_log('organizacao_id: ' . $organizacao_id);
+error_log('ministerio_id: ' . $ministerio_id);
+error_log('page: ' . $page);
+error_log('limit: ' . $limit);
+error_log('search: ' . $search);
+
 // Validações
 if (!$ministerio_id) {
     returnError('Nenhum ministério selecionado');
@@ -62,6 +70,8 @@ $params = http_build_query([
 ]);
 $url = "{$apiUrl}?{$params}";
 
+error_log('URL completa da API de categorias: ' . $url);
+
 // Configuração do cURL
 $ch = curl_init();
 curl_setopt_array($ch, [
@@ -77,6 +87,9 @@ curl_setopt_array($ch, [
 $response = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
+error_log('Resposta da API de categorias - HTTP Code: ' . $httpCode);
+error_log('Resposta bruta da API de categorias: ' . $response);
+
 // Verifica erros do cURL
 if (curl_errno($ch)) {
     $error = curl_error($ch);
@@ -89,12 +102,16 @@ curl_close($ch);
 // Verifica se a resposta é um JSON válido
 $data = json_decode($response, true);
 if (json_last_error() !== JSON_ERROR_NONE) {
+    error_log('Erro ao decodificar JSON da API de categorias: ' . json_last_error_msg());
     returnError('Resposta inválida da API', 500);
 }
+
+error_log('Dados decodificados da API de categorias: ' . print_r($data, true));
 
 // Retorna a resposta
 http_response_code($httpCode);
 echo json_encode([
+    'code' => 200,
     'data' => $data['data'] ?? [],
     'meta' => [
         'page' => $page,

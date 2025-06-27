@@ -3,25 +3,35 @@ let categorias = [];
 
 async function carregarCategorias() {
     try {
+        console.log('Iniciando carregamento de categorias...');
         const params = new URLSearchParams();
         params.append('organizacao_id', window.USER.organizacao_id);
         params.append('ministerio_id', window.USER.ministerio_atual);
 
-        const response = await fetch(`${window.APP_CONFIG.apiUrl}/api/categoria-atividade?${params}`, {
+        console.log('Parâmetros para categorias:', {
+            organizacao_id: window.USER.organizacao_id,
+            ministerio_id: window.USER.ministerio_atual
+        });
+
+        const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/categoria-atividade/get.php?${params}`, {
             method: 'GET',
             headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${window.APP_CONFIG.apiKey}`
+                'Accept': 'application/json'
             }
         });
+
+        console.log('Resposta da API de categorias:', response.status, response.statusText);
 
         if (!response.ok) {
             throw new Error(`Erro HTTP! status: ${response.status}`);
         }
 
         const data = await response.json();
+        console.log('Dados das categorias:', data);
+        
         if (data.code === 200) {
             categorias = data.data;
+            console.log('Categorias carregadas:', categorias);
             return data.data;
         }
         return [];
@@ -34,10 +44,12 @@ async function carregarCategorias() {
 async function carregarAtividades(atividadeContainer) {
     if (loadingAtividades) return;
     
+    console.log('Iniciando carregamento de atividades...');
     const notification = window.notificationManager.show();
     
     try {
         // Carregar categorias primeiro
+        console.log('Carregando categorias...');
         await carregarCategorias();
 
         const params = new URLSearchParams();
@@ -46,25 +58,43 @@ async function carregarAtividades(atividadeContainer) {
         params.append('page', '1');
         params.append('limit', '100');
 
-        const apiUrl = `${window.APP_CONFIG.apiUrl}/api/atividades?${params}`;
+        console.log('Parâmetros para atividades:', {
+            organizacao_id: window.USER.organizacao_id,
+            ministerio_id: window.USER.ministerio_atual,
+            page: '1',
+            limit: '100'
+        });
+
+        const apiUrl = `${window.APP_CONFIG.baseUrl}/src/services/api/atividades/get.php?${params}`;
+        console.log('URL da API de atividades:', apiUrl);
+        
         const response = await fetch(apiUrl, {
             method: 'GET',
             headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${window.APP_CONFIG.apiKey}`
+                'Accept': 'application/json'
             }
         });
+        
+        console.log('Resposta da API de atividades:', response.status, response.statusText);
         
         if (!response.ok) {
             throw new Error(`Erro HTTP! status: ${response.status}`);
         }
         
         const data = await response.json();
+        console.log('Dados das atividades:', data);
         
         const loadingDiv = atividadeContainer.querySelector('#loading-atividades');
         const atividadesLista = atividadeContainer.querySelector('#atividades-lista');
         const floatingSelection = atividadeContainer.querySelector('.floating-selection');
         const searchInput = atividadeContainer.querySelector('#atividade-search-input');
+        
+        console.log('Elementos encontrados:', {
+            loadingDiv: !!loadingDiv,
+            atividadesLista: !!atividadesLista,
+            floatingSelection: !!floatingSelection,
+            searchInput: !!searchInput
+        });
         
         if (loadingDiv) {
             loadingDiv.classList.remove('hidden');
@@ -76,6 +106,7 @@ async function carregarAtividades(atividadeContainer) {
             notification.finish(true);
             if (atividadesLista) {
                 window.todasAtividades = data.data;
+                console.log('Atividades carregadas:', data.data);
                 
                 renderizarAtividadesPorCategoria(data.data, atividadesLista, atividadeContainer);
                 
@@ -95,6 +126,7 @@ async function carregarAtividades(atividadeContainer) {
             }
         }
     } catch (error) {
+        console.error('Erro ao carregar atividades:', error);
         notification.finish(false);
         const atividadesLista = atividadeContainer.querySelector('#atividades-lista');
         if (atividadesLista) {

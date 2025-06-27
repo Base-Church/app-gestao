@@ -11,13 +11,12 @@ async function carregarEventos(eventoContainer) {
         params.append('page', '1');
         params.append('limit', '100');
 
-        const apiUrl = `${window.APP_CONFIG.apiUrl}/api/eventos?${params}`;
+        const apiUrl = `${window.APP_CONFIG.baseUrl}/src/services/api/eventos/get.php?${params}`;
 
         const response = await fetch(apiUrl, {
             method: 'GET',
             headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${window.APP_CONFIG.apiKey}`
+                'Accept': 'application/json'
             }
         });
         

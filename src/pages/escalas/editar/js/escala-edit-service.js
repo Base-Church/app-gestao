@@ -2,19 +2,19 @@ class EscalaEditService {
     static async buscarEscala(id) {
         try {
             const organizacao_id = window.USER.organizacao_id;
-            const url = `${window.APP_CONFIG.apiBaseUrl}/api/escalas/${id}?organizacao_id=${organizacao_id}`;
+            const ministerio_id = window.USER.ministerio_atual;
+            const url = `${window.APP_CONFIG.baseUrl}/src/services/api/escalas/get-by-id.php?escala_id=${id}&organizacao_id=${organizacao_id}&ministerio_id=${ministerio_id}`;
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${window.APP_CONFIG.apiKey}`
+                    'Accept': 'application/json'
                 }
             });
 
             const data = await response.json();
             
             if (!response.ok) {
-                throw new Error(data.message || 'Erro ao buscar escala');
+                throw new Error(data.error || 'Erro ao buscar escala');
             }
 
             return data;
@@ -28,6 +28,7 @@ class EscalaEditService {
         try {
             // Formatar dados para o formato esperado pela API
             const payload = {
+                id: parseInt(id),
                 nome: dadosEscala.nome,
                 tipo: dadosEscala.tipo,
                 data_inicio: dadosEscala.data_inicio,
@@ -46,12 +47,13 @@ class EscalaEditService {
 
             console.log('Payload sendo enviado:', JSON.stringify(payload, null, 2));
 
-            const response = await fetch(`${window.APP_CONFIG.apiUrl}/api/escalas/${id}`, {
+            const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/escalas/put.php`, {
                 method: 'PUT',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${window.APP_CONFIG.apiKey}`
+                    'Ministerio-Id': window.USER.ministerio_atual,
+                    'Organizacao-Id': window.USER.organizacao_id
                 },
                 body: JSON.stringify(payload)
             });
@@ -74,7 +76,7 @@ class EscalaEditService {
                     headers: Object.fromEntries([...response.headers]),
                     body: jsonData
                 });
-                throw new Error(jsonData.message || `Erro ${response.status}: ${response.statusText}`);
+                throw new Error(jsonData.error || `Erro ${response.status}: ${response.statusText}`);
             }
 
             return jsonData;
