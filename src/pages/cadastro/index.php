@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../config/auth/auth.service.php';
 require_once __DIR__ . '/../../../config/auth/session.service.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
@@ -10,26 +9,11 @@ SessionService::start();
 
 // Redireciona se já estiver logado
 if (SessionService::isLoggedIn()) {
-    header('Location: ' . $_ENV['URL_BASE'] . '/src/pages/inicio');
+    header('Location: ' . $_ENV['URL_BASE'] . '/inicio');
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nome = $_POST['nome'] ?? '';
-    $whatsapp = $_POST['whatsapp'] ?? '';
-    $senha = $_POST['senha'] ?? '';
-
-    $authService = new AuthService();
-    $result = $authService->register($nome, $whatsapp, $senha);
-
-    if ($result['status'] === 200 || $result['status'] === 201) {
-        // Redireciona para o login após cadastro bem-sucedido
-        header('Location: ' . $_ENV['URL_BASE'] . '/src/pages/login?cadastro=success');
-        exit;
-    } else {
-        $error = $result['data']['message'] ?? 'Erro ao realizar cadastro';
-    }
-}
+// Removido o processamento PHP do POST
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -47,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   /* Firefox */
   * {
     scrollbar-width: none;
-    scrollbar-color: #8f54a0 #ffffff;
+    scrollbar-color: #8b5cf6 #ffffff;
   }
 
   /* Chrome, Edge, and Safari */
@@ -60,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
   *::-webkit-scrollbar-thumb {
-    background-color: #8f54a0;
+    background-color: #8b5cf6;
     border-radius: 10px;
     border: 3px solid #ffffff;
   }
