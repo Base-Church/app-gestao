@@ -1,32 +1,24 @@
 export async function deleteEscala(id) {
     try {
         const organizacao_id = window.USER.organizacao_id;
+        const baseUrl = window.APP_CONFIG.baseUrl;
+        const apiPath = `${baseUrl}/src/services/api/escalas`;
         
-        const response = await fetch(`${window.APP_CONFIG.apiUrl}/api/escalas/${id}?organizacao_id=${organizacao_id}`, {
+        const response = await fetch(`${apiPath}/delete.php/${id}?organizacao_id=${organizacao_id}`, {
             method: 'DELETE',
             headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${window.APP_CONFIG.apiKey}`
+                'Accept': 'application/json'
             }
         });
 
-        const text = await response.text();
-        let json;
-        try {
-            json = JSON.parse(text);
-        } catch (e) {
-            if (text.startsWith('<!DOCTYPE') || text.startsWith('<html')) {
-                throw new Error('A resposta da API não é JSON. Verifique a URL da API ou se o backend está online.');
-            }
-            throw new Error('Erro ao processar resposta da API: ' + e.message);
-        }
-
         if (!response.ok) {
-            throw new Error(json.message || 'Erro ao excluir escala');
+            const errorText = await response.text();
+            throw new Error(errorText || `Erro ${response.status} ao excluir escala`);
         }
 
-        return json;
+        return await response.json();
     } catch (error) {
-        throw error;
+        console.error('Erro na API:', error);
+        throw new Error(error.message || 'Erro ao excluir escala');
     }
 }
