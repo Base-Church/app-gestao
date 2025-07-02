@@ -42,64 +42,80 @@ export class UI {
         const voluntarios = parseInt(ministerio.quantidade_voluntarios) || 0;
 
         return `
-        <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow group hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700 flex flex-col items-center p-0 pt-8 pb-4 overflow-visible">
-            <div class="absolute -top-8 left-1/2 -translate-x-1/2 flex flex-col items-center">
-                <div class="w-20 h-20 rounded-full border-4 border-white dark:border-gray-800 shadow-lg overflow-hidden bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                    <img src="${safeFoto}" alt="${ministerio.nome}" class="w-full h-full object-cover"
-                         onerror="this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-all duration-200 group">
+            <div class="flex items-center p-6">
+                <!-- Foto e Cor -->
+                <div class="flex-shrink-0 relative">
+                    <div class="w-16 h-16 rounded-full border-3 border-white dark:border-gray-800 shadow-sm overflow-hidden bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                        <img src="${safeFoto}" alt="${ministerio.nome}" class="w-full h-full object-cover"
+                             onerror="this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
+                    </div>
+                    <div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-2 border-white dark:border-gray-800 shadow-sm" style="background:${cor};"></div>
                 </div>
-                <div class="mt-2 w-8 h-8 rounded-full border-2 border-white dark:border-gray-800 shadow" style="background:${cor};"></div>
-            </div>
-            <div class="flex-1 flex flex-col items-center mt-14 w-full px-4">
-                <h3 class="text-lg font-extrabold text-gray-900 dark:text-white text-center w-full truncate">${ministerio.nome}</h3>
-                <span class="mt-1 px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold">${ministerio.prefixo}</span>
-                <div class="flex items-center gap-2 mt-2 mb-2">
-                    ${ministerio.grupo_whatsapp ? `
-                        <span class="inline-flex items-center text-xs text-green-600 dark:text-green-400 font-medium">
-                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm-4.243-1.757a.75.75 0 00-1.06-1.06L9 10.939 7.303 9.243a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.06 0l4.244-4.243z" clip-rule="evenodd" />
-                            </svg>
-                            WhatsApp Vinculado
-                        </span>
-                    ` : `
-                        <span class="inline-flex items-center text-xs text-gray-500 dark:text-gray-400 font-medium">
-                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
-                            </svg>
-                            Não vinculado
-                        </span>
-                    `}
-                </div>
-                <div class="mb-3 text-sm text-gray-700 dark:text-gray-300 text-center min-h-[2.5em] line-clamp-2">${ministerio.descricao || '-'}</div>
-                <div class="flex items-center justify-center w-full mt-auto pt-2">
-                    <div class="flex flex-col items-center">
-                        <span class="text-xs text-gray-500 dark:text-gray-400">Voluntários</span>
-                        <span class="font-extrabold text-primary-600 dark:text-primary-400 text-2xl animate-vol-counter" data-count="${voluntarios}">0</span>
+
+                <!-- Informações do Ministério -->
+                <div class="flex-1 ml-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white">${ministerio.nome}</h3>
+                                <span class="px-3 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold">${ministerio.prefixo}</span>
+                            </div>
+                            
+                            <div class="flex items-center gap-4 mb-3">
+                                ${ministerio.grupo_whatsapp ? `
+                                    <span class="inline-flex items-center text-sm text-green-600 dark:text-green-400 font-medium">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm-4.243-1.757a.75.75 0 00-1.06-1.06L9 10.939 7.303 9.243a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.06 0l4.244-4.243z" clip-rule="evenodd" />
+                                        </svg>
+                                        WhatsApp Vinculado
+                                    </span>
+                                ` : `
+                                    <span class="inline-flex items-center text-sm text-gray-500 dark:text-gray-400 font-medium">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+                                        </svg>
+                                        Não vinculado
+                                    </span>
+                                `}
+                                
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">Voluntários:</span>
+                                    <span class="font-bold text-primary-600 dark:text-primary-400 text-lg animate-vol-counter" data-count="${voluntarios}">0</span>
+                                </div>
+                            </div>
+                            
+                            <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">${ministerio.descricao || 'Nenhuma descrição fornecida.'}</p>
+                        </div>
+
+                        <!-- Botões de Ação -->
+                        <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity ml-4">
+                            <button onclick="window.app.editMinisterio(${JSON.stringify(ministerio).replace(/"/g, '&quot;')})" 
+                                    class="bg-primary-600 hover:bg-primary-700 text-white rounded-lg px-3 py-2 shadow-sm transition flex items-center gap-2" title="Editar">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                                Editar
+                            </button>
+                            <button onclick="window.app.deleteMinisterio(${ministerio.id}, '${ministerio.nome}')" 
+                                    class="bg-red-600 hover:bg-red-700 text-white rounded-lg px-3 py-2 shadow-sm transition flex items-center gap-2" title="Excluir">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                                Excluir
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onclick="window.app.editMinisterio(${JSON.stringify(ministerio).replace(/"/g, '&quot;')})" 
-                        class="bg-primary-600 hover:bg-primary-700 text-white rounded-full p-2 shadow transition" title="Editar">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                    </svg>
-                </button>
-                <button onclick="window.app.deleteMinisterio(${ministerio.id}, '${ministerio.nome}')" 
-                        class="bg-red-600 hover:bg-red-700 text-white rounded-full p-2 shadow transition" title="Excluir">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
-                </button>
             </div>
         </div>
         `;
     }
 
     renderMinisteriosGrid(ministerios) {
-        // Grid de 4 colunas em telas grandes
+        // Lista em uma única coluna
         return `
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 p-6">
+            <div class="space-y-4 p-6">
                 ${ministerios.map(m => this.renderMinisterioCard(m)).join('')}
             </div>
         `;

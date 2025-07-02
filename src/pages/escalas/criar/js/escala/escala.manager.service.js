@@ -65,26 +65,20 @@ class EscalaManagerService {
         const itens = (window.itemService.getItens() || []).map(item => {
             // Buscar a data do evento usando o seletor correto
             const eventoId = item.evento?.id;
-            const eventoDataInput = document.querySelector(`.evento-datepicker[id^="evento-data-input-${eventoId}"]`);
+            
+            // Busca o input de data específico para este evento
+            // Usa um seletor mais específico que inclui o itemId para garantir unicidade
+            const eventoDataInput = document.querySelector(`#${item.id} .evento-datepicker`);
             const eventoData = eventoDataInput?.value || null;
 
-            // Corrigir a busca dos eventos combinados
+            // Busca eventos combinados
             let eventosCombinados = [];
-            if (eventoDataInput) {
-                // Primeiro tenta encontrar pelo seletorId do input
-                const seletorId = eventoDataInput.id.split('-').pop();
-                console.log('Debug - Buscando miniCards pelo seletorId:', seletorId);
-                
-                const miniCards = document.querySelector(`.mini-cards-eventos-combinados[data-seletor-id="seletor-eventos-${seletorId}"]`);
-                console.log('Debug - MiniCards encontrado (nova busca):', miniCards?.dataset);
-
-                if (miniCards?.dataset.eventosCombinados) {
-                    eventosCombinados = miniCards.dataset.eventosCombinados
-                        .split(',')
-                        .map(id => parseInt(id))
-                        .filter(id => !isNaN(id));
-                    console.log('Debug - Eventos combinados encontrados:', eventosCombinados);
-                }
+            const miniCards = document.querySelector(`#${item.id} .mini-cards-eventos-combinados`);
+            if (miniCards?.dataset.eventosCombinados) {
+                eventosCombinados = miniCards.dataset.eventosCombinados
+                    .split(',')
+                    .map(id => parseInt(id))
+                    .filter(id => !isNaN(id));
             }
 
             return {

@@ -63,19 +63,15 @@ if (SessionService::isLoggedIn() &&
     window.APP_CONFIG = {
         baseUrl: '<?php echo $_ENV['URL_BASE']; ?>',
         apiBaseUrl: '<?php echo $_ENV['API_BASE_URL']; ?>',
-        apiKey: '<?php echo $_ENV['API_KEY']; ?>',
         apiWhatsapp: '<?php echo $_ENV['API_WHATSAPP']; ?>',
-        apiTokenWhatsapp: '<?php echo $_ENV['API_TOKEN_WHATSAPP']; ?>',
-        webhookUrl: '<?php echo $_ENV['WEBHOOK_URL'] ?? ''; ?>'
+        apiTokenWhatsapp: '<?php echo $_ENV['API_TOKEN_WHATSAPP']; ?>'
     };
     // Retrocompatibilidade para scripts antigos
     window.ENV = {
         URL_BASE: window.APP_CONFIG.baseUrl,
         API_BASE_URL: window.APP_CONFIG.apiBaseUrl,
-        API_KEY: window.APP_CONFIG.apiKey,
         API_WHATSAPP: window.APP_CONFIG.apiWhatsapp,
-        API_TOKEN_WHATSAPP: window.APP_CONFIG.apiTokenWhatsapp,
-        WEBHOOK_URL: window.APP_CONFIG.webhookUrl
+        API_TOKEN_WHATSAPP: window.APP_CONFIG.apiTokenWhatsapp
     };
 
     window.USER = {

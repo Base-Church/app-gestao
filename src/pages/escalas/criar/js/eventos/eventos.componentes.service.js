@@ -79,7 +79,7 @@ class EventosComponentesService {
                 class="evento-datepicker mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm font-medium"
                 autocomplete="off"
                 data-dia-semana="${diaSemanaNum}"
-                placeholder="dd/mm/aaaa"
+                placeholder="dd/mm/aa"
                 >
             </div>
             <span class="text-sm text-white/60 dark:text-gray-300 ml-2 capitalize font-medium flex-shrink-0">(${evento.dia_semana})</span>
