@@ -27,9 +27,12 @@ if (!isset($data['nome']) || !isset($data['whatsapp']) || !isset($data['senha'])
 
 // Valida formato do whatsapp
 $whatsapp = preg_replace('/[^0-9]/', '', $data['whatsapp']);
-if (strlen($whatsapp) < 10 || strlen($whatsapp) > 13) {
+if (strlen($whatsapp) < 10 || strlen($whatsapp) > 11) {
     returnError('Formato de WhatsApp inválido');
 }
+
+// Adiciona código do país 55 (Brasil)
+$whatsapp = '55' . $whatsapp;
 
 // Prepara o payload simplificado
 $payload = [
