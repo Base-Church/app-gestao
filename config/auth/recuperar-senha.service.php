@@ -15,12 +15,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Step 1: Solicitar código
     if ($step === 'solicitar') {
-        $url = $apiBaseUrl . '/api/usuarios/recuperar-senha/solicitar';
+        $url = $apiBaseUrl . '/usuarios/recuperar-senha/solicitar';
         $data = ['whatsapp' => $whatsapp];
     }
     // Step 2: Atualizar senha
     else if ($step === 'atualizar') {
-        $url = $apiBaseUrl . '/api/usuarios/recuperar-senha/verificar';
+        $url = $apiBaseUrl . '/usuarios/recuperar-senha/verificar';
         $data = [
             'whatsapp' => $whatsapp,
             'codigo' => $input['codigo'] ?? '',

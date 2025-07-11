@@ -11,6 +11,7 @@ return [
     '/escalas/editar' => '/src/pages/escalas/editar/index.php',
 
     '/musicas' => '/src/pages/musicas/index.php',
+    '/musica' => '/src/pages/musicas/detalhes/index.php',
 
     // Modelos
     '/modelos' => '/src/pages/modelos/index.php',
