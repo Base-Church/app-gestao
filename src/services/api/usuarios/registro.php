@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/../../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
 $dotenv->load();
@@ -13,17 +12,6 @@ function returnError($message, $code = 400) {
     exit;
 }
 
-// Verifica autenticação
-SessionService::start();
-if (!SessionService::isLoggedIn()) {
-    returnError('Não autorizado', 401);
-}
-
-// Verifica se o token existe
-if (!SessionService::hasToken()) {
-    returnError('Token de autenticação não encontrado', 401);
-}
-
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     returnError('Método não permitido', 405);
 }
@@ -32,10 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);
 
-// Validações
-if (!isset($data['nome']) || !isset($data['whatsapp']) || !isset($data['senha']) || 
-    !isset($data['organizacao_id']) || !isset($data['nivel']) || 
-    !isset($data['ministerios']) || !isset($data['permissoes'])) {
+// Validações simplificadas
+if (!isset($data['nome']) || !isset($data['whatsapp']) || !isset($data['senha']) || !isset($data['organizacao_id'])) {
     returnError('Campos obrigatórios não fornecidos');
 }
 
@@ -45,20 +31,12 @@ if (strlen($whatsapp) < 10 || strlen($whatsapp) > 13) {
     returnError('Formato de WhatsApp inválido');
 }
 
-// Valida arrays de ministerios e permissões
-if (!is_array($data['ministerios']) || !is_array($data['permissoes'])) {
-    returnError('Formato inválido para ministérios ou permissões');
-}
-
-// Prepara o payload
+// Prepara o payload simplificado
 $payload = [
     'nome' => trim($data['nome']),
     'whatsapp' => $whatsapp,
     'senha' => $data['senha'],
-    'nivel' => strtolower($data['nivel']),
-    'organizacao_id' => (int)$data['organizacao_id'],
-    'ministerios' => array_map('strval', $data['ministerios']),
-    'permissoes' => array_map('strval', $data['permissoes'])
+    'organizacao_id' => (int)$data['organizacao_id']
 ];
 
 // Faz a requisição para a API
@@ -72,8 +50,7 @@ curl_setopt_array($ch, [
     CURLOPT_POSTFIELDS => json_encode($payload),
     CURLOPT_HTTPHEADER => [
         'Content-Type: application/json',
-        'Accept: application/json',
-        'Authorization: Bearer ' . SessionService::getToken()
+        'Accept: application/json'
     ]
 ]);
 

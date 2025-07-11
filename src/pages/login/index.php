@@ -13,7 +13,6 @@ if (SessionService::isLoggedIn()) {
     exit;
 }
 
-// Removido o processamento PHP do POST
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
