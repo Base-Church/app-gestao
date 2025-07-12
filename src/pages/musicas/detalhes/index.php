@@ -115,28 +115,77 @@ $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white">Letra da Música</h3>
                         </div>
                         <div class="p-6">
-                            <!-- Botões de inserção rápida -->
-                            <div class="mb-4 flex gap-2">
-                                <button type="button" class="insert-tag-btn px-3 py-1 text-xs font-medium text-white bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500" data-tag="[BACK]">
-                                    BACK
-                                </button>
-                                <button type="button" class="insert-tag-btn px-3 py-1 text-xs font-medium text-white bg-green-600 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500" data-tag="[MINISTRO]">
-                                    MINISTRO
-                                </button>
-                                <button type="button" class="insert-tag-btn px-3 py-1 text-xs font-medium text-white bg-purple-600 rounded hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500" data-tag="[VOCAL]">
-                                    VOCAL
-                                </button>
+                            <!-- Instruções e Botões de formatação -->
+                            <div class="mb-4">
+                                <div class="mb-3">
+                                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Como usar:</p>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400">1. Clique em um botão de formatação</p>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400">2. Selecione o texto que deseja formatar</p>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400">3. Use "Limpar" para remover formatação</p>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <button type="button" 
+                                            class="format-btn px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200" 
+                                            data-color="backing">
+                                        <span class="flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            Backing
+                                        </span>
+                                    </button>
+                                    <button type="button" 
+                                            class="format-btn px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200" 
+                                            data-color="ministro">
+                                        <span class="flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            Ministro
+                                        </span>
+                                    </button>
+                                    <button type="button" 
+                                            class="format-btn px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200" 
+                                            data-color="todos">
+                                        <span class="flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            Todos
+                                        </span>
+                                    </button>
+                                    <button type="button" 
+                                            class="format-btn px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200" 
+                                            data-color="none">
+                                        <span class="flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                            Limpar
+                                        </span>
+                                    </button>
+                                </div>
                             </div>
-                            <textarea id="letra-editor" name="letra" rows="20" 
-                                      class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm leading-relaxed"
-                                      placeholder="Cole aqui a letra da música...&#10;&#10;Exemplo:&#10;Grande é o Senhor&#10;E digno de louvor&#10;&#10;Com todo o meu ser&#10;Vou te adorar..."></textarea>
+
+                            <!-- Editor de letra -->
+                            <div id="letra-editor-container" class="relative">
+                                <div id="letra-editor" contenteditable="true" 
+                                     class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm leading-relaxed min-h-[500px] max-h-[600px] overflow-y-auto"
+                                     placeholder="Cole aqui a letra da música...
+
+Exemplo:
+Grande é o Senhor
+E digno de louvor
+
+Com todo o meu ser
+Vou te adorar..."></div>
+                                <textarea id="letra-hidden" name="letra" class="hidden"></textarea>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-
     </div>
 </main>
 
@@ -144,8 +193,69 @@ $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 <style>
     #letra-editor {
-        line-height: 1.6;
+        line-height: 1.8;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+    
+    #letra-editor:empty::before {
+        content: attr(placeholder);
+        color: #9ca3af;
+        white-space: pre-line;
+    }
+    
+    /* Estilos para tags formatadas */
+    .tag-backing {
+        background-color: #3b82f6;
+        color: white;
+        border-radius: 6px;
+        padding: 2px 8px;
+        display: inline-block;
+        margin: 0 2px;
+        font-weight: 500;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .tag-ministro {
+        background-color: #22c55e;
+        color: white;
+        border-radius: 6px;
+        padding: 2px 8px;
+        display: inline-block;
+        margin: 0 2px;
+        font-weight: 500;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    .tag-todos {
+        background-color: #9333ea;
+        color: white;
+        border-radius: 6px;
+        padding: 2px 8px;
+        display: inline-block;
+        margin: 0 2px;
+        font-weight: 500;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Efeito hover para botões ativos */
+    .format-btn.active {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Melhor contraste no modo escuro */
+    .dark .tag-backing {
+        background-color: #2563eb;
+    }
+    
+    .dark .tag-ministro {
+        background-color: #16a34a;
+    }
+    
+    .dark .tag-todos {
+        background-color: #7c3aed;
     }
 </style>
 
