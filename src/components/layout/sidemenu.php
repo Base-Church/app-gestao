@@ -250,7 +250,7 @@ $voluntariosActive = strpos($currentPath, '/voluntarios') !== false || strpos($c
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                 </svg>
             </button>
-        </div>
+        </div>  
     </div>
     
     <a href="<?php echo $_ENV['URL_BASE']; ?>/config/auth/logout.service.php" class="block px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700">
@@ -324,19 +324,7 @@ document.getElementById('menuToggle').addEventListener('click', function() {
     sidebar.classList.toggle('-translate-x-full');
 });
 
-// Função para alternar o tema
-function toggleTheme() {
-    const html = document.documentElement;
-    const isDark = html.classList.contains('dark');
-    
-    if (isDark) {
-        html.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-    } else {
-        html.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-    }
-}
+
 </script>
 
 <!-- Script do seletor de ministérios -->
