@@ -82,14 +82,7 @@ function renderEventos(eventos) {
         return eventosPorData[a].dataObj - eventosPorData[b].dataObj;
     });
     
-    let html = `<section>
-        <div class="mb-6">
-            <a href="/geral" class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors duration-200">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                Voltar para Geral
-            </a>
-        </div>
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-8">Próximos Eventos</h2>
+    let html = `
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">`;
     
     datasOrdenadas.forEach(dataStr => {
@@ -97,7 +90,7 @@ function renderEventos(eventos) {
         const eventosNaData = dadosData.eventos;
         const totalVoluntarios = eventosNaData.reduce((total, evento) => total + evento.total_voluntarios, 0);
         const eventosNomes = eventosNaData.map(e => e.evento_nome).join(', ');
-        const dataIso = eventosNaData[0].data_evento;
+        const dataIso = new Date(eventosNaData[0].data_evento).toISOString().split('T')[0];
         
         // Coletar todos os ministérios únicos da data
         const ministeriosUnicos = new Map();
@@ -238,6 +231,11 @@ async function renderRelatorio() {
         loading.classList.add('hidden');
         erro.classList.add('hidden');
         relatorioDiv.classList.remove('hidden');
+        
+        // Verificar parâmetros da URL após carregar os dados
+        if (typeof verificarParametroURL === 'function') {
+            verificarParametroURL();
+        }
     } catch (e) {
         loading.classList.add('hidden');
         erro.classList.remove('hidden');

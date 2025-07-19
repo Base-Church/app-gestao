@@ -1,6 +1,6 @@
 
 <?php
-$pageTitle = "Relatório Geral";
+$pageTitle = "Relatório Escalas";
 require_once __DIR__ . '/../../../components/layout/header.php';
 ?>
 
@@ -8,11 +8,22 @@ require_once __DIR__ . '/../../../components/layout/header.php';
     <div class="max-w-7xl mx-auto">
         <!-- Cabeçalho -->
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Relatório Geral</h1>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Relatório Escalas</h1>
             <p class="mt-2 text-sm text-gray-700 dark:text-gray-400">Dashboard com métricas e indicadores dos ministérios</p>
         </div>
 
         <!-- Botões de Ação Rápida -->
+        <section>
+            <div class="mb-6">
+                <a href="<?= $_ENV['URL_BASE'] ?>/geral" class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors duration-200">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Voltar para Geral
+                </a>
+            </div>
+            
+        </section>
         
 
         <!-- Loading e Erro -->
@@ -38,7 +49,7 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 
 <!-- Modal de Escalas -->
 <div id="modal-escalas" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center p-4">
-    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-6xl max-h-[90vh] flex flex-col">
+    <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-6xl h-[90vh] flex flex-col">
         <!-- Header do Modal -->
         <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
             <h2 id="modal-titulo" class="text-xl font-semibold text-gray-900 dark:text-white">Escalas do Dia</h2>

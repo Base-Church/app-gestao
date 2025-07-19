@@ -3,574 +3,293 @@ let eventosOriginais = null;
 let eventosBaseData = null;
 let ministeriosBaseData = null;
 let eventoSelecionado = null;
+let ministerioSelecionado = null;
 
+// Utilidade
+function getEl(id) { return document.getElementById(id); }
+
+// Exibir modal
 function abrirModalEscalas(dataIso, dataFormatada) {
-    const modal = document.getElementById('modal-escalas');
+    const modal = getEl('modal-escalas');
     if (!modal) return;
-    
-    // Atualizar URL com parâmetro da data
     const url = new URL(window.location);
-    url.searchParams.set('data', dataIso);
-    window.history.pushState({ data: dataIso }, '', url);
-    
-    // Mostrar modal
+    // Garantir que apenas a data seja usada (YYYY-MM-DD)
+    const dataLimpa = new Date(dataIso).toISOString().split('T')[0];
+    url.searchParams.set('data', dataLimpa);
+    window.history.pushState({ data: dataLimpa }, '', url);
     modal.classList.remove('hidden');
     modal.classList.add('flex');
     document.body.style.overflow = 'hidden';
-    
-    // Carregar dados do modal usando os dados já carregados
-    carregarDadosModalLocal(dataIso, dataFormatada);
+    carregarDadosModalLocal(dataLimpa, dataFormatada);
 }
 
 function carregarDadosModalLocal(dataIso, dataFormatada) {
-    const loading = document.getElementById('modal-loading');
-    const content = document.getElementById('modal-content');
-    const titulo = document.getElementById('modal-titulo');
-    
+    const loading = getEl('modal-loading');
+    const content = getEl('modal-content');
+    const titulo = getEl('modal-titulo');
     if (loading) loading.classList.remove('hidden');
     if (content) content.classList.add('hidden');
-    
     try {
-        if (!eventosOriginais || !Array.isArray(eventosOriginais)) {
-            throw new Error('Dados dos eventos não disponíveis');
-        }
-        
-        // Filtrar eventos pela data
+        if (!Array.isArray(eventosOriginais)) throw new Error('Dados dos eventos não disponíveis');
         const dataEventoFormatada = new Date(dataIso).toISOString().split('T')[0];
-        const eventosDaData = eventosOriginais.filter(evento => {
-            const dataEvento = new Date(evento.data_evento).toISOString().split('T')[0];
-            return dataEvento === dataEventoFormatada;
-        });
-        
+        const eventosDaData = eventosOriginais.filter(e =>
+            new Date(e.data_evento).toISOString().split('T')[0] === dataEventoFormatada
+        );
         modalEscalasData = eventosDaData;
-        
-        // Ordenar eventos por proximidade com a hora atual
         const eventosOrdenados = ordenarEventosPorProximidade(eventosDaData);
-        
+        eventoSelecionado = eventosOrdenados[0] || null;
+        ministerioSelecionado = null;
         if (titulo) titulo.textContent = `Escalas de ${dataFormatada}`;
-        
-        // Selecionar o primeiro evento por padrão
-        eventoSelecionado = eventosOrdenados.length > 0 ? eventosOrdenados[0] : null;
-        
         renderizarModalContent(eventosOrdenados);
-        
         if (loading) loading.classList.add('hidden');
         if (content) content.classList.remove('hidden');
-        
     } catch (error) {
         console.error('Erro ao carregar modal:', error);
         if (loading) loading.classList.add('hidden');
         if (content) {
             content.classList.remove('hidden');
-            content.innerHTML = `
-                <div class="text-center py-12">
-                    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
-                        <span class="text-red-600 dark:text-red-400 font-semibold">Erro ao carregar dados: ${error.message}</span>
-                    </div>
-                </div>
-            `;
+            content.innerHTML = `<div class="text-center py-12"><div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
+                <span class="text-red-600 dark:text-red-400 font-semibold">Erro ao carregar dados: ${error.message}</span></div></div>`;
         }
     }
 }
 
 function ordenarEventosPorProximidade(eventos) {
     const agora = new Date();
-    const diaAtual = agora.getDay(); // 0 = domingo, 1 = segunda, etc.
-    const horaAtual = agora.getHours() * 60 + agora.getMinutes(); // minutos desde meia-noite
-    
-    const diasSemana = {
-        'domingo': 0, 'segunda': 1, 'terca': 2, 'quarta': 3,
-        'quinta': 4, 'sexta': 5, 'sabado': 6
-    };
-    
+    const diaAtual = agora.getDay();
+    const horaAtual = agora.getHours() * 60 + agora.getMinutes();
+    const diasSemana = { 'domingo': 0, 'segunda': 1, 'terca': 2, 'quarta': 3, 'quinta': 4, 'sexta': 5, 'sabado': 6 };
     return eventos.map(evento => {
         const eventoBase = eventosBaseData?.find(e => e.nome === evento.evento_nome);
         if (!eventoBase) return { ...evento, distancia: Infinity };
-        
         const diaSemanaEvento = diasSemana[eventoBase.dia_semana] || 0;
         const [hora, minuto] = eventoBase.hora.split(':').map(Number);
         const horaEvento = hora * 60 + minuto;
-        
-        // Calcular distância em dias e minutos
         let distanciaDias = (diaSemanaEvento - diaAtual + 7) % 7;
-        if (distanciaDias === 0 && horaEvento < horaAtual) {
-            distanciaDias = 7; // próxima semana se já passou a hora hoje
-        }
-        
-        const distancia = distanciaDias * 1440 + (horaEvento - horaAtual); // em minutos
-        
+        if (distanciaDias === 0 && horaEvento < horaAtual) distanciaDias = 7;
+        const distancia = distanciaDias * 1440 + (horaEvento - horaAtual);
         return { ...evento, distancia, eventoBase };
     }).sort((a, b) => a.distancia - b.distancia);
 }
 
-// Novas funções para o comportamento compacto
-function toggleMinisterios() {
-    const listaMinisterios = document.getElementById('lista-ministerios');
-    const seta = document.getElementById('seta-ministerios');
-    
-    if (!listaMinisterios || !seta) return;
-    
-    if (listaMinisterios.classList.contains('hidden')) {
-        listaMinisterios.classList.remove('hidden');
-        seta.style.transform = 'rotate(180deg)';
-    } else {
-        listaMinisterios.classList.add('hidden');
-        seta.style.transform = 'rotate(0deg)';
-    }
-}
-
-function gerarListaMinisterios() {
-    const listaContainer = document.querySelector('#lista-ministerios .space-y-2');
-    if (!listaContainer || !eventoSelecionado) return;
-    
-    const ministerios = eventoSelecionado.ministerios || [];
-    
-    if (ministerios.length === 0) {
-        listaContainer.innerHTML = '<div class="text-gray-500 dark:text-gray-400 text-sm text-center py-4">Nenhum ministério encontrado</div>';
+function renderizarModalContent(eventos) {
+    const content = getEl('modal-content');
+    if (!content) return;
+    if (!Array.isArray(eventos) || eventos.length === 0) {
+        content.innerHTML = `<div class="text-center py-6 text-gray-500 dark:text-gray-400">Nenhum evento encontrado para esta data.</div>`;
+        content.classList.remove('hidden');
         return;
     }
-    
-    let html = '';
-    
-    ministerios.forEach(ministerio => {
-        const ministerioBase = ministeriosBaseData?.find(m => m.nome === ministerio.ministerio_nome);
-        
-        html += `
-            <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                 onclick="selecionarMinisterio('${ministerio.ministerio_nome}')">
-                
-                <!-- Foto do Ministério -->
-                <div class="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-gray-200 dark:bg-gray-700 mr-3">
-                    ${ministerioBase?.foto ? 
-                        `<img src="${window.APP_CONFIG.baseUrl}/${ministerioBase.foto}" alt="${ministerio.ministerio_nome}" class="w-full h-full object-cover">` :
-                        `<div class="w-full h-full flex items-center justify-center text-white font-bold text-xs" style="background-color: ${ministerioBase?.cor || '#6B7280'}">
-                            ${ministerio.ministerio_nome.charAt(0).toUpperCase()}
-                        </div>`
-                    }
+    let html = `
+        <div class="space-y-4">
+            ${eventoSelecionado ? renderizarCardEventoCompacto(eventos) : ''}
+            <div id="ministerio-card-container"></div>
+        </div>
+    `;
+    content.innerHTML = html;
+    if (!eventoSelecionado && eventos.length > 0) eventoSelecionado = eventos[0];
+    renderizarMinisterioCard();
+}
+
+// Card compacto do evento selecionado
+function renderizarCardEventoCompacto(eventos) {
+    const eventoBase = eventoSelecionado.eventoBase || eventosBaseData?.find(e => e.nome === eventoSelecionado.evento_nome);
+    return `
+        <div class="relative">
+            <div class="flex items-center p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
+                onclick="abrirListaEventos()">
+                <div class="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700 mr-3">
+                    ${eventoBase?.foto ? `<img src="${window.APP_CONFIG.baseUrl}/assets/img/eventos/${eventoBase.foto}" alt="${eventoSelecionado.evento_nome}" class="w-full h-full object-cover">` :
+                        `<div class="w-full h-full flex items-center justify-center text-gray-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2z"></path></svg>
+                        </div>`}
                 </div>
-                
-                <!-- Nome do Ministério -->
                 <div class="flex-1 min-w-0">
-                    <span class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate block">
-                        ${ministerio.ministerio_nome}
-                    </span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400">
-                        ${ministerio.total_voluntarios} voluntário(s)
-                    </span>
+                    <span class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate block">${eventoSelecionado.evento_nome}</span>
+                    <div class="flex items-center space-x-2 mt-1 text-xs text-gray-600 dark:text-gray-400">
+                        ${eventoBase ? `<span>${eventoBase.hora.substring(0, 5)}</span>` : ''}
+                        <span>• ${eventoSelecionado.total_voluntarios} vol.</span>
+                    </div>
                 </div>
-                
-                <!-- Seta -->
                 <div class="flex-shrink-0 ml-2">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                 </div>
             </div>
-        `;
-    });
-    
-    listaContainer.innerHTML = html;
+            <div id="lista-eventos-flutuante" class="absolute left-0 right-0 mt-2 z-10 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg hidden max-h-64 overflow-y-auto">
+                ${eventos.map(evento => renderizarEventoListaFlutuante(evento)).join('')}
+            </div>
+        </div>
+    `;
 }
 
+// Lista flutuante de eventos
+function abrirListaEventos() {
+    document.getElementById('lista-eventos-flutuante').classList.toggle('hidden');
+}
 function selecionarEvento(eventoId) {
     eventoSelecionado = modalEscalasData.find(e => e.evento_id == eventoId);
-    
-    // Limpar seleção de ministério
-    const ministerioContainer = document.getElementById('ministerio-selecionado-container');
-    if (ministerioContainer) ministerioContainer.innerHTML = '';
-    
-    // Atualizar visual dos cards de eventos
+    ministerioSelecionado = null;
+    document.getElementById('lista-eventos-flutuante').classList.add('hidden');
     renderizarModalContent(modalEscalasData);
-    
-    // Mostrar cards de ministérios
-    atualizarCardsMinisterios();
+}
+function renderizarEventoListaFlutuante(evento) {
+    const eventoBase = evento.eventoBase || eventosBaseData?.find(e => e.nome === evento.evento_nome);
+    const isSelected = eventoSelecionado && eventoSelecionado.evento_id === evento.evento_id;
+    return `<div class="flex items-center p-3 ${isSelected ? 'bg-primary-50 dark:bg-primary-900/20' : 'bg-gray-50 dark:bg-gray-900'} rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        onclick="selecionarEvento(${evento.evento_id})">
+        <div class="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700 mr-2">
+            ${eventoBase?.foto ? `<img src="${window.APP_CONFIG.baseUrl}/assets/img/eventos/${eventoBase.foto}" alt="${evento.evento_nome}" class="w-full h-full object-cover">` :
+                `<div class="w-full h-full flex items-center justify-center text-gray-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2z"></path></svg></div>`}
+        </div>
+        <div class="flex-1 min-w-0">
+            <span class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate block">${evento.evento_nome}</span>
+            <span class="text-xs text-gray-500 dark:text-gray-400">${eventoBase ? eventoBase.hora.substring(0, 5) : ''}</span>
+        </div>
+        ${isSelected ? `<div class="flex-shrink-0 ml-2"><svg class="w-3 h-3 text-primary-500" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg></div>` : ''}
+    </div>`;
 }
 
-function selecionarMinisterio(ministerioNome) {
-    renderizarMinisterioSelecionado(ministerioNome);
+// Card compacto do ministério escolhido
+function renderizarMinisterioCard() {
+    const container = getEl('ministerio-card-container');
+    if (!container || !eventoSelecionado) return;
+    const ministerios = eventoSelecionado.ministerios || [];
+    // Não mostra nada se não há ministérios
+    if (ministerios.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+    container.innerHTML = `
+        <div class="relative mt-2">
+            <div class="flex items-center p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
+                onclick="abrirListaMinisterios()">
+                <div class="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-gray-200 dark:bg-gray-700 mr-3">
+                    ${ministerioSelecionado ?
+                        (() => {
+                            const ministerioBase = ministeriosBaseData?.find(m => m.nome === ministerioSelecionado);
+                            return ministerioBase?.foto
+                                ? `<img src="${window.APP_CONFIG.baseUrl}/${ministerioBase.foto}" alt="${ministerioSelecionado}" class="w-full h-full object-cover">`
+                                : `<div class="w-full h-full flex items-center justify-center text-white font-bold text-xs" style="background-color: ${ministerioBase?.cor || '#6B7280'}">${ministerioSelecionado.charAt(0).toUpperCase()}</div>`;
+                        })()
+                        : `<div class="w-full h-full flex items-center justify-center text-gray-400"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></div>`
+                    }
+                </div>
+                <div class="flex-1 min-w-0">
+                    <span class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate block">
+                        ${ministerioSelecionado ? ministerioSelecionado : 'Selecione um ministério'}
+                    </span>
+                </div>
+                <div class="flex-shrink-0 ml-2">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+            </div>
+            <div id="lista-ministerios-flutuante" class="absolute left-0 right-0 mt-2 z-10 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg hidden max-h-64 overflow-y-auto">
+                ${ministerios.map(m => renderizarMinisterioListaFlutuante(m)).join('')}
+            </div>
+            <div id="voluntarios-ministerio" class="mt-4"></div>
+        </div>
+    `;
+    if (ministerioSelecionado) renderizarVoluntariosMinisterio(ministerioSelecionado);
+}
+function abrirListaMinisterios() {
+    document.getElementById('lista-ministerios-flutuante').classList.toggle('hidden');
+}
+function selecionarMinisterio(nome) {
+    ministerioSelecionado = nome;
+    document.getElementById('lista-ministerios-flutuante').classList.add('hidden');
+    renderizarMinisterioCard();
+}
+function renderizarMinisterioListaFlutuante(ministerio) {
+    const ministerioBase = ministeriosBaseData?.find(m => m.nome === ministerio.ministerio_nome);
+    const isSelected = ministerioSelecionado === ministerio.ministerio_nome;
+    return `<div class="flex items-center p-3 ${isSelected ? 'bg-primary-50 dark:bg-primary-900/20' : 'bg-gray-50 dark:bg-gray-900'} rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        onclick="selecionarMinisterio('${ministerio.ministerio_nome}')">
+        <div class="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 bg-gray-200 dark:bg-gray-700 mr-2">
+            ${ministerioBase?.foto ? `<img src="${window.APP_CONFIG.baseUrl}/${ministerioBase.foto}" alt="${ministerio.ministerio_nome}" class="w-full h-full object-cover">`
+                : `<div class="w-full h-full flex items-center justify-center text-white font-bold text-xs" style="background-color: ${ministerioBase?.cor || '#6B7280'}">${ministerio.ministerio_nome.charAt(0).toUpperCase()}</div>`}
+        </div>
+        <div class="flex-1 min-w-0">
+            <span class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate block">${ministerio.ministerio_nome}</span>
+            <span class="text-xs text-gray-500 dark:text-gray-400">${ministerio.total_voluntarios} voluntário(s)</span>
+        </div>
+        ${isSelected ? `<div class="flex-shrink-0 ml-2"><svg class="w-3 h-3 text-primary-500" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg></div>` : ''}
+    </div>`;
 }
 
-// Função para definir os eventos originais (chamada do app.service.js)
-function setEventosOriginais(eventos) {
-    eventosOriginais = eventos;
+// Voluntários do ministério selecionado
+function renderizarVoluntariosMinisterio(nome) {
+    const container = document.getElementById('voluntarios-ministerio');
+    if (!container || !eventoSelecionado || !nome) {
+        if (container) container.innerHTML = '';
+        return;
+    }
+    const ministerio = eventoSelecionado.ministerios?.find(m => m.ministerio_nome === nome);
+    if (!ministerio) { container.innerHTML = ''; return; }
+    const ministerioBase = ministeriosBaseData?.find(m => m.nome === ministerio.ministerio_nome);
+    let html = `<h5 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Voluntários Escalados</h5><div class="space-y-2">`;
+    if (Array.isArray(ministerio.voluntarios) && ministerio.voluntarios.length > 0) {
+        html += ministerio.voluntarios.map(voluntario => {
+            const inicial = voluntario.nome?.trim()?.charAt(0)?.toUpperCase() || '?';
+            return `<div class="flex items-center gap-3 bg-gray-50 dark:bg-gray-900 rounded-lg px-3 py-2 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <span class="flex items-center justify-center w-8 h-8 rounded-full font-bold text-xs shadow-md flex-shrink-0" 
+                    style="background-color: ${ministerioBase?.cor || '#6B7280'}20; color: ${ministerioBase?.cor || '#6B7280'}">${inicial}</span>
+                <div class="flex-1 min-w-0">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200 block">${voluntario.nome}</span>
+                </div>
+            </div>`;
+        }).join('');
+    } else {
+        html += `<div class="col-span-full text-center py-6"><div class="text-gray-500 dark:text-gray-400">
+            <svg class="w-8 h-8 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            <p class="text-sm">Nenhum voluntário escalado para este ministério</p></div></div>`;
+    }
+    html += `</div>`;
+    container.innerHTML = html;
 }
 
-function setEventosData(eventos) {
-    eventosBaseData = eventos;
-}
+// Setters
+function setEventosOriginais(eventos) { eventosOriginais = eventos; }
+function setEventosData(eventos) { eventosBaseData = eventos; }
+function setMinisteriosData(ministerios) { ministeriosBaseData = ministerios; }
 
-function setMinisteriosData(ministerios) {
-    ministeriosBaseData = ministerios;
-}
-
+// Fechar modal
 function fecharModalEscalas() {
-    const modal = document.getElementById('modal-escalas');
+    const modal = getEl('modal-escalas');
     if (!modal) return;
-    
     modal.classList.add('hidden');
     modal.classList.remove('flex');
     document.body.style.overflow = 'auto';
-    
-    // Remover parâmetro da URL
     const url = new URL(window.location);
     url.searchParams.delete('data');
     window.history.pushState({}, '', url);
 }
 
-function renderizarModalContent(eventos) {
-    const content = document.getElementById('modal-content');
-    if (!content) return;
-    
-    if (!eventos || !Array.isArray(eventos) || eventos.length === 0) {
-        content.innerHTML = `
-            <div class="text-center py-12">
-                <div class="text-gray-500 dark:text-gray-400">Nenhum evento encontrado para esta data.</div>
-            </div>
-        `;
-        return;
-    }
-    
-    let html = `
-        <div class="space-y-6">
-            <!-- Cards de Eventos -->
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                    Selecione o evento:
-                </label>
-                <div class="space-y-3">
-    `;
-    
-    eventos.forEach(evento => {
-        const eventoBase = evento.eventoBase || eventosBaseData?.find(e => e.nome === evento.evento_nome);
-        const isSelected = eventoSelecionado && eventoSelecionado.evento_id === evento.evento_id;
-        
-        html += `
-            <div class="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
-                isSelected 
-                    ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' 
-                    : 'border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600'
-            }" onclick="selecionarEvento(${evento.evento_id})">
-                
-                <!-- Foto do Evento -->
-                <div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700 mr-4">
-                    ${eventoBase?.foto ? 
-                        `<img src="${window.APP_CONFIG.baseUrl}/assets/img/eventos/${eventoBase.foto}" alt="${evento.evento_nome}" class="w-full h-full object-cover">` :
-                        `<div class="w-full h-full flex items-center justify-center text-gray-400">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                        </div>`
-                    }
-                </div>
-                
-                <!-- Info do Evento -->
-                <div class="flex-1 min-w-0">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white truncate">
-                        ${evento.evento_nome}
-                    </h3>
-                    <div class="flex items-center space-x-4 mt-1 text-sm text-gray-600 dark:text-gray-400">
-                        ${eventoBase ? `
-                            <span class="flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                ${eventoBase.hora.substring(0, 5)}
-                            </span>
-                            <span class="capitalize">${eventoBase.dia_semana}</span>
-                        ` : ''}
-                        <span class="flex items-center">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 515.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                            </svg>
-                            ${evento.total_voluntarios} voluntário(s)
-                        </span>
-                    </div>
-                </div>
-                
-                <!-- Indicador de Seleção -->
-                <div class="flex-shrink-0 ml-4">
-                    <div class="w-6 h-6 rounded-full border-2 ${
-                        isSelected 
-                            ? 'border-primary-500 bg-primary-500' 
-                            : 'border-gray-300 dark:border-gray-600'
-                    } flex items-center justify-center">
-                        ${isSelected ? '<div class="w-2 h-2 bg-white rounded-full"></div>' : ''}
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-    
-    html += `
-                </div>
-            </div>
-            
-            <!-- Cards de Ministérios -->
-            <div id="container-ministerios" class="hidden">
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                    Selecione o ministério:
-                </label>
-                <div id="cards-ministerios" class="space-y-3">
-                    <!-- Será preenchido via JS -->
-                </div>
-            </div>
-            
-            <!-- Ministério Selecionado -->
-            <div id="ministerio-selecionado-container">
-                <!-- Será renderizado pela função renderizarMinisterioSelecionado -->
-            </div>
-        </div>
-    `;
-    
-    content.innerHTML = html;
-    
-    // Se já há um evento selecionado, atualizar os cards de ministérios
-    if (eventoSelecionado) {
-        atualizarCardsMinisterios();
-    }
-}
-
-function atualizarCardsMinisterios() {
-    const cardsContainer = document.getElementById('cards-ministerios');
-    const containerMinisterios = document.getElementById('container-ministerios');
-    
-    if (!cardsContainer || !containerMinisterios || !eventoSelecionado) return;
-    
-    const ministerios = eventoSelecionado.ministerios || [];
-    
-    if (ministerios.length === 0) {
-        containerMinisterios.classList.add('hidden');
-        return;
-    }
-    
-    let html = '';
-    
-    ministerios.forEach(ministerio => {
-        const ministerioBase = ministeriosBaseData?.find(m => m.nome === ministerio.ministerio_nome);
-        
-        html += `
-            <div class="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600"
-                 onclick="selecionarMinisterio('${ministerio.ministerio_nome}')">
-                
-                <!-- Foto do Ministério -->
-                <div class="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-gray-200 dark:bg-gray-700 mr-4">
-                    ${ministerioBase?.foto ? 
-                        `<img src="${window.APP_CONFIG.baseUrl}/${ministerioBase.foto}" alt="${ministerio.ministerio_nome}" class="w-full h-full object-cover">` :
-                        `<div class="w-full h-full flex items-center justify-center text-white font-bold text-sm" style="background-color: ${ministerioBase?.cor || '#6B7280'}">
-                            ${ministerio.ministerio_nome.charAt(0).toUpperCase()}
-                        </div>`
-                    }
-                </div>
-                
-                <!-- Info do Ministério -->
-                <div class="flex-1 min-w-0">
-                    <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-100 truncate">
-                        ${ministerio.ministerio_nome}
-                    </h4>
-                    <div class="flex items-center mt-1 text-sm text-gray-600 dark:text-gray-400">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 515.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 919.288 0M15 7a3 3 0 11-6 0 3 3 0 616 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
-                        ${ministerio.total_voluntarios} voluntário(s)
-                    </div>
-                </div>
-                
-                <!-- Seta indicativa -->
-                <div class="flex-shrink-0 ml-4">
-                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                </div>
-            </div>
-        `;
-    });
-    
-    cardsContainer.innerHTML = html;
-    containerMinisterios.classList.remove('hidden');
-}
-
-function renderizarCardEventoSelecionado() {
-    const container = document.getElementById('card-evento-selecionado');
-    if (!container || !eventoSelecionado) return;
-    
-    const eventoBase = eventoSelecionado.eventoBase || eventosBaseData?.find(e => e.nome === eventoSelecionado.evento_nome);
-    
-    let html = `
-        <div class="bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 rounded-xl p-6 border border-primary-200 dark:border-primary-700">
-            <div class="flex items-center">
-                <!-- Foto do Evento -->
-                <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-white dark:bg-gray-700 mr-6 shadow-lg">
-                    ${eventoBase?.foto ? 
-                        `<img src="${window.APP_CONFIG.baseUrl}/assets/img/eventos/${eventoBase.foto}" alt="${eventoSelecionado.evento_nome}" class="w-full h-full object-cover">` :
-                        `<div class="w-full h-full flex items-center justify-center text-primary-400">
-                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                        </div>`
-                    }
-                </div>
-                
-                <!-- Info do Evento -->
-                <div class="flex-1">
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                        ${eventoSelecionado.evento_nome}
-                    </h3>
-                    <div class="flex items-center space-x-6 text-sm text-gray-600 dark:text-gray-400">
-                        ${eventoBase ? `
-                            <span class="flex items-center font-medium">
-                                <svg class="w-4 h-4 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                ${eventoBase.hora.substring(0, 5)}
-                            </span>
-                            <span class="flex items-center font-medium capitalize">
-                                <svg class="w-4 h-4 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                                ${eventoBase.dia_semana}
-                            </span>
-                        ` : ''}
-                        <span class="flex items-center font-medium">
-                            <svg class="w-4 h-4 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                            </svg>
-                            ${eventoSelecionado.total_voluntarios} voluntário(s)
-                        </span>
-                        <span class="flex items-center font-medium">
-                            <svg class="w-4 h-4 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h1a1 1 0 011 1v5m-4 0h4"></path>
-                            </svg>
-                            ${(eventoSelecionado.ministerios || []).length} ministério(s)
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    container.innerHTML = html;
-    container.classList.remove('hidden');
-}
-
-function renderizarMinisteriosEvento() {
-    // Esta função agora é chamada apenas quando um ministério específico é selecionado
-    // A lógica foi movida para renderizarMinisterioSelecionado
-}
-
-function renderizarMinisterioSelecionado(ministerioNome) {
-    const container = document.getElementById('ministerio-selecionado-container');
-    if (!container || !eventoSelecionado || !ministerioNome) {
-        if (container) container.innerHTML = '';
-        return;
-    }
-    
-    const ministerio = eventoSelecionado.ministerios?.find(m => m.ministerio_nome === ministerioNome);
-    if (!ministerio) {
-        container.innerHTML = '';
-        return;
-    }
-    
-    const ministerioBase = ministeriosBaseData?.find(m => m.nome === ministerio.ministerio_nome);
-    
-    let html = `
-        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
-            <div class="flex items-center mb-6">
-                <!-- Foto do Ministério -->
-                <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-gray-200 dark:bg-gray-700 mr-4 shadow-md">
-                    ${ministerioBase?.foto ? 
-                        `<img src="${window.APP_CONFIG.baseUrl}/${ministerioBase.foto}" alt="${ministerio.ministerio_nome}" class="w-full h-full object-cover">` :
-                        `<div class="w-full h-full flex items-center justify-center text-white font-bold text-lg" style="background-color: ${ministerioBase?.cor || '#6B7280'}">
-                            ${ministerio.ministerio_nome.charAt(0).toUpperCase()}
-                        </div>`
-                    }
-                </div>
-                
-                <div class="flex-1">
-                    <h4 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-1">${ministerio.ministerio_nome}</h4>
-                    <div class="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
-                        <span class="flex items-center font-medium">
-                            <svg class="w-4 h-4 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                            </svg>
-                            ${ministerio.total_voluntarios} voluntário(s) escalado(s)
-                        </span>
-                        <span class="flex items-center font-medium">
-                            <svg class="w-4 h-4 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                            ${eventoSelecionado.evento_nome}
-                        </span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
-                <h5 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Voluntários Escalados</h5>
-                <div class="space-y-3">
-    `;
-    
-    if (ministerio.voluntarios && Array.isArray(ministerio.voluntarios) && ministerio.voluntarios.length > 0) {
-        ministerio.voluntarios.forEach(voluntario => {
-            const inicial = voluntario.nome?.trim()?.charAt(0)?.toUpperCase() || '?';
-            html += `
-                <div class="flex items-center gap-4 bg-gray-50 dark:bg-gray-900 rounded-lg px-4 py-3 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <span class="flex items-center justify-center w-12 h-12 rounded-full font-bold text-sm shadow-md flex-shrink-0" 
-                          style="background-color: ${ministerioBase?.cor || '#6B7280'}20; color: ${ministerioBase?.cor || '#6B7280'}">
-                        ${inicial}
-                    </span>
-                    <div class="flex-1 min-w-0">
-                        <span class="text-base font-medium text-gray-700 dark:text-gray-200 block">
-                            ${voluntario.nome}
-                        </span>
-                    </div>
-                </div>
-            `;
-        });
-    } else {
-        html += `
-            <div class="col-span-full text-center py-8">
-                <div class="text-gray-500 dark:text-gray-400">
-                    <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                    </svg>
-                    <p class="text-sm">Nenhum voluntário escalado para este ministério</p>
-                </div>
-            </div>
-        `;
-    }
-    
-    html += `
-                </div>
-            </div>
-        </div>
-    `;
-    
-    container.innerHTML = html;
-}
-
-// Verificar se há parâmetro de data na URL ao carregar a página
+// URL & Navegação
 function verificarParametroURL() {
     const urlParams = new URLSearchParams(window.location.search);
     const dataParam = urlParams.get('data');
-    
     if (dataParam) {
-        const dataFormatada = new Date(dataParam).toLocaleDateString('pt-BR');
-        abrirModalEscalas(dataParam, dataFormatada);
+        // Aguardar os dados estarem carregados antes de abrir o modal
+        const aguardarDados = () => {
+            if (Array.isArray(eventosOriginais) && eventosOriginais.length > 0) {
+                const dataFormatada = new Date(dataParam).toLocaleDateString('pt-BR');
+                abrirModalEscalas(dataParam, dataFormatada);
+            } else {
+                // Tentar novamente em 100ms
+                setTimeout(aguardarDados, 100);
+            }
+        };
+        aguardarDados();
     }
 }
 
-// Event listeners
-document.addEventListener('DOMContentLoaded', verificarParametroURL);
-
-// Fechar modal com ESC
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        fecharModalEscalas();
-    }
-});
-
-// Voltar/avançar do navegador
-window.addEventListener('popstate', function(e) {
+// Eventos globais
+document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharModalEscalas(); });
+window.addEventListener('popstate', e => {
     if (e.state && e.state.data) {
         const dataFormatada = new Date(e.state.data).toLocaleDateString('pt-BR');
         abrirModalEscalas(e.state.data, dataFormatada);
