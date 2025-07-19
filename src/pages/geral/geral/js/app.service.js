@@ -38,157 +38,6 @@ function getScoreColor(score) {
     return 'text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/30';
 }
 
-function renderAniversariantesChart(data) {
-    const canvas = document.getElementById('aniversariantes-chart');
-    if (!canvas) {
-        console.error('Canvas aniversariantes-chart não encontrado');
-        return;
-    }
-    
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-        console.error('Contexto 2D não disponível');
-        return;
-    }
-    
-    if (!data || !Array.isArray(data) || data.length === 0) {
-        console.error('Dados de aniversariantes inválidos:', data);
-        return;
-    }
-    
-    // Tornar o canvas responsivo
-    const container = canvas.parentElement;
-    const containerRect = container.getBoundingClientRect();
-    const containerWidth = containerRect.width - 32; // -32 para padding da div pai
-    const canvasHeight = Math.min(300, window.innerWidth < 768 ? 250 : 300); // Menor em mobile
-    
-    // Definir tamanho físico do canvas
-    canvas.width = containerWidth * window.devicePixelRatio;
-    canvas.height = canvasHeight * window.devicePixelRatio;
-    
-    // Definir tamanho CSS para ocupar 100% do container
-    canvas.style.width = '100%';
-    canvas.style.height = canvasHeight + 'px';
-    
-    // Escalar o contexto para alta resolução
-    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-    
-    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-    const maxValue = Math.max(...data.map(item => item.quantidade));
-    
-    // Usar dimensões escaladas
-    const chartWidth = containerWidth - 100;
-    const chartHeight = canvasHeight - 100;
-    const stepX = chartWidth / 11; // 11 intervalos para 12 pontos
-    
-    ctx.clearRect(0, 0, containerWidth, canvasHeight);
-    
-    // Configurar cores baseadas no tema  
-    const isDarkMode = document.documentElement.classList.contains('dark');
-    const textColor = isDarkMode ? '#E5E7EB' : '#374151';
-    
-    // Extrair cor primária do Tailwind usando elemento temporário
-    const tempDiv = document.createElement('div');
-    tempDiv.className = 'text-primary-500';
-    document.body.appendChild(tempDiv);
-    const primaryColor = getComputedStyle(tempDiv).color;
-    document.body.removeChild(tempDiv);
-    
-    // Converter cor RGB para formato hexadecimal para usar no canvas
-    const rgbToHex = (rgb) => {
-        const match = rgb.match(/\d+/g);
-        if (!match) return '#3B82F6'; // fallback
-        const [r, g, b] = match.map(Number);
-        return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
-    };
-    
-    const primaryHex = rgbToHex(primaryColor);
-    
-    // Criar pontos da curva
-    const points = data.map((item, index) => ({
-        x: 50 + index * stepX,
-        y: canvasHeight - 50 - ((item.quantidade / maxValue) * chartHeight),
-        value: item.quantidade
-    }));
-    
-    // Desenhar área com gradiente (fade)
-    const gradient = ctx.createLinearGradient(0, 50, 0, canvasHeight - 50);
-    gradient.addColorStop(0, primaryHex + '40'); // 40 = 25% opacidade
-    gradient.addColorStop(1, primaryHex + '00'); // 00 = transparente
-    
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.moveTo(points[0].x, canvasHeight - 50);
-    
-    // Desenhar linha suave (curva bezier)
-    for (let i = 0; i < points.length; i++) {
-        if (i === 0) {
-            ctx.lineTo(points[i].x, points[i].y);
-        } else {
-            const prevPoint = points[i - 1];
-            const currentPoint = points[i];
-            
-            // Pontos de controle para curva suave
-            const cpx1 = prevPoint.x + stepX * 0.3;
-            const cpy1 = prevPoint.y;
-            const cpx2 = currentPoint.x - stepX * 0.3;
-            const cpy2 = currentPoint.y;
-            
-            ctx.bezierCurveTo(cpx1, cpy1, cpx2, cpy2, currentPoint.x, currentPoint.y);
-        }
-    }
-    
-    // Fechar a área
-    ctx.lineTo(points[points.length - 1].x, canvasHeight - 50);
-    ctx.closePath();
-    ctx.fill();
-    
-    // Desenhar linha da onda
-    ctx.strokeStyle = primaryHex;
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(points[0].x, points[0].y);
-    
-    for (let i = 1; i < points.length; i++) {
-        const prevPoint = points[i - 1];
-        const currentPoint = points[i];
-        
-        const cpx1 = prevPoint.x + stepX * 0.3;
-        const cpy1 = prevPoint.y;
-        const cpx2 = currentPoint.x - stepX * 0.3;
-        const cpy2 = currentPoint.y;
-        
-        ctx.bezierCurveTo(cpx1, cpy1, cpx2, cpy2, currentPoint.x, currentPoint.y);
-    }
-    ctx.stroke();
-    
-    // Desenhar pontos
-    points.forEach((point, index) => {
-        // Círculo de fundo branco
-        ctx.fillStyle = '#FFFFFF';
-        ctx.beginPath();
-        ctx.arc(point.x, point.y, 6, 0, 2 * Math.PI);
-        ctx.fill();
-        
-        // Círculo principal
-        ctx.fillStyle = primaryHex;
-        ctx.beginPath();
-        ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI);
-        ctx.fill();
-        
-        // Labels dos meses
-        ctx.fillStyle = textColor;
-        ctx.textAlign = 'center';
-        ctx.font = '12px system-ui, -apple-system, sans-serif';
-        ctx.fillText(months[index], point.x, canvasHeight - 25);
-        
-        // Valores
-        ctx.fillStyle = textColor;
-        ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
-        ctx.fillText(point.value.toString(), point.x, point.y - 15);
-    });
-}
-
 function renderMinisteriosCards(voluntarios, scores, novos) {
     const container = document.getElementById('ministerios-cards');
     
@@ -261,19 +110,15 @@ function renderEscalasCards(escalas) {
     `).join('');
     
     // Adicionar card "Ver mais" com mesmo tamanho
+    const BASE_URL = window.BASE_URL || '';
     const verMaisCard = `
         <div class="bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 rounded-xl border-2 border-dashed border-primary-300 dark:border-primary-600 p-6 flex flex-col items-center justify-center">
             <svg class="w-8 h-8 text-primary-500 dark:text-primary-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
             </svg>
             <h3 class="text-lg font-semibold text-primary-700 dark:text-primary-300 mb-2">Ver Distribuição</h3>
-            <p class="text-sm text-primary-600 dark:text-primary-400 text-center mb-4">Visualize a distribuição completa de voluntários por culto</p>
-            <a href="/geral/escalas" class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors duration-200">
-                Ver Escalas
-                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-            </a>
+            <p class="text-sm text-primary-600 dark:text-primary-400 text-center mb-4">Visualize a distribuição completa de voluntários por culto, <b>Clique em Escalas e Eventos</b></p>
+            
         </div>
     `;
     
@@ -282,7 +127,6 @@ function renderEscalasCards(escalas) {
 
 async function renderRelatorio() {
     try {
-        console.log('Iniciando renderização do relatório...');
         
         // Aguardar que o DOM esteja completamente carregado
         if (document.readyState !== 'complete') {
@@ -297,9 +141,7 @@ async function renderRelatorio() {
             throw new Error('Organização não encontrada');
         }
         
-        console.log('Fazendo requisição para organização:', organizacao_id);
         const result = await getRelatorioGeral(organizacao_id);
-        console.log('Resultado da API:', result);
         
         if (!result?.data) throw new Error('Dados não encontrados');
         
@@ -328,16 +170,6 @@ async function renderRelatorio() {
         
         // Renderizar cards de escalas
         renderEscalasCards(d.escalas_mes_atual);
-        
-        // Renderizar gráfico de aniversariantes (por último)
-        console.log('Dados de aniversariantes recebidos:', d.total_aniversariantes);
-        window.lastAniversariantesData = d.total_aniversariantes; // Salvar para redimensionamento
-        
-        if (d.total_aniversariantes && Array.isArray(d.total_aniversariantes)) {
-            renderAniversariantesChart(d.total_aniversariantes);
-        } else {
-            console.error('Dados de aniversariantes inválidos ou não encontrados');
-        }
         
         // Adicionar funcionalidade de scroll com setas para ministérios
         setupMinisteriosScroll();
@@ -383,39 +215,5 @@ function setupMinisteriosScroll() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM carregado, iniciando renderização...');
     renderRelatorio();
 });
-
-// Redimensionar gráfico quando a janela mudar de tamanho
-let resizeTimeout;
-window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-        const canvas = document.getElementById('aniversariantes-chart');
-        if (canvas && window.lastAniversariantesData) {
-            console.log('Redimensionando gráfico...');
-            renderAniversariantesChart(window.lastAniversariantesData);
-        }
-    }, 250); // Debounce de 250ms
-});
-
-// Observador de redimensionamento para container do gráfico
-if (typeof ResizeObserver !== 'undefined') {
-    const resizeObserver = new ResizeObserver(entries => {
-        for (let entry of entries) {
-            if (entry.target.id === 'aniversariantes-chart' && window.lastAniversariantesData) {
-                setTimeout(() => {
-                    renderAniversariantesChart(window.lastAniversariantesData);
-                }, 100);
-            }
-        }
-    });
-    
-    window.addEventListener('DOMContentLoaded', () => {
-        const canvas = document.getElementById('aniversariantes-chart');
-        if (canvas) {
-            resizeObserver.observe(canvas.parentElement);
-        }
-    });
-}

@@ -35,6 +35,10 @@ function carregarDadosModalLocal(dataIso, dataFormatada) {
         const eventosDaData = eventosOriginais.filter(e =>
             new Date(e.data_evento).toISOString().split('T')[0] === dataEventoFormatada
         );
+        
+        // Debug: Verificar se temos eventos duplicados ou com problemas
+        console.log('Eventos da data:', eventosDaData.map(e => ({ id: e.evento_id, nome: e.evento_nome, voluntarios: e.total_voluntarios })));
+        
         modalEscalasData = eventosDaData;
         const eventosOrdenados = ordenarEventosPorProximidade(eventosDaData);
         eventoSelecionado = eventosOrdenados[0] || null;
@@ -59,17 +63,50 @@ function ordenarEventosPorProximidade(eventos) {
     const diaAtual = agora.getDay();
     const horaAtual = agora.getHours() * 60 + agora.getMinutes();
     const diasSemana = { 'domingo': 0, 'segunda': 1, 'terca': 2, 'quarta': 3, 'quinta': 4, 'sexta': 5, 'sabado': 6 };
-    return eventos.map(evento => {
-        const eventoBase = eventosBaseData?.find(e => e.nome === evento.evento_nome);
-        if (!eventoBase) return { ...evento, distancia: Infinity };
+    
+    return eventos.map((evento, index) => {
+        // Buscar evento base correspondente pelo ID primeiro, depois pelo nome se necessário
+        let eventoBase = eventosBaseData?.find(e => e.id === evento.evento_id);
+        if (!eventoBase) {
+            eventoBase = eventosBaseData?.find(e => e.nome === evento.evento_nome);
+        }
+        
+        if (!eventoBase) {
+            return { 
+                ...evento, 
+                distancia: Infinity, 
+                eventoBase: null,
+                originalIndex: index,
+                uniqueKey: `${evento.evento_id}_${index}` // Chave única para cada evento
+            };
+        }
+        
         const diaSemanaEvento = diasSemana[eventoBase.dia_semana] || 0;
         const [hora, minuto] = eventoBase.hora.split(':').map(Number);
         const horaEvento = hora * 60 + minuto;
         let distanciaDias = (diaSemanaEvento - diaAtual + 7) % 7;
         if (distanciaDias === 0 && horaEvento < horaAtual) distanciaDias = 7;
         const distancia = distanciaDias * 1440 + (horaEvento - horaAtual);
-        return { ...evento, distancia, eventoBase };
-    }).sort((a, b) => a.distancia - b.distancia);
+        
+        return { 
+            ...evento, 
+            distancia, 
+            eventoBase: { 
+                ...eventoBase,
+                // Garantir que cada evento tenha dados únicos baseados no ID do evento
+                uniqueId: evento.evento_id,
+                originalHora: eventoBase.hora
+            },
+            originalIndex: index,
+            uniqueKey: `${evento.evento_id}_${index}`
+        };
+    }).sort((a, b) => {
+        // Primeiro ordenar por distância, depois por ID para garantir ordem consistente
+        if (a.distancia !== b.distancia) {
+            return a.distancia - b.distancia;
+        }
+        return a.evento_id - b.evento_id;
+    });
 }
 
 function renderizarModalContent(eventos) {
@@ -93,7 +130,23 @@ function renderizarModalContent(eventos) {
 
 // Card compacto do evento selecionado
 function renderizarCardEventoCompacto(eventos) {
-    const eventoBase = eventoSelecionado.eventoBase || eventosBaseData?.find(e => e.nome === eventoSelecionado.evento_nome);
+    // Buscar o evento base correto para o evento selecionado
+    let eventoBase = null;
+    if (eventoSelecionado.eventoBase && eventoSelecionado.eventoBase.uniqueId === eventoSelecionado.evento_id) {
+        eventoBase = eventoSelecionado.eventoBase;
+    } else {
+        eventoBase = eventosBaseData?.find(e => e.id === eventoSelecionado.evento_id);
+        if (!eventoBase) {
+            eventoBase = eventosBaseData?.find(e => e.nome === eventoSelecionado.evento_nome);
+        }
+    }
+    
+    // Determinar o horário correto para exibição
+    let horarioDisplay = 'N/A';
+    if (eventoBase && eventoBase.hora) {
+        horarioDisplay = eventoBase.hora.substring(0, 5);
+    }
+    
     return `
         <div class="relative">
             <div class="flex items-center p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
@@ -107,7 +160,8 @@ function renderizarCardEventoCompacto(eventos) {
                 <div class="flex-1 min-w-0">
                     <span class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate block">${eventoSelecionado.evento_nome}</span>
                     <div class="flex items-center space-x-2 mt-1 text-xs text-gray-600 dark:text-gray-400">
-                        ${eventoBase ? `<span>${eventoBase.hora.substring(0, 5)}</span>` : ''}
+                        <span>${horarioDisplay}</span>
+                        <span>• ID: ${eventoSelecionado.evento_id}</span>
                         <span>• ${eventoSelecionado.total_voluntarios} vol.</span>
                     </div>
                 </div>
@@ -135,8 +189,27 @@ function selecionarEvento(eventoId) {
     renderizarModalContent(modalEscalasData);
 }
 function renderizarEventoListaFlutuante(evento) {
-    const eventoBase = evento.eventoBase || eventosBaseData?.find(e => e.nome === evento.evento_nome);
+    // Buscar o evento base correspondente diretamente pelo ID do evento para garantir dados únicos
+    let eventoBase = null;
+    if (evento.eventoBase && evento.eventoBase.uniqueId === evento.evento_id) {
+        // Usar o eventoBase já associado se o ID bater
+        eventoBase = evento.eventoBase;
+    } else {
+        // Buscar pelo ID primeiro, depois pelo nome como fallback
+        eventoBase = eventosBaseData?.find(e => e.id === evento.evento_id);
+        if (!eventoBase) {
+            eventoBase = eventosBaseData?.find(e => e.nome === evento.evento_nome);
+        }
+    }
+    
     const isSelected = eventoSelecionado && eventoSelecionado.evento_id === evento.evento_id;
+    
+    // Determinar o horário a ser exibido - usar o horário específico do evento base encontrado
+    let horarioDisplay = 'N/A';
+    if (eventoBase && eventoBase.hora) {
+        horarioDisplay = eventoBase.hora.substring(0, 5);
+    }
+    
     return `<div class="flex items-center p-3 ${isSelected ? 'bg-primary-50 dark:bg-primary-900/20' : 'bg-gray-50 dark:bg-gray-900'} rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
         onclick="selecionarEvento(${evento.evento_id})">
         <div class="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-gray-700 mr-2">
@@ -145,7 +218,11 @@ function renderizarEventoListaFlutuante(evento) {
         </div>
         <div class="flex-1 min-w-0">
             <span class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate block">${evento.evento_nome}</span>
-            <span class="text-xs text-gray-500 dark:text-gray-400">${eventoBase ? eventoBase.hora.substring(0, 5) : ''}</span>
+            <div class="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
+                <span>${horarioDisplay}</span>
+                <span>• ID: ${evento.evento_id}</span>
+                <span>• ${evento.total_voluntarios} vol.</span>
+            </div>
         </div>
         ${isSelected ? `<div class="flex-shrink-0 ml-2"><svg class="w-3 h-3 text-primary-500" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg></div>` : ''}
     </div>`;

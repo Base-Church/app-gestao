@@ -56,13 +56,11 @@ $voluntariosActive = strpos($currentPath, '/voluntarios') !== false || strpos($c
                  <!-- Geral -->
                 <a href="<?php echo $_ENV['URL_BASE']; ?>/geral" 
                    class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
-                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 12 12">
+                        <path fill="currentColor" d="M5.816 2.035a.5.5 0 0 1 .368 0l3.5 1.384a.5.5 0 0 1 .316.465v4.23a.5.5 0 0 1-.316.466l-3.5 1.383a.5.5 0 0 1-.368 0l-3.5-1.383A.5.5 0 0 1 2 8.115V3.884a.5.5 0 0 1 .316-.465zm.735-.93a1.5 1.5 0 0 0-1.102 0l-3.5 1.384A1.5 1.5 0 0 0 1 3.884v4.23a1.5 1.5 0 0 0 .949 1.396l3.5 1.383a1.5 1.5 0 0 0 1.102 0l3.5-1.383A1.5 1.5 0 0 0 11 8.115V3.884a1.5 1.5 0 0 0-.949-1.395zm-2.865 2.93a.5.5 0 0 0-.372.93l2.186.874V8a.5.5 0 0 0 1 0V5.839l2.186-.875a.5.5 0 1 0-.372-.928L6 4.96z"/>
                     </svg>
                     <span class="font-medium">Geral</span>
                 </a>
-
-
                 <!-- Escalas (submenu) -->
                 <div class="space-y-1">
                     <button type="button" onclick="toggleSubMenu('escalasSubMenu', this)" 
@@ -99,16 +97,20 @@ $voluntariosActive = strpos($currentPath, '/voluntarios') !== false || strpos($c
                 <!-- Solicitações -->
                 <a href="<?php echo $_ENV['URL_BASE']; ?>/solicitacoes" 
                    class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
-                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h6q.425 0 .713.288T12 4t-.288.713T11 5H5v14h14v-6q0-.425.288-.712T20 12t.713.288T21 13v6q0 .825-.587 1.413T19 21zM19 6.4L10.4 15q-.275.275-.7.275T9 15t-.275-.7t.275-.7L17.6 5H15q-.425 0-.712-.288T14 4t.288-.712T15 3h5q.425 0 .713.288T21 4v5q0 .425-.288.713T20 10t-.712-.288T19 9z"/>
                     </svg>
                     <span class="font-medium">Solicitações</span>
                 </a>
                 <!-- Músicas -->
                 <a href="<?php echo $_ENV['URL_BASE']; ?>/musicas" 
                    class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
-                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <g stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 18V5.716a2 2 0 0 1 1.696-1.977l9-1.385A2 2 0 0 1 21 4.331V16"/>
+                            <path d="m8 9l13-2"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 18a3 3 0 1 1-6 0c0-1.657 1.343-2 3-2s3 .343 3 2m13-2a3 3 0 1 1-6 0c0-1.657 1.343-2 3-2s3 .343 3 2"/>
+                        </g>
                     </svg>
                     <span class="font-medium">Músicas</span>
                 </a>

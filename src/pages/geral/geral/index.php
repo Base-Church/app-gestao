@@ -43,7 +43,7 @@ require_once __DIR__ . '/../../../components/layout/header.php';
                     </div>
                 </a>
 
-                <a href="<?= $_ENV['URL_BASE'] ?>/geral/engajamento" class="flex items-center justify-center bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg p-4 transition-all duration-200 border border-gray-200 dark:border-gray-600">
+                <a href="<?= $_ENV['URL_BASE'] ?>/geral/indisponibilidades" class="flex items-center justify-center bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg p-4 transition-all duration-200 border border-gray-200 dark:border-gray-600">
                     <div class="text-center lg:flex lg:items-center lg:text-left">
                         <svg class="w-5 h-5 mx-auto mb-2 lg:mx-0 lg:mb-0 lg:mr-3 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
@@ -171,14 +171,6 @@ require_once __DIR__ . '/../../../components/layout/header.php';
                     <div id="escalas-cards" class="contents">
                         <!-- Preenchido via JS -->
                     </div>
-                </div>
-            </section>
-
-            <!-- Aniversariantes por Mês (movido para o final) -->
-            <section class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Aniversariantes por Mês</h2>
-                <div class="relative">
-                    <canvas id="aniversariantes-chart" width="400" height="300" class="w-full"></canvas>
                 </div>
             </section>
 
