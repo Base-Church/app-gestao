@@ -7,7 +7,7 @@ export class MinisteriosAPI {
         this.apiPath = `${baseUrl}/src/services/api/ministerios`; // Adicionar /src ao caminho
     }
 
-    async list(page = 1, limit = 12, search = '') {
+    async list(page = 1, limit = 50, search = '') {
         try {
             const params = new URLSearchParams({
                 page,

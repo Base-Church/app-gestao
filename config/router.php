@@ -4,19 +4,29 @@ return [
     // Página inicial
     '/inicio' => '/src/pages/inicio/index.php',
 
-    // Escalas
-    '/escalas' => '/src/pages/escalas/index.php',
-    '/escalas/criar' => '/src/pages/escalas/criar/index.php',
-    '/escalas/criar/v2' => '/src/pages/escalas/v2/index.php',
-    '/escalas/editar' => '/src/pages/escalas/editar/index.php',
+    // Geral
+    '/geral/voluntarios'        => '/src/pages/geral/voluntarios/index.php',
+    '/geral/escalas'        => '/src/pages/geral/escalas/index.php',
+    '/geral/indisponibilidades'        => '/src/pages/geral/indisponibilidades/index.php',
+    '/geral/aniversariantes'        => '/src/pages/geral/aniversariantes/index.php',
 
-    '/musicas' => '/src/pages/musicas/index.php',
-    '/musica' => '/src/pages/musicas/detalhes/index.php',
+
+    '/geral'                    => '/src/pages/geral/geral/index.php',
+
+
+    // Escalas
+    '/escalas'              => '/src/pages/escalas/index.php',
+    '/escalas/criar'        => '/src/pages/escalas/criar/index.php',
+    '/escalas/criar/v2'    => '/src/pages/escalas/v2/index.php',
+    '/escalas/editar'       => '/src/pages/escalas/editar/index.php',
+
+    '/musicas'              => '/src/pages/musicas/index.php',
+    '/musica'               => '/src/pages/musicas/detalhes/index.php',
 
     // Modelos
-    '/modelos' => '/src/pages/modelos/index.php',
-    '/modelos/criar' => '/src/pages/modelos/criar.php',
-    
+    '/modelos'              => '/src/pages/modelos/index.php',
+    '/modelos/criar'       => '/src/pages/modelos/criar.php',
+
     // Ministérios
     '/ministerios' => '/src/pages/ministerios/index.php',
 
@@ -56,6 +66,8 @@ return [
     '/login' => '/src/pages/login/index.php',
     '/cadastro' => '/src/pages/cadastro/index.php',
     '/recuperar' => '/src/pages/recuperar-senha/index.php',
+    '/logout' => '/config/auth/login.logout.php',
+
 
     // Sem ministério
     '/sem-ministerio' => '/src/pages/sem-ministerio/index.php',

@@ -33,38 +33,23 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 }
 
 // Pega os parâmetros da requisição
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 1000;
-$search = isset($_GET['search']) ? trim($_GET['search']) : '';
-$ministerioId = isset($_GET['ministerio_id']) ? (int)$_GET['ministerio_id'] : null;
-$organizacao_id = SessionService::getOrganizacaoId();
+$organizacao_id = isset($_GET['organizacao_id']) ? (int)$_GET['organizacao_id'] : null;
+$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 8000;
 
 // Validações
 if (!$organizacao_id) {
-    returnError('ID da organização não encontrado na sessão');
+    returnError('ID da organização não encontrado');
 }
-
-if ($page < 1) {
-    returnError('Página inválida');
-}
-
-if ($limit < 1 || $limit > 1000) {
+if ($limit < 1 || $limit > 8000) {
     returnError('Limite inválido');
 }
 
 // Monta a URL da API
-$apiUrl = $_ENV['API_BASE_URL'] . '/ministerios';
+$apiUrl = $_ENV['API_BASE_URL'] . '/relatorios/geral';
 $params = [
     'organizacao_id' => $organizacao_id,
-    'page' => $page,
-    'limit' => $limit,
-    'search' => $search
+    'limit' => $limit
 ];
-
-if ($ministerioId) {
-    $params['ministerio_id'] = $ministerioId;
-}
-
 $queryString = http_build_query($params);
 $url = "{$apiUrl}?{$queryString}";
 
@@ -75,7 +60,7 @@ curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [
         'Accept: application/json',
-        'Authorization: Bearer ' . SessionService::getToken()
+        'Authorization: ' . SessionService::getToken()
     ]
 ]);
 
@@ -98,20 +83,6 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     returnError('Resposta inválida da API', 500);
 }
 
-// Filtra o ministério específico se o parâmetro ministerio_id for fornecido
-if ($ministerioId) {
-    $data['data'] = array_filter($data['data'], function($ministerio) use ($ministerioId) {
-        return $ministerio['id'] === $ministerioId;
-    });
-}
-
 // Retorna a resposta
 http_response_code($httpCode);
-echo json_encode([
-    'data' => $data['data'] ?? [],
-    'meta' => [
-        'page' => $page,
-        'total' => $data['total'] ?? 0,
-        'totalPages' => ceil(($data['total'] ?? 0) / $limit)
-    ]
-]);
+echo json_encode($data);
