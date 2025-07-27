@@ -1,0 +1,445 @@
+// Construtor de formulários principal
+class FormBuilder {
+    constructor() {
+        this.formElements = [];
+        this.selectedElement = null;
+        this.nextId = 1;
+        this.conditions = [];
+        
+        this.init();
+    }
+
+    init() {
+        // Inicializa os componentes
+        this.elements = new FormElements();
+        this.dragDrop = new DragDropManager(this);
+        this.properties = new PropertiesManager(this);
+        
+        // Configura eventos
+        this.setupEventListeners();
+        
+        // Renderiza elementos iniciais
+        this.renderElementsSidebar();
+        this.updateJsonOutput();
+        
+        // Inicializa sistema de condições
+        this.conditions = [];
+        
+        // Torna disponível globalmente
+        window.formBuilder = this;
+    }
+
+    setupEventListeners() {
+        // Botão de salvar formulário
+        const saveBtn = document.getElementById('save-form-btn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => this.saveForm());
+        }
+
+        // Botão de limpar formulário
+        const clearBtn = document.getElementById('clear-form-btn');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => this.clearForm());
+        }
+
+        // Clique na área do formulário para deselecionar
+        const formArea = document.getElementById('drop-zone');
+        if (formArea) {
+            formArea.addEventListener('click', (e) => {
+                if (e.target === formArea) {
+                    this.deselectElement();
+                }
+            });
+        }
+    }
+
+    // Renderiza a barra lateral de elementos
+    renderElementsSidebar() {
+        const container = document.querySelector('.col-span-3 .p-3.space-y-2');
+        if (!container) return;
+
+        const elementTypes = this.elements.getElementTypes();
+        
+        container.innerHTML = elementTypes.map(element => `
+            <div class="element-item bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow"
+                 draggable="true" data-type="${element.type}">
+                <div class="flex items-center space-x-3">
+                    <div class="text-primary-600 dark:text-primary-400">
+                        ${element.icon}
+                    </div>
+                    <div>
+                        <div class="font-medium text-gray-900 dark:text-white text-sm">${element.label}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">${element.description}</div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Adiciona um elemento ao formulário
+    addElement(elementType, position = null) {
+        const elementConfig = this.elements.getElementType(elementType);
+        if (!elementConfig) return null;
+
+        const element = {
+            id: `element_${this.nextId++}`,
+            type: elementType,
+            props: { ...elementConfig.defaultProps }
+        };
+
+        if (position !== null && position >= 0 && position <= this.formElements.length) {
+            this.formElements.splice(position, 0, element);
+        } else {
+            this.formElements.push(element);
+        }
+
+        this.renderForm();
+        this.updateJsonOutput();
+        this.selectElement(element.id);
+        
+        // Atualiza o sortable após adicionar elemento
+        if (this.dragDrop && this.dragDrop.updateSortable) {
+            this.dragDrop.updateSortable();
+        }
+        
+        return element;
+    }
+
+    // Remove um elemento do formulário
+    deleteElement(elementId) {
+        const index = this.formElements.findIndex(el => el.id === elementId);
+        if (index !== -1) {
+            this.formElements.splice(index, 1);
+            
+            // Se o elemento removido estava selecionado, limpa a seleção
+            if (this.selectedElement && this.selectedElement.id === elementId) {
+                this.deselectElement();
+            }
+            
+            this.renderForm();
+            this.updateJsonOutput();
+        }
+    }
+
+    // Atualiza as propriedades de um elemento
+    updateElement(elementId, newProps) {
+        const element = this.formElements.find(el => el.id === elementId);
+        if (element) {
+            element.props = { ...element.props, ...newProps };
+            this.renderForm();
+            this.updateJsonOutput();
+        }
+    }
+
+    // Move um elemento para uma nova posição
+    moveElement(elementId, newPosition) {
+        const currentIndex = this.formElements.findIndex(el => el.id === elementId);
+        if (currentIndex === -1) return;
+
+        const element = this.formElements.splice(currentIndex, 1)[0];
+        this.formElements.splice(newPosition, 0, element);
+        
+        this.renderForm();
+        this.updateJsonOutput();
+    }
+
+    // Seleciona um elemento
+    selectElement(elementId) {
+        // Remove seleção anterior
+        document.querySelectorAll('.form-element').forEach(el => {
+            el.classList.remove('ring-2', 'ring-primary-500');
+        });
+
+        // Encontra o elemento
+        const element = this.formElements.find(el => el.id === elementId);
+        if (!element) return;
+
+        this.selectedElement = element;
+        
+        // Adiciona visual de seleção
+        const elementDiv = document.querySelector(`[data-element-id="${elementId}"]`);
+        if (elementDiv) {
+            elementDiv.classList.add('ring-2', 'ring-primary-500');
+        }
+
+        // Mostra propriedades
+        this.properties.showElementProperties(element);
+    }
+
+    // Deseleciona elemento atual
+    deselectElement() {
+        document.querySelectorAll('.form-element').forEach(el => {
+            el.classList.remove('ring-2', 'ring-primary-500');
+        });
+        
+        this.selectedElement = null;
+        this.properties.hideElementProperties();
+    }
+
+    // Renderiza o formulário
+    renderForm() {
+        const container = document.getElementById('drop-zone');
+        if (!container) return;
+
+        if (this.formElements.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-12 text-gray-500 dark:text-gray-400">
+                    <svg class="mx-auto h-12 w-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <p class="text-lg font-medium mb-2">Formulário vazio</p>
+                    <p class="text-sm">Arraste elementos da barra lateral para começar a construir seu formulário</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = this.formElements.map((element, index) => {
+            const elementConfig = this.elements.getElementType(element.type);
+            if (!elementConfig) return '';
+
+            const html = elementConfig.template(element.props, element.id);
+            
+            return `
+                <div class="form-element relative group border border-transparent rounded-lg p-1 hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+                     data-element-id="${element.id}" data-element-index="${index}">
+                    
+                    <!-- Controles do elemento -->
+                    <div class="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1 z-10">
+                        <button onclick="window.formBuilder.selectElement('${element.id}')" 
+                                class="bg-primary-600 text-white rounded-full p-1 hover:bg-primary-700 shadow-lg"
+                                title="Configurar">
+                            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </button>
+                        <button onclick="window.formBuilder.deleteElement('${element.id}')" 
+                                class="bg-red-600 text-white rounded-full p-1 hover:bg-red-700 shadow-lg"
+                                title="Excluir">
+                            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Indicador de arrastar -->
+                    <div class="absolute left-1 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity cursor-move drag-handle"
+                         data-element-id="${element.id}">
+                        <svg class="h-4 w-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                        </svg>
+                    </div>
+                    
+                    <!-- Conteúdo do elemento -->
+                    <div class="ml-6">
+                        ${html}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // Adiciona event listeners para cliques nos elementos
+        document.querySelectorAll('.form-element').forEach(elementDiv => {
+            elementDiv.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const elementId = elementDiv.dataset.elementId;
+                if (elementId) {
+                    this.selectElement(elementId);
+                }
+            });
+            
+            // Event listeners removidos - condições aplicadas apenas no preview
+        });
+        
+        // Reaplica seleção se houver
+        if (this.selectedElement) {
+            const elementDiv = document.querySelector(`[data-element-id="${this.selectedElement.id}"]`);
+            if (elementDiv) {
+                elementDiv.classList.add('ring-2', 'ring-primary-500');
+            }
+        }
+    }
+
+    // Atualiza a saída JSON
+    updateJsonOutput() {
+        const jsonContainer = document.getElementById('form-json');
+        if (!jsonContainer) return;
+
+        // Coletar todas as condições dos elementos
+        const allConditions = [];
+        this.formElements.forEach(element => {
+            if (element.props.conditions && element.props.conditions.length > 0) {
+                element.props.conditions.forEach(condition => {
+                    allConditions.push({
+                        elementId: element.id,
+                        ...condition
+                    });
+                });
+            }
+        });
+
+        const formData = {
+            title: 'Formulário Personalizado',
+            description: 'Formulário criado com o construtor',
+            elements: this.formElements.map(element => {
+                const properties = { ...element.props };
+                // Substituir helpText por placeholder no JSON final
+                if (properties.helpText !== undefined) {
+                    properties.placeholder = properties.helpText;
+                    delete properties.helpText;
+                }
+                return {
+                    id: element.id,
+                    type: element.type,
+                    properties: properties
+                };
+            })
+        };
+
+        if (allConditions.length > 0) {
+            formData.conditions = allConditions;
+        }
+
+        jsonContainer.textContent = JSON.stringify(formData, null, 2);
+        
+        // Condições aplicadas apenas no preview
+    }
+
+    // Salva o formulário
+    saveForm() {
+        if (this.formElements.length === 0) {
+            alert('Adicione pelo menos um elemento ao formulário antes de salvar.');
+            return;
+        }
+
+        const formData = {
+            title: 'Formulário Personalizado',
+            description: 'Formulário criado com o construtor',
+            elements: this.formElements.map(element => {
+                const properties = { ...element.props };
+                // Substituir helpText por placeholder no JSON final
+                if (properties.helpText !== undefined) {
+                    properties.placeholder = properties.helpText;
+                    delete properties.helpText;
+                }
+                return {
+                    id: element.id,
+                    type: element.type,
+                    properties: properties
+                };
+            })
+        };
+
+        // Por enquanto, apenas mostra o JSON
+        console.log('Formulário salvo:', formData);
+        
+        // Cria um blob e faz download
+        const blob = new Blob([JSON.stringify(formData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'formulario.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        alert('Formulário salvo com sucesso!');
+    }
+
+    // Limpa o formulário
+    clearForm() {
+        if (this.formElements.length === 0) return;
+        
+        if (confirm('Tem certeza que deseja limpar todo o formulário? Esta ação não pode ser desfeita.')) {
+            this.formElements = [];
+            this.selectedElement = null;
+            this.nextId = 1;
+            
+            this.renderForm();
+            this.updateJsonOutput();
+            this.properties.hideElementProperties();
+        }
+    }
+
+    // Obter elemento por ID
+    getElement(id) {
+        return this.formElements.find(element => element.id === id);
+    }
+    
+    // Obter todos os elementos que podem ser usados como campos em condições
+    getFieldElements() {
+        return this.formElements.filter(element => {
+            const fieldTypes = ['text', 'number', 'email', 'radio', 'select', 'checkbox'];
+            return fieldTypes.includes(element.type);
+        });
+    }
+
+    // Obtém o JSON do formulário
+    getFormJson() {
+        return {
+            title: 'Formulário Personalizado',
+            description: 'Formulário criado com o construtor',
+            elements: this.formElements.map(element => {
+                const properties = { ...element.props };
+                // Substituir helpText por placeholder no JSON final
+                if (properties.helpText !== undefined) {
+                    properties.placeholder = properties.helpText;
+                    delete properties.helpText;
+                }
+                return {
+                    id: element.id,
+                    type: element.type,
+                    properties: properties
+                };
+            })
+        };
+    }
+
+    // Carrega um formulário a partir de JSON
+    loadFormFromJson(jsonData) {
+        try {
+            this.formElements = jsonData.elements.map(element => ({
+                id: element.id,
+                type: element.type,
+                props: element.properties
+            }));
+            
+            // Restaurar condições dos elementos se existirem
+            if (jsonData.conditions && Array.isArray(jsonData.conditions)) {
+                jsonData.conditions.forEach(condition => {
+                    const element = this.formElements.find(el => el.id === condition.elementId);
+                    if (element) {
+                        if (!element.props.conditions) {
+                            element.props.conditions = [];
+                        }
+                        const conditionCopy = { ...condition };
+                        delete conditionCopy.elementId;
+                        element.props.conditions.push(conditionCopy);
+                    }
+                });
+            }
+            
+            // Atualiza o próximo ID
+            const maxId = Math.max(...this.formElements.map(el => {
+                const match = el.id.match(/element_(\d+)/);
+                return match ? parseInt(match[1]) : 0;
+            }));
+            this.nextId = maxId + 1;
+            
+            this.renderForm();
+            this.updateJsonOutput();
+            this.deselectElement();
+            
+        } catch (error) {
+            console.error('Erro ao carregar formulário:', error);
+            alert('Erro ao carregar o formulário. Verifique se o JSON está correto.');
+        }
+    }
+}
+
+// Inicializa quando o DOM estiver pronto
+document.addEventListener('DOMContentLoaded', () => {
+    new FormBuilder();
+});

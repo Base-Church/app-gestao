@@ -9,10 +9,11 @@ return [
     '/geral/escalas'        => '/src/pages/geral/escalas/index.php',
     '/geral/indisponibilidades'        => '/src/pages/geral/indisponibilidades/index.php',
     '/geral/aniversariantes'        => '/src/pages/geral/aniversariantes/index.php',
-
-
     '/geral'                    => '/src/pages/geral/geral/index.php',
 
+    // Formularios
+    '/formularios'                    => '/src/pages/formularios/index.php',
+    '/formularios/criar'                    => '/src/pages/formularios/criar/index.php',
 
     // Escalas
     '/escalas'              => '/src/pages/escalas/index.php',
@@ -67,7 +68,6 @@ return [
     '/cadastro' => '/src/pages/cadastro/index.php',
     '/recuperar' => '/src/pages/recuperar-senha/index.php',
     '/logout' => '/config/auth/login.logout.php',
-
 
     // Sem ministério
     '/sem-ministerio' => '/src/pages/sem-ministerio/index.php',
