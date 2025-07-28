@@ -6,14 +6,12 @@ function initializeFormBuilder() {
     try {
         // Verifica se SortableJS está disponível
         if (!window.Sortable) {
-            console.error('SortableJS não está carregado');
             NotificationSystem.show('Erro: SortableJS não foi carregado', 'error');
             return;
         }
         
         // Inicializa o Form Builder
         window.formBuilderApp = new FormBuilder();
-        console.log('Form Builder inicializado com sucesso');
     } catch (error) {
         console.error('Erro ao inicializar Form Builder:', error);
         NotificationSystem.show('Erro ao inicializar o construtor de formulários', 'error');

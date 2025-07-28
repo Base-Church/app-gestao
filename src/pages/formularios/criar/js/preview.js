@@ -80,14 +80,15 @@ class FormPreview {
         wrapper.setAttribute('data-element-id', element.id);
         wrapper.setAttribute('data-element-type', element.type);
         
-        // Garantir que element.props existe
+        // Garantir que element.props existe e normalizar propriedades
         if (!element.props) {
-            element.props = {};
+            element.props = element.properties || {};
         }
 
         // Armazenar condições no elemento
-        if (element.props && element.props.conditions) {
-            wrapper.setAttribute('data-conditions', JSON.stringify(element.props.conditions));
+        const conditions = element.props.conditions || element.properties?.conditions;
+        if (conditions) {
+            wrapper.setAttribute('data-conditions', JSON.stringify(conditions));
         }
 
         let html = '';
@@ -202,12 +203,59 @@ class FormPreview {
                     </div>
                 `;
                 break;
+                
+            case 'cpf':
+                html = `
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            ${element.props.label || 'CPF'}
+                            ${element.props.required ? '<span class="text-red-500">*</span>' : ''}
+                        </label>
+                        <input type="text" 
+                               name="${element.props.name || element.id}"
+                               placeholder="${element.props.placeholder || '000.000.000-00'}"
+                               ${element.props.required ? 'required' : ''}
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white">
+                    </div>
+                `;
+                break;
+                
+            case 'birthdate':
+                html = `
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            ${element.props.label || 'Data de Nascimento'}
+                            ${element.props.required ? '<span class="text-red-500">*</span>' : ''}
+                        </label>
+                        <input type="date" 
+                               name="${element.props.name || element.id}"
+                               ${element.props.required ? 'required' : ''}
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white">
+                    </div>
+                `;
+                break;
+                
+            case 'datetime':
+                const datetimeType = element.props.datetimeType || 'datetime-local';
+                html = `
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            ${element.props.label || 'Data e Hora'}
+                            ${element.props.required ? '<span class="text-red-500">*</span>' : ''}
+                        </label>
+                        <input type="${datetimeType}" 
+                               name="${element.props.name || element.id}"
+                               ${element.props.required ? 'required' : ''}
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white">
+                    </div>
+                `;
+                break;
         }
         
         wrapper.innerHTML = html;
         
         // Adicionar event listeners para campos que podem afetar condições
-        if (['text', 'email', 'number', 'radio', 'select', 'checkbox'].includes(element.type)) {
+        if (['text', 'email', 'number', 'radio', 'select', 'checkbox', 'cpf', 'birthdate', 'datetime'].includes(element.type)) {
             const inputs = wrapper.querySelectorAll('input, select');
             inputs.forEach(input => {
                 input.addEventListener('change', () => {
@@ -230,25 +278,37 @@ class FormPreview {
                 const conditions = JSON.parse(element.getAttribute('data-conditions'));
                 
                 if (conditions && conditions.length > 0) {
-                    const shouldShow = this.evaluateConditions(conditions);
+                    // Avaliamos cada condição separadamente
+                    let elementVisible = true;
                     
-                    if (shouldShow) {
+                    conditions.forEach(condition => {
+                        const conditionMet = this.evaluateCondition(condition);
+                        
+                        // Aplicar ação baseada na condição
+                        if (conditionMet) {
+                            this.applyConditionAction(element, condition.action);
+                            if (condition.action === 'show') {
+                                elementVisible = true;
+                            }
+                        } else {
+                            // Se a condição não for atendida e a ação for 'show', esconder o elemento
+                            if (condition.action === 'show') {
+                                elementVisible = false;
+                            }
+                        }
+                    });
+                    
+                    // Aplicar visibilidade final
+                    if (elementVisible) {
                         element.style.display = '';
                         element.classList.remove('hidden');
-                        
-                        // Aplicar ações específicas
-                        conditions.forEach(condition => {
-                            if (this.evaluateCondition(condition)) {
-                                this.applyConditionAction(element, condition.action);
-                            }
-                        });
                     } else {
                         element.style.display = 'none';
                         element.classList.add('hidden');
                     }
                 }
             } catch (e) {
-                console.error('Erro ao avaliar condições:', e);
+                console.error('Erro ao avaliar condições:', e, element);
             }
         });
     }
@@ -258,6 +318,11 @@ class FormPreview {
     }
     
     evaluateCondition(condition) {
+        // Verificar se o campo está definido
+        if (!condition.field || condition.field.trim() === '') {
+            return false;
+        }
+        
         const targetField = this.previewForm.querySelector(`[name="${condition.field}"], [name="${condition.field}[]"]`);
         
         if (!targetField) {

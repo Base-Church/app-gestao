@@ -60,20 +60,54 @@ class FormBuilder {
 
         const elementTypes = this.elements.getElementTypes();
         
-        container.innerHTML = elementTypes.map(element => `
-            <div class="element-item bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow"
-                 draggable="true" data-type="${element.type}">
-                <div class="flex items-center space-x-3">
-                    <div class="text-primary-600 dark:text-primary-400">
-                        ${element.icon}
-                    </div>
-                    <div>
-                        <div class="font-medium text-gray-900 dark:text-white text-sm">${element.label}</div>
-                        <div class="text-xs text-gray-500 dark:text-gray-400">${element.description}</div>
-                    </div>
-                </div>
-            </div>
-        `).join('');
+        // Definir categorias
+        const categories = {
+            'Campos de Entrada': ['text', 'number', 'email'],
+            'Campos Especiais': ['cpf', 'birthdate'],
+            'Seleção': ['radio', 'select', 'checkbox'],
+            'Data e Hora': ['datetime'],
+            'Conteúdo': ['title', 'description', 'separator']
+        };
+        
+        let html = '';
+        let isFirstCategory = true;
+        
+        // Renderizar cada categoria
+        Object.entries(categories).forEach(([categoryName, elementTypesInCategory]) => {
+            const elementsInCategory = elementTypes.filter(element => 
+                elementTypesInCategory.includes(element.type)
+            );
+            
+            if (elementsInCategory.length > 0) {
+                // Adicionar espaçamento antes da categoria (exceto a primeira)
+                if (!isFirstCategory) {
+                    html += `<div class="pt-3 border-t border-gray-200 dark:border-gray-600"></div>`;
+                }
+                
+                html += `<h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">${categoryName}</h4>`;
+                
+                elementsInCategory.forEach(element => {
+                    html += `
+                        <div class="element-item bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow"
+                             draggable="true" data-type="${element.type}">
+                            <div class="flex items-center space-x-3">
+                                <div class="text-primary-600 dark:text-primary-400">
+                                    ${element.icon}
+                                </div>
+                                <div>
+                                    <div class="font-medium text-gray-900 dark:text-white text-sm">${element.label}</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">${element.description}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                isFirstCategory = false;
+            }
+        });
+        
+        container.innerHTML = html;
     }
 
     // Adiciona um elemento ao formulário
@@ -81,8 +115,11 @@ class FormBuilder {
         const elementConfig = this.elements.getElementType(elementType);
         if (!elementConfig) return null;
 
+        // Gerar ID único e aleatório
+        const randomId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        
         const element = {
-            id: `element_${this.nextId++}`,
+            id: `element_${randomId}`,
             type: elementType,
             props: { ...elementConfig.defaultProps }
         };
@@ -266,22 +303,11 @@ class FormBuilder {
         const jsonContainer = document.getElementById('form-json');
         if (!jsonContainer) return;
 
-        // Coletar todas as condições dos elementos
-        const allConditions = [];
-        this.formElements.forEach(element => {
-            if (element.props.conditions && element.props.conditions.length > 0) {
-                element.props.conditions.forEach(condition => {
-                    allConditions.push({
-                        elementId: element.id,
-                        ...condition
-                    });
-                });
-            }
-        });
+        const titleInput = document.getElementById('form-title-input');
+        const formTitle = titleInput ? titleInput.value.trim() : 'Formulário Personalizado';
 
         const formData = {
-            title: 'Formulário Personalizado',
-            description: 'Formulário criado com o construtor',
+            title: formTitle || 'Formulário Personalizado',
             elements: this.formElements.map(element => {
                 const properties = { ...element.props };
                 // Substituir helpText por placeholder no JSON final
@@ -296,10 +322,6 @@ class FormBuilder {
                 };
             })
         };
-
-        if (allConditions.length > 0) {
-            formData.conditions = allConditions;
-        }
 
         jsonContainer.textContent = JSON.stringify(formData, null, 2);
         
@@ -331,9 +353,7 @@ class FormBuilder {
             })
         };
 
-        // Por enquanto, apenas mostra o JSON
-        console.log('Formulário salvo:', formData);
-        
+        // Por enquanto, apenas mostra o JSON        
         // Cria um blob e faz download
         const blob = new Blob([JSON.stringify(formData, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -378,9 +398,11 @@ class FormBuilder {
 
     // Obtém o JSON do formulário
     getFormJson() {
+        const titleInput = document.getElementById('form-title-input');
+        const formTitle = titleInput ? titleInput.value.trim() : 'Formulário Personalizado';
+        
         return {
-            title: 'Formulário Personalizado',
-            description: 'Formulário criado com o construtor',
+            title: formTitle || 'Formulário Personalizado',
             elements: this.formElements.map(element => {
                 const properties = { ...element.props };
                 // Substituir helpText por placeholder no JSON final
@@ -405,28 +427,6 @@ class FormBuilder {
                 type: element.type,
                 props: element.properties
             }));
-            
-            // Restaurar condições dos elementos se existirem
-            if (jsonData.conditions && Array.isArray(jsonData.conditions)) {
-                jsonData.conditions.forEach(condition => {
-                    const element = this.formElements.find(el => el.id === condition.elementId);
-                    if (element) {
-                        if (!element.props.conditions) {
-                            element.props.conditions = [];
-                        }
-                        const conditionCopy = { ...condition };
-                        delete conditionCopy.elementId;
-                        element.props.conditions.push(conditionCopy);
-                    }
-                });
-            }
-            
-            // Atualiza o próximo ID
-            const maxId = Math.max(...this.formElements.map(el => {
-                const match = el.id.match(/element_(\d+)/);
-                return match ? parseInt(match[1]) : 0;
-            }));
-            this.nextId = maxId + 1;
             
             this.renderForm();
             this.updateJsonOutput();

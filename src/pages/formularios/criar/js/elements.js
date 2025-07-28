@@ -220,6 +220,83 @@ class FormElements {
                         <hr class="border-${props.color}-300 dark:border-${props.color}-600" style="border-style: ${props.style}; border-width: ${props.thickness}px;">
                     </div>
                 `
+            },
+            
+            cpf: {
+                type: 'cpf',
+                label: 'CPF',
+                icon: 'cpf',
+                defaultProps: {
+                    label: 'CPF',
+                    placeholder: '000.000.000-00',
+                    required: false,
+                    helpText: ''
+                },
+                template: (props, id) => `
+                    <div class="mb-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            ${props.label}
+                            ${props.required ? '<span class="text-red-500">*</span>' : ''}
+                        </label>
+                        <input type="text" 
+                               name="${id}"
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" 
+                               placeholder="${props.placeholder}"
+                               maxlength="14"
+                               pattern="[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}"
+                               ${props.required ? 'required' : ''}>
+                        ${props.helpText ? `<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">${props.helpText}</p>` : ''}
+                    </div>
+                `
+            },
+            
+            birthdate: {
+                type: 'birthdate',
+                label: 'Data de Nascimento',
+                icon: 'birthdate',
+                defaultProps: {
+                    label: 'Data de Nascimento',
+                    required: false,
+                    helpText: ''
+                },
+                template: (props, id) => `
+                    <div class="mb-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            ${props.label}
+                            ${props.required ? '<span class="text-red-500">*</span>' : ''}
+                        </label>
+                        <input type="date" 
+                               name="${id}"
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" 
+                               ${props.required ? 'required' : ''}>
+                        ${props.helpText ? `<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">${props.helpText}</p>` : ''}
+                    </div>
+                `
+            },
+            
+            datetime: {
+                type: 'datetime',
+                label: 'Data e Hora',
+                icon: 'datetime',
+                defaultProps: {
+                    label: 'Data e Hora',
+                    dateType: 'datetime-local',
+                    required: false,
+                    helpText: ''
+                },
+                template: (props, id) => `
+                    <div class="mb-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            ${props.label}
+                            ${props.required ? '<span class="text-red-500">*</span>' : ''}
+                        </label>
+                        <input type="${props.dateType}" 
+                               name="${id}"
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" 
+                               ${props.required ? 'required' : ''}>
+                        ${props.helpText ? `<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">${props.helpText}</p>` : ''}
+                    </div>
+                `
             }
         };
     }
@@ -255,7 +332,10 @@ class FormElements {
             checkbox: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
             title: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2"/></svg>',
             description: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>',
-            separator: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>'
+            separator: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>',
+            cpf: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>',
+            birthdate: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>',
+            datetime: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
         };
         return icons[type] || icons.text;
     }
@@ -271,7 +351,10 @@ class FormElements {
             checkbox: 'Opções de múltipla escolha',
             title: 'Título ou cabeçalho',
             description: 'Texto descritivo',
-            separator: 'Linha divisória'
+            separator: 'Linha divisória',
+            cpf: 'Campo para CPF',
+            birthdate: 'Campo de data de nascimento',
+            datetime: 'Campo de data e/ou hora'
         };
         return descriptions[type] || 'Elemento de formulário';
     }

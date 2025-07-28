@@ -1100,6 +1100,10 @@ select {
   top: 0.5rem;
 }
 
+.top-20 {
+  top: 5rem;
+}
+
 .top-3 {
   top: 0.75rem;
 }
@@ -1108,8 +1112,8 @@ select {
   top: 1rem;
 }
 
-.top-20 {
-  top: 5rem;
+.top-6 {
+  top: 1.5rem;
 }
 
 .isolate {
@@ -1559,6 +1563,10 @@ select {
   width: 2.75rem;
 }
 
+.w-11\/12 {
+  width: 91.666667%;
+}
+
 .w-12 {
   width: 3rem;
 }
@@ -1637,10 +1645,6 @@ select {
 
 .w-screen {
   width: 100vw;
-}
-
-.w-11\/12 {
-  width: 91.666667%;
 }
 
 .min-w-0 {

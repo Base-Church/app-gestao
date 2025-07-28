@@ -5,7 +5,6 @@ class DragDropManager {
         this.formContainer = document.getElementById('drop-zone');
         this.elementsContainer = document.querySelector('.col-span-3 .p-3.space-y-2');
         this.sortableInstance = null;
-        
         this.init();
     }
 

@@ -15,6 +15,11 @@ require_once __DIR__ . '/../../../components/layout/header.php';
                 <p class="mt-2 text-sm text-gray-700 dark:text-gray-400">Crie formulários personalizados com arrastar e soltar</p>
             </div>
             <div class="mt-4 sm:mt-0 flex items-center gap-4">
+                <input type="text" 
+                       id="form-title-input" 
+                       placeholder="Título do Formulário"
+                       class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                       value="Formulário Personalizado">
                 <button id="save-form-btn" 
                         class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800 transition-all duration-150 hover:scale-105">
                     <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -41,15 +46,15 @@ require_once __DIR__ . '/../../../components/layout/header.php';
         </div>
 
         <!-- Layout Principal - 3 Colunas -->
-        <div class="grid grid-cols-12 gap-6 h-screen">
+        <div id="coluna-elementos" class="grid grid-cols-12 gap-6">
             <!-- Coluna 1: Elementos (3 colunas) -->
             <div class="col-span-3">
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 h-full">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 sticky top-6" style="height: calc(100vh - 140px);">
                     <div class="p-4 border-b border-gray-200 dark:border-gray-700">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white">Elementos</h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400">Arraste os elementos para o formulário</p>
                     </div>
-                    <div class="p-3 space-y-2 overflow-y-auto" style="max-height: calc(100vh - 200px);">
+                    <div class="p-3 space-y-2 overflow-y-auto" style="height: calc(100% - 80px);">
                         <!-- Elementos de Input -->
                         <div class="space-y-1">
                             <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Campos de Entrada</h4>
@@ -121,6 +126,49 @@ require_once __DIR__ . '/../../../components/layout/header.php';
                             </div>
                         </div>
 
+                        <!-- Elementos Especiais -->
+                        <div class="space-y-1 pt-3 border-t border-gray-200 dark:border-gray-600">
+                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Elementos Especiais</h4>
+                            
+                            <!-- CPF -->
+                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" 
+                                 data-type="cpf" draggable="true">
+                                <div class="flex items-center">
+                                    <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">CPF</span>
+                                </div>
+                            </div>
+
+                            <!-- Data de Nascimento -->
+                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" 
+                                 data-type="birthdate" draggable="true">
+                                <div class="flex items-center">
+                                    <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Data de Nascimento</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Elementos Básicos Adicionais -->
+                        <div class="space-y-1 pt-3 border-t border-gray-200 dark:border-gray-600">
+                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Data e Hora</h4>
+                            
+                            <!-- Data e Hora -->
+                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" 
+                                 data-type="datetime" draggable="true">
+                                <div class="flex items-center">
+                                    <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Data e Hora</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Elementos de Conteúdo -->
                         <div class="space-y-1 pt-3 border-t border-gray-200 dark:border-gray-600">
                             <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Conteúdo</h4>
@@ -164,12 +212,12 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 
             <!-- Coluna 2: Formulário (6 colunas) -->
             <div class="col-span-6">
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 h-full">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                     <div class="p-4 border-b border-gray-200 dark:border-gray-700">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white">Formulário</h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400">Arraste elementos aqui para construir seu formulário</p>
                     </div>
-                    <div id="form-builder" class="p-6 min-h-96 overflow-y-auto" style="max-height: calc(100vh - 200px);">
+                    <div id="form-builder" class="p-6 min-h-96">
                         <div id="drop-zone" class="">
                             <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -182,7 +230,7 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 
             <!-- Coluna 3: Configurações (3 colunas) -->
             <div class="col-span-3">
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 h-full">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 sticky top-6" style="height: calc(100vh - 140px);">
                     <div class="p-4 border-b border-gray-200 dark:border-gray-700">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white">Configurações</h3>
                     </div>
@@ -200,7 +248,7 @@ require_once __DIR__ . '/../../../components/layout/header.php';
                     </div>
 
                     <!-- Tab Content -->
-                    <div class="p-4 overflow-y-auto" style="max-height: calc(100vh - 250px);">
+                    <div class="p-4 overflow-y-auto" style="height: calc(100% - 130px);">
                         <!-- Properties Tab -->
                         <div id="properties-panel" class="tab-content">
                             <div id="no-selection" class="text-center py-8">
