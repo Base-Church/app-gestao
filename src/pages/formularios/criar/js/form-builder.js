@@ -315,6 +315,14 @@ class FormBuilder {
                     properties.placeholder = properties.helpText;
                     delete properties.helpText;
                 }
+                // Garante que options de radio/select/checkbox são [{id,label}]
+                if (["radio","select","checkbox"].includes(element.type) && Array.isArray(properties.options)) {
+                    properties.options = properties.options.map(opt =>
+                        typeof opt === 'object' && opt !== null && 'id' in opt && 'label' in opt
+                            ? opt
+                            : { id: 'op' + Math.random().toString(36).substr(2, 6), label: String(opt) }
+                    );
+                }
                 return {
                     id: element.id,
                     type: element.type,
@@ -329,44 +337,60 @@ class FormBuilder {
     }
 
     // Salva o formulário
-    saveForm() {
-        if (this.formElements.length === 0) {
-            alert('Adicione pelo menos um elemento ao formulário antes de salvar.');
-            return;
-        }
+    async saveForm() {
+        try {
+            if (this.formElements.length === 0) {
+                alert('Adicione pelo menos um elemento ao formulário antes de salvar.');
+                return;
+            }
 
-        const formData = {
-            title: 'Formulário Personalizado',
-            description: 'Formulário criado com o construtor',
-            elements: this.formElements.map(element => {
-                const properties = { ...element.props };
-                // Substituir helpText por placeholder no JSON final
-                if (properties.helpText !== undefined) {
-                    properties.placeholder = properties.helpText;
-                    delete properties.helpText;
+            const formTitle = document.getElementById('form-title-input')?.value || 'Formulário Personalizado';
+            const processoEtapaInput = document.getElementById('processo-etapa-select');
+            const processoEtapaValue = processoEtapaInput ? processoEtapaInput.value.trim() : '';
+            
+            // Converter string separada por vírgula em array (pode ser vazio)
+            const processoEtapaIds = processoEtapaValue ? processoEtapaValue.split(',').filter(id => id.trim()).map(id => parseInt(id.trim())) : [];
+
+            // Importa e usa a API
+            const { FormulariosAPI } = await import('./api.js');
+            const api = new FormulariosAPI();
+            const ministerioId = api.getMinisterioId();
+
+            const formData = {
+                nome: formTitle,
+                processo_etapa_ids: processoEtapaIds,
+                ministerio_id: ministerioId,
+                dados: {
+                    elements: this.formElements.map(element => {
+                        const properties = { ...element.props };
+                        // Substituir helpText por placeholder no JSON final
+                        if (properties.helpText !== undefined) {
+                            properties.placeholder = properties.helpText;
+                            delete properties.helpText;
+                        }
+                        return {
+                            id: element.id,
+                            type: element.type,
+                            properties: properties
+                        };
+                    })
                 }
-                return {
-                    id: element.id,
-                    type: element.type,
-                    properties: properties
-                };
-            })
-        };
+            };
 
-        // Por enquanto, apenas mostra o JSON        
-        // Cria um blob e faz download
-        const blob = new Blob([JSON.stringify(formData, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'formulario.json';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+            // Usa a API para salvar o formulário
+            const result = await api.createFormulario(formData);
+            
+            alert('Formulário salvo com sucesso!');
+            // Opcional: limpar formulário após salvar
+            // this.clearForm();
 
-        alert('Formulário salvo com sucesso!');
+        } catch (error) {
+            console.error('Erro ao salvar formulário:', error);
+            alert('Erro ao salvar formulário: ' + error.message);
+        }
     }
+
+
 
     // Limpa o formulário
     clearForm() {
@@ -410,6 +434,14 @@ class FormBuilder {
                     properties.placeholder = properties.helpText;
                     delete properties.helpText;
                 }
+                // Garante que options de radio/select/checkbox são [{id,label}]
+                if (["radio","select","checkbox"].includes(element.type) && Array.isArray(properties.options)) {
+                    properties.options = properties.options.map(opt =>
+                        typeof opt === 'object' && opt !== null && 'id' in opt && 'label' in opt
+                            ? opt
+                            : { id: 'op' + Math.random().toString(36).substr(2, 6), label: String(opt) }
+                    );
+                }
                 return {
                     id: element.id,
                     type: element.type,
@@ -438,6 +470,9 @@ class FormBuilder {
         }
     }
 }
+
+// Exporta a classe para uso em módulos
+export { FormBuilder };
 
 // Inicializa quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', () => {

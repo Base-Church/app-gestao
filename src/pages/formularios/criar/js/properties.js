@@ -452,11 +452,16 @@ class PropertiesManager {
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Opções</label>
                     <div id="options-container" class="space-y-2">
                         ${element.props.options.map((option, index) => `
-                            <div class="flex items-center space-x-2">
-                                <input type="text" value="${option}" data-option-index="${index}" 
-                                       class="option-input flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
-                                <button onclick="this.parentElement.remove(); window.formBuilder.properties.updateOptionsFromInputs()" 
-                                        class="text-red-600 hover:text-red-800 p-1">
+                            <div class="flex items-center gap-2">
+                                <input type="text" value="${option.label}" data-option-index="${index}" data-option-field="label"
+                                       class="option-label-input grow px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm" placeholder="Texto da opção">
+                                <button type="button" class="copy-option-id text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 p-1 flex-shrink-0" data-option-id="${option.id}" title="Copiar ID">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16h8M8 12h8m-7 8h6a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                </button>
+                                <button onclick="this.parentElement.remove(); window.formBuilder.properties.removeOption(${index})" 
+                                        class="text-red-600 hover:text-red-800 p-1 flex-shrink-0" title="Remover opção">
                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                     </svg>
@@ -683,46 +688,89 @@ class PropertiesManager {
         
         element.props[propertyName] = value;
         this.formBuilder.updateElement(element.id, element.props);
+        this.formBuilder.renderForm();
     }
 
-    // Adiciona uma nova opção
+    // Adiciona uma nova opção com id único e label
     addOption() {
-        const container = document.getElementById('options-container');
-        const newIndex = container.children.length;
-        
-        const optionDiv = document.createElement('div');
-        optionDiv.className = 'flex items-center space-x-2';
-        optionDiv.innerHTML = `
-            <input type="text" value="Nova opção" data-option-index="${newIndex}" 
-                   class="option-input flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
-            <button onclick="this.parentElement.remove(); window.formBuilder.properties.updateOptionsFromInputs()" 
-                    class="text-red-600 hover:text-red-800 p-1">
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        `;
-        
-        container.appendChild(optionDiv);
-        
-        // Adiciona listener ao novo input
-        const newInput = optionDiv.querySelector('.option-input');
-        newInput.addEventListener('input', () => {
-            this.updateOptionsFromInputs();
-        });
-        
-        this.updateOptionsFromInputs();
+        if (!this.currentElement) return;
+        if (!Array.isArray(this.currentElement.props.options)) this.currentElement.props.options = [];
+        this.currentElement.props.options.push({ id: 'opt_' + Math.random().toString(36).substr(2, 9), label: 'Nova opção' });
+        this.formBuilder.updateElement(this.currentElement.id, this.currentElement.props);
+        this.renderProperties(this.currentElement);
     }
 
-    // Atualiza as opções baseado nos inputs
+    // Atualiza apenas os labels das opções existentes
     updateOptionsFromInputs() {
-        if (!this.currentElement) return;
-        
-        const optionInputs = document.querySelectorAll('.option-input');
-        const options = Array.from(optionInputs).map(input => input.value).filter(value => value.trim() !== '');
-        
-        this.currentElement.props.options = options;
+        if (!this.currentElement || !Array.isArray(this.currentElement.props.options)) return;
+        const optionLabelInputs = document.querySelectorAll('.option-label-input');
+        for (let i = 0; i < optionLabelInputs.length; i++) {
+            if (this.currentElement.props.options[i]) {
+                this.currentElement.props.options[i].label = optionLabelInputs[i].value;
+            }
+        }
         this.formBuilder.updateElement(this.currentElement.id, this.currentElement.props);
+        this.formBuilder.renderForm();
+    }
+
+    // Remove uma opção específica
+    removeOption(index) {
+        if (!this.currentElement || !Array.isArray(this.currentElement.props.options)) return;
+        this.currentElement.props.options.splice(index, 1);
+        this.formBuilder.updateElement(this.currentElement.id, this.currentElement.props);
+        this.renderProperties(this.currentElement);
+    }
+    // Adiciona listeners para copiar ID das opções
+    setupPropertyListeners(element) {
+        const inputs = this.propertiesPanel.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                this.updateElementProperty(element, input);
+            });
+            input.addEventListener('change', () => {
+                this.updateElementProperty(element, input);
+            });
+        });
+
+        // Listener especial para inputs de opções
+        const optionLabelInputs = this.propertiesPanel.querySelectorAll('.option-label-input');
+        const optionIdInputs = this.propertiesPanel.querySelectorAll('.option-id-input');
+        optionLabelInputs.forEach(input => {
+            input.addEventListener('input', () => {
+                this.updateOptionsFromInputs();
+            });
+        });
+        optionIdInputs.forEach(input => {
+            input.addEventListener('input', () => {
+                this.updateOptionsFromInputs();
+            });
+        });
+
+        // Botão de copiar ID
+        const copyButtons = this.propertiesPanel.querySelectorAll('.copy-option-id');
+        copyButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const id = btn.getAttribute('data-option-id');
+                if (id) {
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(id);
+                    } else {
+                        const tempInput = document.createElement('input');
+                        tempInput.value = id;
+                        document.body.appendChild(tempInput);
+                        tempInput.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(tempInput);
+                    }
+                    if (window.NotificationSystem) {
+                        window.NotificationSystem.show('ID copiado: ' + id, 'success', 2000);
+                    } else {
+                        alert('ID copiado: ' + id);
+                    }
+                }
+            });
+        });
     }
 }
 

@@ -9,39 +9,65 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 <main class="mt-24 lg:ml-64 px-6 pb-8">
     <div class="max-w-full mx-auto">
         <!-- Cabeçalho da Página -->
-        <div class="sm:flex sm:items-center sm:justify-between mb-8">
-            <div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+            <div class="flex items-center justify-between mb-4">
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Construtor de Formulários</h1>
-                <p class="mt-2 text-sm text-gray-700 dark:text-gray-400">Crie formulários personalizados com arrastar e soltar</p>
-            </div>
-            <div class="mt-4 sm:mt-0 flex items-center gap-4">
-                <input type="text" 
-                       id="form-title-input" 
-                       placeholder="Título do Formulário"
-                       class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
-                       value="Formulário Personalizado">
-                <button id="save-form-btn" 
-                        class="inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800 transition-all duration-150 hover:scale-105">
-                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"/>
-                    </svg>
-                    Salvar Formulário
-                </button>
-                <button id="preview-form-btn" 
-                        class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800 transition-all duration-150">
-                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                    </svg>
-                    Preview
-                </button>
-                <button id="clear-form-btn" 
-                        class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800 transition-all duration-150">
-                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
-                    Limpar
-                </button>
+                <div class="flex gap-2">
+                        <button id="save-form-btn" 
+                                class="inline-flex items-center justify-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800 transition-all duration-200 hover:shadow-md">
+                            <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"/>
+                            </svg>
+                            Salvar
+                        </button>
+                        <button id="preview-form-btn" 
+                                class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800 transition-all duration-150">
+                            <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                            Preview
+                        </button>
+                        <button id="clear-form-btn" 
+                                class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800 transition-all duration-150">
+                            <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            Limpar
+                        </button>
+                    </div>
+                </div>
+            
+            <!-- Campos de configuração -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Título do Formulário</label>
+                    <input type="text" 
+                           id="form-title-input" 
+                           placeholder="Digite o título do formulário"
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white transition-colors"
+                           value="Formulário Personalizado">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Etapas do Processo</label>
+                    <el-dropdown class="relative w-full">
+                        <button id="processo-etapa-button" class="w-full px-3 py-2 text-left bg-white border border-gray-300 rounded-md text-sm text-gray-900 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600 flex justify-between items-center transition-colors">
+                            <span id="selected-etapas-text" class="truncate">Selecione as etapas</span>
+                            <svg class="w-4 h-4 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        
+                        <el-menu id="processo-etapa-menu" anchor="bottom start" popover class="absolute z-50 mt-1 bg-white border border-gray-300 rounded-md shadow-lg dark:bg-gray-700 dark:border-gray-600" style="max-height: 200px; overflow-y: auto;">
+                            <div class="py-1" id="etapas-list">
+                                <!-- Opções serão carregadas via JavaScript -->
+                            </div>
+                        </el-menu>
+                    </el-dropdown>
+                    <!-- Hidden input para armazenar os IDs selecionados -->
+                    <input type="hidden" id="processo-etapa-select" name="processo_etapa_ids" value="">
+                </div>
             </div>
         </div>
 
@@ -362,9 +388,10 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/criar/js/elements.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/criar/js/drag-drop.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/criar/js/properties.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/criar/js/form-builder.js"></script>
+<script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/criar/js/form-builder.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/criar/js/preview.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/criar/js/main.js"></script>
+<script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/criar/js/api.js"></script>
+<script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/criar/js/main.js"></script>
 
 
 

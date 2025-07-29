@@ -5,73 +5,73 @@ return [
     '/inicio' => '/src/pages/inicio/index.php',
 
     // Geral
-    '/geral/voluntarios'        => '/src/pages/geral/voluntarios/index.php',
-    '/geral/escalas'        => '/src/pages/geral/escalas/index.php',
-    '/geral/indisponibilidades'        => '/src/pages/geral/indisponibilidades/index.php',
-    '/geral/aniversariantes'        => '/src/pages/geral/aniversariantes/index.php',
-    '/geral'                    => '/src/pages/geral/geral/index.php',
+    '/geral/voluntarios'                    => '/src/pages/geral/voluntarios/index.php',
+    '/geral/escalas'                        => '/src/pages/geral/escalas/index.php',
+    '/geral/indisponibilidades'             => '/src/pages/geral/indisponibilidades/index.php',
+    '/geral/aniversariantes'                => '/src/pages/geral/aniversariantes/index.php',
+    '/geral'                                => '/src/pages/geral/geral/index.php',
 
     // Formularios
-    '/formularios'                    => '/src/pages/formularios/index.php',
+    '/formularios'                          => '/src/pages/formularios/index.php',
     '/formularios/criar'                    => '/src/pages/formularios/criar/index.php',
 
     // Escalas
-    '/escalas'              => '/src/pages/escalas/index.php',
-    '/escalas/criar'        => '/src/pages/escalas/criar/index.php',
-    '/escalas/criar/v2'    => '/src/pages/escalas/v2/index.php',
-    '/escalas/editar'       => '/src/pages/escalas/editar/index.php',
+    '/escalas'                              => '/src/pages/escalas/index.php',
+    '/escalas/criar'                        => '/src/pages/escalas/criar/index.php',
+    '/escalas/criar/v2'                     => '/src/pages/escalas/v2/index.php',
+    '/escalas/editar'                       => '/src/pages/escalas/editar/index.php',
 
-    '/musicas'              => '/src/pages/musicas/index.php',
-    '/musica'               => '/src/pages/musicas/detalhes/index.php',
+    '/musicas'                              => '/src/pages/musicas/index.php',
+    '/musica'                               => '/src/pages/musicas/detalhes/index.php',
 
     // Modelos
-    '/modelos'              => '/src/pages/modelos/index.php',
-    '/modelos/criar'       => '/src/pages/modelos/criar.php',
+    '/modelos'                              => '/src/pages/modelos/index.php',
+    '/modelos/criar'                        => '/src/pages/modelos/criar.php',
 
     // Ministérios
-    '/ministerios' => '/src/pages/ministerios/index.php',
+    '/ministerios'                          => '/src/pages/ministerios/index.php',
 
     // Solicitações
-    '/solicitacoes' => '/src/pages/solicitacoes/index.php',
+    '/solicitacoes'                         => '/src/pages/solicitacoes/index.php',
 
     // Liderança
-    '/lideres' => '/src/pages/lideres/index.php',
+    '/lideres'                              => '/src/pages/lideres/index.php',
 
     // Atividades
-    '/categoria-atividade' => '/src/pages/categoria-atividade/index.php',
-    '/atividades' => '/src/pages/atividades/index.php',
+    '/categoria-atividade'                  => '/src/pages/categoria-atividade/index.php',
+    '/atividades'                           => '/src/pages/atividades/index.php',
 
     // Eventos
-    '/eventos' => '/src/pages/eventos/index.php',
+    '/eventos'                              => '/src/pages/eventos/index.php',
 
     // Recados
-    '/recados' => '/src/pages/recados/index.php',
+    '/recados'                              => '/src/pages/recados/index.php',
 
     // Voluntários
-    '/voluntarios' => '/src/pages/voluntarios/index.php',
-    '/calendario' => '/src/pages/calendario/index.php',
-    '/observacoes' => '/src/pages/observacoes/index.php',
+    '/voluntarios'                          => '/src/pages/voluntarios/index.php',
+    '/calendario'                           => '/src/pages/calendario/index.php',
+    '/observacoes'                          => '/src/pages/observacoes/index.php',
 
     // Ordem de culto
-    '/orden-culto' => '/src/pages/orden-culto/index.php',
+    '/orden-culto'                          => '/src/pages/orden-culto/index.php',
 
     // Disparador de Mensagens
-    '/disparador' => '/src/pages/disparador/index.php',
-    '/disparador/criar' => '/src/pages/disparador/criar/index.php',
-    '/disparador/historico' => '/src/pages/disparador/historico.php',
+    '/disparador'                           => '/src/pages/disparador/index.php',
+    '/disparador/criar'                     => '/src/pages/disparador/criar/index.php',
+    '/disparador/historico'                 => '/src/pages/disparador/historico.php',
 
     // Configurações
-    '/configuracoes' => '/src/pages/configuracoes/index.php',
+    '/configuracoes'                        => '/src/pages/configuracoes/index.php',
 
     // Páginas públicas
-    '/login' => '/src/pages/login/index.php',
-    '/cadastro' => '/src/pages/cadastro/index.php',
-    '/recuperar' => '/src/pages/recuperar-senha/index.php',
-    '/logout' => '/config/auth/login.logout.php',
+    '/login'                                => '/src/pages/login/index.php',
+    '/cadastro'                             => '/src/pages/cadastro/index.php',
+    '/recuperar'                            => '/src/pages/recuperar-senha/index.php',
+    '/logout'                               => '/config/auth/login.logout.php',
 
     // Sem ministério
-    '/sem-ministerio' => '/src/pages/sem-ministerio/index.php',
+    '/sem-ministerio'                       => '/src/pages/sem-ministerio/index.php',
 
     // Aniversariantes
-    '/aniversariantes' => '/src/pages/aniversariantes/index.php',
+    '/aniversariantes'                      => '/src/pages/aniversariantes/index.php',
 ];
