@@ -52,7 +52,7 @@ if (!$organizacao_id) {
 }
 
 // Monta a URL da API para deletar escala
-$apiUrl = $_ENV['API_BASE_URL'] . "/escalas/{$escalaId}";
+$apiUrl = $_ENV['API_BASE_URL'] . "/escalas/{$escalaId}?organizacao_id=1";
 
 // Configuração do cURL
 $ch = curl_init($apiUrl);

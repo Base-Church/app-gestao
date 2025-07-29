@@ -27,6 +27,4 @@ export class EscalasAPI {
             throw new Error(error.message || 'Erro ao buscar escalas');
         }
     }
-
-    // Métodos para create, update, delete podem ser adicionados conforme necessidade
 }
