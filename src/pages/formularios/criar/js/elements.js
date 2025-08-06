@@ -100,14 +100,14 @@ class FormElements {
                             ${props.required ? '<span class="text-red-500">*</span>' : ''}
                         </label>
                         <div class="space-y-2">
-                            ${props.options.map((option, index) => `
+                            ${(props.options && Array.isArray(props.options) ? props.options : []).map((option, index) => `
                                 <div class="flex items-center">
                                     <input type="radio" 
                                            id="${id}_option_${index}" 
                                            name="${id}" 
-                                           value="${option.id}"
+                                           value="${option.id || option.value || ''}"
                                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600">
-                                    <label for="${id}_option_${index}" class="ml-2 text-sm text-gray-700 dark:text-gray-300">${option.label}</label>
+                                    <label for="${id}_option_${index}" class="ml-2 text-sm text-gray-700 dark:text-gray-300">${option.label || option.text || 'Opção'}</label>
                                 </div>
                             `).join('')}
                         </div>
@@ -140,7 +140,7 @@ class FormElements {
                                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" 
                                 ${props.required ? 'required' : ''}>
                             <option value="">${props.placeholder}</option>
-                            ${props.options.map(option => `<option value="${option.id}">${option.label}</option>`).join('')}
+                            ${(props.options && Array.isArray(props.options) ? props.options : []).map(option => `<option value="${option.id || option.value || ''}">${option.label || option.text || 'Opção'}</option>`).join('')}
                         </select>
                         ${props.helpText ? `<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">${props.helpText}</p>` : ''}
                     </div>
@@ -167,14 +167,14 @@ class FormElements {
                             ${props.required ? '<span class="text-red-500">*</span>' : ''}
                         </label>
                         <div class="space-y-2">
-                            ${props.options.map((option, index) => `
+                            ${(props.options && Array.isArray(props.options) ? props.options : []).map((option, index) => `
                                 <div class="flex items-center">
                                     <input type="checkbox" 
                                            id="${id}_option_${index}" 
                                            name="${id}[]" 
-                                           value="${option.id}"
+                                           value="${option.id || option.value || ''}"
                                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
-                                    <label for="${id}_option_${index}" class="ml-2 text-sm text-gray-700 dark:text-gray-300">${option.label}</label>
+                                    <label for="${id}_option_${index}" class="ml-2 text-sm text-gray-700 dark:text-gray-300">${option.label || option.text || 'Opção'}</label>
                                 </div>
                             `).join('')}
                         </div>

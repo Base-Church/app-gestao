@@ -384,14 +384,17 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 </div>
 
 <!-- Scripts da página -->
+
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/criar/js/elements.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/criar/js/drag-drop.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/criar/js/properties.js"></script>
-<script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/criar/js/form-builder.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/criar/js/preview.js"></script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/criar/js/api.js"></script>
+<script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/criar/js/form-builder.js"></script>
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/criar/js/main.js"></script>
+<script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/criar/js/edit-formulario.js"></script>
+
 
 
 
@@ -404,6 +407,6 @@ require_once __DIR__ . '/../../../components/layout/header.php';
         transform: rotate(3deg) scale(1.05);
         transition: transform 0.2s ease;
     }
-    </style>
+</style>
 
 <?php require_once __DIR__ . '/../../../components/layout/footer.php'; ?>

@@ -451,11 +451,11 @@ class PropertiesManager {
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Opções</label>
                     <div id="options-container" class="space-y-2">
-                        ${element.props.options.map((option, index) => `
+                        ${(element.props.options || []).map((option, index) => `
                             <div class="flex items-center gap-2">
-                                <input type="text" value="${option.label}" data-option-index="${index}" data-option-field="label"
+                                <input type="text" value="${option.label || option.text || 'Opção'}" data-option-index="${index}" data-option-field="label"
                                        class="option-label-input grow px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm" placeholder="Texto da opção">
-                                <button type="button" class="copy-option-id text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 p-1 flex-shrink-0" data-option-id="${option.id}" title="Copiar ID">
+                                <button type="button" class="copy-option-id text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 p-1 flex-shrink-0" data-option-id="${option.id || option.value || ''}" title="Copiar ID">
                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16h8M8 12h8m-7 8h6a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>

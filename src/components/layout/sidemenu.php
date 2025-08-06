@@ -6,6 +6,9 @@ $currentPath = $_SERVER['REQUEST_URI'];
 $escalasActive = strpos($currentPath, '/escalas') !== false || strpos($currentPath, '/modelos') !== false || strpos($currentPath, '/musicas') !== false;
 $atividadesActive = strpos($currentPath, '/atividades') !== false || strpos($currentPath, '/categoria-atividade') !== false;
 $voluntariosActive = strpos($currentPath, '/voluntarios') !== false || strpos($currentPath, '/calendario') !== false || strpos($currentPath, '/observacoes') !== false;
+$ministeriosActive = strpos($currentPath, '/ministerios') !== false || strpos($currentPath, '/solicitacoes') !== false || strpos($currentPath, '/recados') !== false || strpos($currentPath, '/aniversariantes') !== false;
+$processosActive = strpos($currentPath, '/processos') !== false;
+$ferramentasActive = strpos($currentPath, '/formularios') !== false || strpos($currentPath, '/disparador') !== false;
 ?>
 
 <!-- Botão Toggle Menu Mobile -->
@@ -83,37 +86,45 @@ $voluntariosActive = strpos($currentPath, '/voluntarios') !== false || strpos($c
                            class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
                             <span>Modelos</span>
                         </a>
+                        <a href="<?php echo $_ENV['URL_BASE']; ?>/musicas" 
+                           class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+                            <span>Músicas</span>
+                        </a>
                     </div>
                 </div>
 
-                <!-- Ministérios -->
-                <a href="<?php echo $_ENV['URL_BASE']; ?>/ministerios" 
-                   class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
-                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                    </svg>
-                    <span class="font-medium">Ministérios</span>
-                </a>
-                <!-- Solicitações -->
-                <a href="<?php echo $_ENV['URL_BASE']; ?>/solicitacoes" 
-                   class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
-                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h6q.425 0 .713.288T12 4t-.288.713T11 5H5v14h14v-6q0-.425.288-.712T20 12t.713.288T21 13v6q0 .825-.587 1.413T19 21zM19 6.4L10.4 15q-.275.275-.7.275T9 15t-.275-.7t.275-.7L17.6 5H15q-.425 0-.712-.288T14 4t.288-.712T15 3h5q.425 0 .713.288T21 4v5q0 .425-.288.713T20 10t-.712-.288T19 9z"/>
-                    </svg>
-                    <span class="font-medium">Solicitações</span>
-                </a>
-                <!-- Músicas -->
-                <a href="<?php echo $_ENV['URL_BASE']; ?>/musicas" 
-                   class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
-                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <g stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 18V5.716a2 2 0 0 1 1.696-1.977l9-1.385A2 2 0 0 1 21 4.331V16"/>
-                            <path d="m8 9l13-2"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 18a3 3 0 1 1-6 0c0-1.657 1.343-2 3-2s3 .343 3 2m13-2a3 3 0 1 1-6 0c0-1.657 1.343-2 3-2s3 .343 3 2"/>
-                        </g>
-                    </svg>
-                    <span class="font-medium">Músicas</span>
-                </a>
+                <!-- Ministérios (submenu) -->
+                <div class="space-y-1">
+                    <button type="button" onclick="toggleSubMenu('ministeriosSubMenu', this)" 
+                            aria-expanded="<?= $ministeriosActive ? 'true' : 'false' ?>"
+                            class="w-full flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group focus:outline-none">
+                        <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        <span class="font-medium flex-1 text-left">Ministérios</span>
+                        <svg id="ministeriosArrow" class="w-4 h-4 ml-auto transition-transform duration-200 <?= $ministeriosActive ? 'rotate-180' : '' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="ministeriosSubMenu" class="<?= $ministeriosActive ? '' : 'hidden' ?> pl-11 space-y-1">
+                        <a href="<?php echo $_ENV['URL_BASE']; ?>/ministerios" 
+                           class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+                            <span>Ver Ministérios</span>
+                        </a>
+                        <a href="<?php echo $_ENV['URL_BASE']; ?>/solicitacoes" 
+                           class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+                            <span>Solicitações</span>
+                        </a>
+                        <a href="<?php echo $_ENV['URL_BASE']; ?>/recados" 
+                           class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+                            <span>Recados</span>
+                        </a>
+                        <a href="<?php echo $_ENV['URL_BASE']; ?>/aniversariantes" 
+                           class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+                            <span>Aniversariantes</span>
+                        </a>
+                    </div>
+                </div>
                 <!-- Atividades (submenu) -->
                 <div class="space-y-1">
                     <button type="button" onclick="toggleSubMenu('atividadesSubMenu', this)" 
@@ -146,14 +157,6 @@ $voluntariosActive = strpos($currentPath, '/voluntarios') !== false || strpos($c
                     </svg>
                     <span class="font-medium">Eventos</span>
                 </a>
-                <!-- Recados -->
-                <a href="<?php echo $_ENV['URL_BASE']; ?>/recados" 
-                   class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
-                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-                    </svg>
-                    <span class="font-medium">Recados</span>
-                </a>
                 <!-- Voluntários (submenu) -->
                 <div class="space-y-1">
                     <button type="button" onclick="toggleSubMenu('voluntariosSubMenu', this)" 
@@ -180,9 +183,38 @@ $voluntariosActive = strpos($currentPath, '/voluntarios') !== false || strpos($c
                            class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
                             <span>Observações</span>
                         </a>
-                        <a href="<?php echo $_ENV['URL_BASE']; ?>/aniversariantes" 
+                    </div>
+                </div>
+                <!-- Processos -->
+                <a href="<?php echo $_ENV['URL_BASE']; ?>/processos" 
+                   class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
+                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span class="font-medium">Processos</span>
+                </a>
+                <!-- Ferramentas (submenu) -->
+                <div class="space-y-1">
+                    <button type="button" onclick="toggleSubMenu('ferramentasSubMenu', this)" 
+                            aria-expanded="<?= $ferramentasActive ? 'true' : 'false' ?>"
+                            class="w-full flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group focus:outline-none">
+                        <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span class="font-medium flex-1 text-left">Ferramentas</span>
+                        <svg id="ferramentasArrow" class="w-4 h-4 ml-auto transition-transform duration-200 <?= $ferramentasActive ? 'rotate-180' : '' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="ferramentasSubMenu" class="<?= $ferramentasActive ? '' : 'hidden' ?> pl-11 space-y-1">
+                        <a href="<?php echo $_ENV['URL_BASE']; ?>/formularios" 
                            class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
-                            <span>Aniversariantes</span>
+                            <span>Formulários</span>
+                        </a>
+                        <a href="<?php echo $_ENV['URL_BASE']; ?>/disparador" 
+                           class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+                            <span>Disparador</span>
                         </a>
                     </div>
                 </div>
@@ -193,14 +225,6 @@ $voluntariosActive = strpos($currentPath, '/voluntarios') !== false || strpos($c
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                     </svg>
                     <span class="font-medium">Orden de culto</span>
-                </a>
-                <!-- Disparador de Mensagens -->
-                <a href="<?php echo $_ENV['URL_BASE']; ?>/disparador" 
-                   class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
-                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                    </svg>
-                    <span class="font-medium">Disparador</span>
                 </a>
                 <!-- Configurações -->
                 <a href="<?php echo $_ENV['URL_BASE']; ?>/configuracoes" class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
@@ -391,6 +415,18 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('voluntariosSubMenu')?.classList.remove('hidden');
         document.getElementById('voluntariosArrow')?.classList.add('rotate-180');
         document.querySelector('button[onclick*="voluntariosSubMenu"]')?.setAttribute('aria-expanded', 'true');
+    <?php endif; ?>
+    <?php if (!$ministeriosActive): ?>document.getElementById('ministeriosSubMenu')?.classList.add('hidden');<?php endif; ?>
+    <?php if ($ministeriosActive): ?>
+        document.getElementById('ministeriosSubMenu')?.classList.remove('hidden');
+        document.getElementById('ministeriosArrow')?.classList.add('rotate-180');
+        document.querySelector('button[onclick*="ministeriosSubMenu"]')?.setAttribute('aria-expanded', 'true');
+    <?php endif; ?>
+    <?php if (!$ferramentasActive): ?>document.getElementById('ferramentasSubMenu')?.classList.add('hidden');<?php endif; ?>
+    <?php if ($ferramentasActive): ?>
+        document.getElementById('ferramentasSubMenu')?.classList.remove('hidden');
+        document.getElementById('ferramentasArrow')?.classList.add('rotate-180');
+        document.querySelector('button[onclick*="ferramentasSubMenu"]')?.setAttribute('aria-expanded', 'true');
     <?php endif; ?>
 });
 </script>

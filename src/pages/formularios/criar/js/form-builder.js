@@ -356,6 +356,10 @@ class FormBuilder {
             const api = new FormulariosAPI();
             const ministerioId = api.getMinisterioId();
 
+            // Verificar se é edição (tem ID na URL)
+            const urlParams = new URLSearchParams(window.location.search);
+            const formularioId = urlParams.get('id');
+
             const formData = {
                 nome: formTitle,
                 processo_etapa_ids: processoEtapaIds,
@@ -368,6 +372,14 @@ class FormBuilder {
                             properties.placeholder = properties.helpText;
                             delete properties.helpText;
                         }
+                        // Garante que options de radio/select/checkbox são [{id,label}]
+                        if (["radio","select","checkbox"].includes(element.type) && Array.isArray(properties.options)) {
+                            properties.options = properties.options.map(opt =>
+                                typeof opt === 'object' && opt !== null && 'id' in opt && 'label' in opt
+                                    ? opt
+                                    : { id: 'op' + Math.random().toString(36).substr(2, 6), label: String(opt) }
+                            );
+                        }
                         return {
                             id: element.id,
                             type: element.type,
@@ -377,12 +389,18 @@ class FormBuilder {
                 }
             };
 
-            // Usa a API para salvar o formulário
-            const result = await api.createFormulario(formData);
+            // Não precisa adicionar ID ao formData pois será passado como parâmetro
+
+            // Usa a API para salvar ou atualizar o formulário
+            const result = formularioId 
+                ? await api.updateFormulario(formularioId, formData)
+                : await api.createFormulario(formData);
             
-            alert('Formulário salvo com sucesso!');
-            // Opcional: limpar formulário após salvar
-            // this.clearForm();
+            const message = formularioId ? 'Formulário atualizado com sucesso!' : 'Formulário salvo com sucesso!';
+            alert(message);
+            
+            // Redirecionar para a lista de formulários
+            window.location.href = `${window.location.origin}${window.location.pathname.replace('/criar', '').replace('/editar', '')}`;
 
         } catch (error) {
             console.error('Erro ao salvar formulário:', error);
@@ -454,11 +472,37 @@ class FormBuilder {
     // Carrega um formulário a partir de JSON
     loadFormFromJson(jsonData) {
         try {
-            this.formElements = jsonData.elements.map(element => ({
-                id: element.id,
-                type: element.type,
-                props: element.properties
-            }));
+            this.formElements = jsonData.elements.map(element => {
+                const elementConfig = this.elements.getElementType(element.type);
+                const props = { ...element.properties };
+                
+                // Para elementos com opções (select, radio, checkbox), garantir que options existe e está no formato correto
+                if (['select', 'radio', 'checkbox'].includes(element.type)) {
+                    if (!props.options || !Array.isArray(props.options)) {
+                        props.options = elementConfig ? elementConfig.defaultProps.options : [];
+                    } else {
+                        // Normalizar opções para garantir estrutura {id, label}
+                        props.options = props.options.map(opt => {
+                            if (typeof opt === 'string') {
+                                return { id: 'opt_' + Math.random().toString(36).substr(2, 9), label: opt };
+                            }
+                            if (typeof opt === 'object' && opt !== null) {
+                                return {
+                                    id: opt.id || opt.value || 'opt_' + Math.random().toString(36).substr(2, 9),
+                                    label: opt.label || opt.text || opt.name || 'Opção'
+                                };
+                            }
+                            return { id: 'opt_' + Math.random().toString(36).substr(2, 9), label: 'Opção' };
+                        });
+                    }
+                }
+                
+                return {
+                    id: element.id,
+                    type: element.type,
+                    props: props
+                };
+            });
             
             this.renderForm();
             this.updateJsonOutput();
