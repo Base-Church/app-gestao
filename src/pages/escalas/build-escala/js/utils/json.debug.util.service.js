@@ -7,7 +7,7 @@
         }
 
         // Cria o modal
-        fetch(window.APP_CONFIG.baseUrl + '/src/pages/escalas/criar/components/json-debug-modal.php')
+        fetch(window.APP_CONFIG.baseUrl + '/src/pages/escalas/build-escala/components/json-debug-modal.php')
             .then(r => r.text())
             .then(html => {
                 const modalDiv = document.createElement('div');

@@ -1,5 +1,4 @@
 <?php
-// Carrega o dotenv antes de qualquer operação
 require_once __DIR__ . '/../../../../vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
 $dotenv->load();
@@ -25,8 +24,8 @@ if (!SessionService::hasToken()) {
     returnError('Token de autenticação não encontrado', 401);
 }
 
-// Verifica método
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+// Permite apenas PUT
+if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
     returnError('Método não permitido', 405);
 }
 
@@ -34,8 +33,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);
 
-if (!$data || !isset($data['cabecalho']) || !isset($data['itens'])) {
-    returnError('Dados inválidos ou incompletos');
+// Validação da estrutura correta da escala
+if (!$data || !isset($data['id']) || !isset($data['nome']) || !isset($data['tipo']) || 
+    !isset($data['data_inicio']) || !isset($data['data_fim']) || !isset($data['eventos'])) {
+    returnError('Dados inválidos ou incompletos. Campos obrigatórios: id, nome, tipo, data_inicio, data_fim, eventos');
 }
 
 // Recebe headers específicos
@@ -46,16 +47,22 @@ if (!$ministerioId) {
     returnError('Ministério não informado');
 }
 
-// Adiciona IDs ao payload
-$data['ministerio_id'] = $ministerioId;
-$data['organizacao_id'] = $organizacaoId;
+$escalaId = $data['id'];
 
-// Configura requisição para API
-$apiUrl = $_ENV['API_BASE_URL'] . '/escalas/v2/';
+// Adiciona IDs ao payload se não estiverem presentes
+if (!isset($data['ministerio_id'])) {
+    $data['ministerio_id'] = $ministerioId;
+}
+if (!isset($data['organizacao_id'])) {
+    $data['organizacao_id'] = $organizacaoId;
+}
+
+// Monta URL da API principal para update
+$apiUrl = $_ENV['API_BASE_URL'] . "/escalas/v2/{$escalaId}";
 $ch = curl_init();
 curl_setopt_array($ch, [
     CURLOPT_URL => $apiUrl,
-    CURLOPT_POST => true,
+    CURLOPT_CUSTOMREQUEST => 'PUT',
     CURLOPT_POSTFIELDS => json_encode($data),
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [

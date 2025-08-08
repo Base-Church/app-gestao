@@ -102,8 +102,8 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 </div>
 
 <style>
-    @import url('<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/css/animacoes.escala.css');
-     @import url('<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/css/datepicker.custom.css');
+    @import url('<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/css/animacoes.escala.css');
+     @import url('<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/css/datepicker.custom.css');
 </style>
 
  <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
@@ -112,40 +112,62 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 
 
 <!-- Geral -->
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/api.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/cabecalho/cabecalho.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/api.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/cabecalho/cabecalho.service.js"></script>
 
 <!-- Eventos -->
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/eventos/eventos.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/eventos/eventos.componentes.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/eventos/eventos.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/eventos/eventos.componentes.service.js"></script>
 
 <!-- Escala -->
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/escala/escala.manager.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/escala/escala.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/escala/submit.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/escala/escala.manager.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/escala/escala.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/escala/submit.service.js"></script>
 
 <!-- Atividades -->
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/atividades/atividades.componentes.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/atividades/atividades.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/atividades/atividades.componentes.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/atividades/atividades.service.js"></script>
 
 <!-- Itens -->
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/item/item.componentes.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/item/item.manager.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/item/item.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/item/item.componentes.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/item/item.manager.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/item/item.service.js"></script>
 
 <!-- voluntarios -->
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/voluntarios/voluntarios.componentes.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/voluntarios/voluntarios.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/voluntarios/voluntarios.componentes.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/voluntarios/voluntarios.service.js"></script>
 
 <!-- Utilitários -->
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/utils/item.duplicar.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/utils/item.modelos.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/utils/resumo.escala.util.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/utils/json.debug.util.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/utils/eventos.combinacao.util.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/item.duplicar.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/item.modelos.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/resumo.escala.util.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/json.debug.util.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/eventos.combinacao.util.service.js"></script>
 
 <!-- Escala Editar: Popula campos ao carregar se for edição -->
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/criar/js/escala/escala.editar.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/escala/escala.editar.service.js"></script>
+
+<!-- Inicialização: Detecta modo de edição -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Verifica se há parâmetro id na URL para modo de edição
+        const urlParams = new URLSearchParams(window.location.search);
+        const escalaId = urlParams.get('id');
+        
+        if (escalaId) {
+            console.log('Modo de edição detectado para escala ID:', escalaId);
+            
+            // Aguarda um pouco para garantir que todos os serviços estejam carregados
+            setTimeout(async () => {
+                if (window.EscalaEditarService) {
+                    window.EscalaEditarService = await window.EscalaEditarService.inicializar();
+                } else {
+                    console.error('EscalaEditarService não encontrado');
+                }
+            }, 500);
+        }
+    });
+</script>
 
 <?php require_once __DIR__ . '/../../../components/layout/footer.php'; ?>
 

@@ -59,7 +59,7 @@
 
     // Abre o modal de resumo e popula os dados
     function abrirModalResumo() {
-        fetch(window.APP_CONFIG.baseUrl + '/src/pages/escalas/criar/components/resumo-escala-modal.php')
+        fetch(window.APP_CONFIG.baseUrl + '/src/pages/escalas/build-escala/components/resumo-escala-modal.php')
             .then(r => r.text())
             .then(html => {
                 const modalDiv = document.createElement('div');
@@ -90,23 +90,29 @@
         removeTooltip();
         const tooltip = document.createElement('div');
         tooltip.id = 'vol-tooltip-global';
-        tooltip.className = 'fixed z-[6000] w-56 rounded-lg bg-gray-900 text-white text-xs shadow-lg px-4 py-2 pointer-events-auto';
+        tooltip.className = 'fixed z-[6000] w-80 max-w-sm rounded-lg bg-gray-900 text-white text-xs shadow-lg px-4 py-2 pointer-events-auto';
         tooltip.innerHTML = html;
         document.body.appendChild(tooltip);
 
-        // Calcula posição acima do trigger
+        // Força o tooltip a aparecer sempre acima do botão
         const rect = triggerEl.getBoundingClientRect();
         const scrollY = window.scrollY || window.pageYOffset;
         const scrollX = window.scrollX || window.pageXOffset;
-        const tooltipRect = tooltip.getBoundingClientRect();
-        let top = rect.top + scrollY - tooltipRect.height - 10;
-        let left = rect.left + scrollX + rect.width / 2 - tooltipRect.width / 2;
+        
+        // Posiciona sempre acima do botão
+        let top = rect.top + scrollY - tooltip.offsetHeight - 10;
+        let left = rect.left + scrollX + (rect.width / 2) - (tooltip.offsetWidth / 2);
 
-        // Ajusta se sair da tela
+        // Ajusta horizontalmente se sair da tela
         if (left < 8) left = 8;
-        if (left + tooltipRect.width > window.innerWidth - 8) left = window.innerWidth - tooltipRect.width - 8;
-        // Sempre tenta mostrar acima, mas se não couber, mostra abaixo
-        if (top < 8) top = rect.bottom + scrollY + 10;
+        if (left + tooltip.offsetWidth > window.innerWidth - 8) {
+            left = window.innerWidth - tooltip.offsetWidth - 8;
+        }
+        
+        // Se não couber acima, força para aparecer acima mesmo assim
+        if (top < 8) {
+            top = 8;
+        }
 
         tooltip.style.top = `${top}px`;
         tooltip.style.left = `${left}px`;
@@ -233,16 +239,12 @@
                              onerror="this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
                         <div class="flex-1 min-w-0 flex items-center">
                             <div>
-                                <div class="font-semibold flex items-center gap-1">
-                                    ${v.nome}
-                                    <span class="ml-1 relative">
-                                        <svg class="w-4 h-4 text-primary-500 hover:text-primary-700 cursor-pointer tooltip-trigger" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                            data-tooltip='${encodeURIComponent(`<div class="font-semibold mb-1 text-primary-300">Eventos deste voluntário:</div>${tooltipContent}`)}'
-                                            tabindex="0">
-                                            <circle cx="12" cy="12" r="10" stroke-width="2"></circle>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16v-4m0-4h.01"/>
-                                        </svg>
-                                    </span>
+                                <div class="font-semibold flex items-center gap-2">
+                                    <span class="truncate max-w-[120px]" title="${v.nome}">${v.nome}</span>
+                                    <button class="text-xs px-2 py-1 bg-primary-100 hover:bg-primary-200 text-primary-700 rounded transition tooltip-trigger flex-shrink-0" 
+                                            data-tooltip='${encodeURIComponent(`<div class="font-semibold mb-1 text-primary-300">Eventos deste voluntário:</div>${tooltipContent}`)}'>
+                                        Ver eventos
+                                    </button>
                                 </div>
                                 <div class="text-xs text-gray-500">Escalado ${v.eventos.length}x</div>
                             </div>
@@ -324,16 +326,21 @@
                 : '<div class="text-gray-400 dark:text-gray-500">Nenhum voluntário fora da escala</div>';
         }
 
-        // Tooltip funcional (hover e foco)
-        modalDiv.querySelectorAll('.tooltip-trigger').forEach(svg => {
-            svg.addEventListener('mouseenter', function(e) {
-                showTooltip(svg, decodeURIComponent(svg.dataset.tooltip));
+        // Tooltip funcional (clique)
+        modalDiv.querySelectorAll('.tooltip-trigger').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Se o tooltip já está visível, remove
+                const existingTooltip = document.getElementById('vol-tooltip-global');
+                if (existingTooltip) {
+                    removeTooltip();
+                } else {
+                    // Caso contrário, mostra o tooltip
+                    showTooltip(button, decodeURIComponent(button.dataset.tooltip));
+                }
             });
-            svg.addEventListener('mouseleave', removeTooltip);
-            svg.addEventListener('focus', function(e) {
-                showTooltip(svg, decodeURIComponent(svg.dataset.tooltip));
-            });
-            svg.addEventListener('blur', removeTooltip);
         });
     }
 

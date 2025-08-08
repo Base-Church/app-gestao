@@ -18,9 +18,8 @@ return [
 
     // Escalas
     '/escalas'                              => '/src/pages/escalas/index.php',
-    '/escalas/criar'                        => '/src/pages/escalas/criar/index.php',
-    '/escalas/criar/v2'                     => '/src/pages/escalas/v2/index.php',
-    '/escalas/editar'                       => '/src/pages/escalas/editar/index.php',
+    '/escalas/criar'                        => '/src/pages/escalas/build-escala/index.php',
+    '/escalas/editar'                       => '/src/pages/escalas/build-escala/index.php',
 
     '/musicas'                              => '/src/pages/musicas/index.php',
     '/musica'                               => '/src/pages/musicas/detalhes/index.php',
