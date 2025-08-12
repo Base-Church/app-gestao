@@ -13,8 +13,8 @@ return [
 
     // Formularios
     '/formularios'                          => '/src/pages/formularios/index.php',
-    '/formularios/criar'                    => '/src/pages/formularios/criar/index.php',
-    '/formularios/editar'                   => '/src/pages/formularios/criar/index.php',
+    '/formularios/criar'                    => '/src/pages/formularios/builder/index.php',
+    '/formularios/editar'                   => '/src/pages/formularios/builder/index.php',
 
     // Escalas
     '/escalas'                              => '/src/pages/escalas/index.php',
