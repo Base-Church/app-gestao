@@ -1,4 +1,7 @@
-import { FormulariosAPI } from './api.js';
+// Variáveis globais
+let currentFormularioId = null;
+let isEditMode = false;
+let originalFormData = null;
 
 // Função para carregar formulário para edição
 window.loadFormForEdit = async function() {
@@ -6,9 +9,10 @@ window.loadFormForEdit = async function() {
     const formularioId = urlParams.get('id');
     if (!formularioId) return;
 
-    const api = new FormulariosAPI();
+    currentFormularioId = formularioId;
+    isEditMode = true;
     try {
-        const response = await api.getFormularioById(formularioId);
+        const response = await window.formulariosAPI.getFormularioById(formularioId);
         
         if (response.code === 200 && response.data) {
             // Preencher o título do formulário

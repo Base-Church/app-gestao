@@ -1,4 +1,4 @@
-export class FormulariosAPI {
+class FormulariosAPI {
     constructor() {
         this.baseUrl = window.APP_CONFIG.baseUrl;
         this.apiPath = `${this.baseUrl}/src/services/api/formularios`;
@@ -108,3 +108,6 @@ export class FormulariosAPI {
         throw new Error('ID do ministério não encontrado');
     }
 }
+
+// Instância global da API
+window.formulariosAPI = new FormulariosAPI();

@@ -351,10 +351,8 @@ class FormBuilder {
             // Converter string separada por vírgula em array (pode ser vazio)
             const processoEtapaIds = processoEtapaValue ? processoEtapaValue.split(',').filter(id => id.trim()).map(id => parseInt(id.trim())) : [];
 
-            // Importa e usa a API
-            const { FormulariosAPI } = await import('./api.js');
-            const api = new FormulariosAPI();
-            const ministerioId = api.getMinisterioId();
+            // Usa a API global
+            const ministerioId = window.formulariosAPI.getMinisterioId();
 
             // Verificar se é edição (tem ID na URL)
             const urlParams = new URLSearchParams(window.location.search);
@@ -393,8 +391,8 @@ class FormBuilder {
 
             // Usa a API para salvar ou atualizar o formulário
             const result = formularioId 
-                ? await api.updateFormulario(formularioId, formData)
-                : await api.createFormulario(formData);
+                ? await window.formulariosAPI.updateFormulario(formularioId, formData)
+                : await window.formulariosAPI.createFormulario(formData);
             
             const message = formularioId ? 'Formulário atualizado com sucesso!' : 'Formulário salvo com sucesso!';
             alert(message);
@@ -515,8 +513,8 @@ class FormBuilder {
     }
 }
 
-// Exporta a classe para uso em módulos
-export { FormBuilder };
+// FormBuilder disponível globalmente
+window.FormBuilder = FormBuilder;
 
 // Inicializa quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', () => {

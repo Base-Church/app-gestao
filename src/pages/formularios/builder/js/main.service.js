@@ -1,11 +1,6 @@
 // Arquivo principal do construtor de formulários
 // Inicializa a aplicação quando o DOM estiver carregado
 
-import { FormulariosAPI } from './api.js';
-
-// Inicializar a API
-const formulariosAPI = new FormulariosAPI();
-
 // Array para armazenar etapas selecionadas
 let selectedEtapas = [];
 
@@ -17,8 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
 // Função para carregar as etapas do processo
 async function loadProcessoEtapas() {
     try {
-        const ministerioId = formulariosAPI.getMinisterioId();
-        const data = await formulariosAPI.getProcessoEtapas(ministerioId);
+        const ministerioId = window.formulariosAPI.getMinisterioId();
+        const data = await window.formulariosAPI.getProcessoEtapas(ministerioId);
         const etapasList = document.getElementById('etapas-list');
         
         if (etapasList && data.data) {

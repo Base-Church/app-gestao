@@ -35,6 +35,14 @@ require_once __DIR__ . '/../../../components/layout/header.php';
                             </svg>
                             Limpar
                         </button>
+                        <button id="config-form-btn" onclick="openConfigModalWithData()" 
+                                class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800 transition-all duration-150">
+                            <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Configurações
+                        </button>
                     </div>
                 </div>
             
@@ -46,7 +54,7 @@ require_once __DIR__ . '/../../../components/layout/header.php';
                            id="form-title-input" 
                            placeholder="Digite o título do formulário"
                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white transition-colors"
-                           value="Formulário Personalizado">
+                           >
                 </div>
                 
                 <div>
@@ -383,17 +391,25 @@ require_once __DIR__ . '/../../../components/layout/header.php';
     </div>
 </div>
 
+<!-- Incluir Modal de Configuração -->
+<?php include __DIR__ . '/modal/modal.config.service.php'; ?>
+
 <!-- Scripts da página -->
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/elements.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/drag-drop.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/properties.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/preview.js"></script>
-<script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/api.js"></script>
-<script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/form-builder.js"></script>
-<script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/main.js"></script>
-<script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/edit-formulario.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/elements.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/drag-drop.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/properties.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/preview.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/moda.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/api.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/form.builder.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/main.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/edit.service.js"></script>
 
 
 
