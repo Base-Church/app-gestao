@@ -223,36 +223,67 @@ class PreenchimentosUI {
 
     showDetailsModal(preenchimento) {
         const modalTitle = document.getElementById('modal-title');
-        modalTitle.textContent = `Preenchimento - ${preenchimento.formulario_nome || 'Formulário'}`;
+        
+        // Busca o nome do formulário
+        const formularioNome = this.getFormularioNome(preenchimento.formulario_id);
+        modalTitle.textContent = `Detalhes - ${formularioNome}`;
+
+        const formatDate = (dateString) => {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        };
+
+        const getStatusText = (processo_etapa_id) => {
+            return processo_etapa_id === "0" ? 'Completo' : 'Em andamento';
+        };
 
         let detailsHTML = `
             <div class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Formulário</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.formulario_nome || 'N/A'}</p>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${formularioNome}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Preenchido por</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.usuario_nome || 'N/A'}</p>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">ID do Preenchimento</label>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.id}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.usuario_email || 'N/A'}</p>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">CPF</label>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.cpf || 'CPF não informado'}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${getStatusText(preenchimento.processo_etapa_id)}</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Data de Preenchimento</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.created_at ? new Date(preenchimento.created_at).toLocaleString('pt-BR') : 'N/A'}</p>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${formatDate(preenchimento.created_at)}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Ministério ID</label>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.ministerio_id || 'N/A'}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Organização ID</label>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.organizacao_id || 'N/A'}</p>
                     </div>
                 </div>
         `;
 
-        if (preenchimento.respostas) {
+        if (preenchimento.dados) {
             detailsHTML += `
                 <div class="mt-6">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Respostas</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Dados do Preenchimento</label>
                     <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                        <pre class="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">${JSON.stringify(preenchimento.respostas, null, 2)}</pre>
+                        <pre class="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">${JSON.stringify(preenchimento.dados, null, 2)}</pre>
                     </div>
                 </div>
             `;
