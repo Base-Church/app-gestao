@@ -254,12 +254,46 @@ class FormPreview {
                     </div>
                 `;
                 break;
+                
+            case 'nome':
+                html = `
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            ${element.props.label || 'Nome Completo'}
+                            ${element.props.required ? '<span class="text-red-500">*</span>' : ''}
+                        </label>
+                        <input type="text" 
+                               name="${element.props.name || element.id}"
+                               placeholder="${element.props.placeholder || 'Digite seu nome completo'}"
+                               ${element.props.required ? 'required' : ''}
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white">
+                        ${element.props.helpText ? `<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">${element.props.helpText}</p>` : ''}
+                    </div>
+                `;
+                break;
+                
+            case 'whatsapp':
+                html = `
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            ${element.props.label || 'WhatsApp'}
+                            ${element.props.required ? '<span class="text-red-500">*</span>' : ''}
+                        </label>
+                        <input type="tel" 
+                               name="${element.props.name || element.id}"
+                               placeholder="${element.props.placeholder || '(00) 00000-0000'}"
+                               ${element.props.required ? 'required' : ''}
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white">
+                        ${element.props.helpText ? `<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">${element.props.helpText}</p>` : ''}
+                    </div>
+                `;
+                break;
         }
         
         wrapper.innerHTML = html;
         
         // Adicionar event listeners para campos que podem afetar condições
-        if (['text', 'email', 'number', 'radio', 'select', 'checkbox', 'cpf', 'birthdate', 'datetime'].includes(element.type)) {
+        if (['text', 'email', 'number', 'radio', 'select', 'checkbox', 'cpf', 'birthdate', 'datetime', 'nome', 'whatsapp'].includes(element.type)) {
             const inputs = wrapper.querySelectorAll('input, select');
             inputs.forEach(input => {
                 input.addEventListener('change', () => {

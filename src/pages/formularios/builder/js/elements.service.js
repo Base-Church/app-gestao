@@ -306,6 +306,65 @@ class FormElements {
                         ${props.helpText ? `<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">${props.helpText}</p>` : ''}
                     </div>
                 `
+            },
+            
+            nome: {
+                type: 'nome',
+                label: 'Nome Completo',
+                icon: 'nome',
+                defaultProps: {
+                    label: 'Nome Completo',
+                    placeholder: 'Digite seu nome completo',
+                    required: false,
+                    helpText: ''
+                },
+                template: (props, id) => `
+                    <div class="mb-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            ${props.label}
+                            ${props.required ? '<span class="text-red-500">*</span>' : ''}
+                        </label>
+                        <input type="text" 
+                               name="${id}"
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" 
+                               placeholder="${props.placeholder}"
+                               minlength="2"
+                               maxlength="100"
+                               pattern="[A-Za-zÀ-ÿ\\s]+$"
+                               title="Digite apenas letras e espaços"
+                               ${props.required ? 'required' : ''}>
+                        ${props.helpText ? `<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">${props.helpText}</p>` : ''}
+                    </div>
+                `
+            },
+            
+            whatsapp: {
+                type: 'whatsapp',
+                label: 'WhatsApp',
+                icon: 'whatsapp',
+                defaultProps: {
+                    label: 'WhatsApp',
+                    placeholder: '(00) 00000-0000',
+                    required: false,
+                    helpText: ''
+                },
+                template: (props, id) => `
+                    <div class="mb-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            ${props.label}
+                            ${props.required ? '<span class="text-red-500">*</span>' : ''}
+                        </label>
+                        <input type="tel" 
+                               name="${id}"
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" 
+                               placeholder="${props.placeholder}"
+                               maxlength="15"
+                               pattern="\\([0-9]{2}\\)\\s[0-9]{4,5}-[0-9]{4}"
+                               title="Digite no formato (00) 00000-0000"
+                               ${props.required ? 'required' : ''}>
+                        ${props.helpText ? `<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">${props.helpText}</p>` : ''}
+                    </div>
+                `
             }
         };
     }
@@ -344,7 +403,9 @@ class FormElements {
             separator: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>',
             cpf: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>',
             birthdate: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>',
-            datetime: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+            datetime: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+            nome: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>',
+            whatsapp: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>'
         };
         return icons[type] || icons.text;
     }
@@ -363,7 +424,9 @@ class FormElements {
             separator: 'Linha divisória',
             cpf: 'Campo para CPF',
             birthdate: 'Campo de data de nascimento',
-            datetime: 'Campo de data e/ou hora'
+            datetime: 'Campo de data e/ou hora',
+            nome: 'Campo para nome completo',
+            whatsapp: 'Campo para número do WhatsApp'
         };
         return descriptions[type] || 'Elemento de formulário';
     }

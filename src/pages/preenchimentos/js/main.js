@@ -22,7 +22,8 @@ class App {
             changePage: this.changePage.bind(this),
             deletePreenchimento: this.deletePreenchimento.bind(this),
             viewPreenchimento: this.viewPreenchimento.bind(this),
-            toggleDetailsModal: this.toggleDetailsModal.bind(this)
+            toggleDetailsModal: this.toggleDetailsModal.bind(this),
+            clearFilters: this.clearFilters.bind(this)
         };
 
         // Carrega os formulários para o filtro
@@ -55,6 +56,15 @@ class App {
             });
         }
 
+        // Configura o filtro de data
+        const dateFilter = document.getElementById('date-filter');
+        if (dateFilter) {
+            dateFilter.addEventListener('change', (e) => {
+                this.state.setCreatedAt(e.target.value);
+                this.loadPreenchimentos();
+            });
+        }
+
         // Configura o fechamento do modal ao clicar fora
         const detailsModal = document.getElementById('details-modal');
         if (detailsModal) {
@@ -64,6 +74,13 @@ class App {
                 }
             });
         }
+
+        // Configura o fechamento do modal com a tecla ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.toggleDetailsModal(false);
+            }
+        });
     }
 
     async loadFormularios() {
@@ -88,7 +105,7 @@ class App {
                 this.state.getLimit(),
                 this.state.getSearch(),
                 this.state.getFormularioId(),
-                this.state.getProcessoEtapaId(),
+                '',
                 this.state.getCreatedAt()
             );
 
@@ -99,7 +116,7 @@ class App {
                 if (response.data.length === 0) {
                     this.ui.showEmpty();
                 } else {
-                    this.ui.renderPreenchimentos(response.data);
+                    this.ui.renderPreenchimentos(response.data, this.state.getFormularios());
                     this.ui.renderPagination(response.meta);
                     this.ui.showPreenchimentos();
                 }
@@ -142,12 +159,29 @@ class App {
     async viewPreenchimento(id) {
         try {
             // Busca os dados completos do preenchimento
-            const response = await this.api.getById(id);
-            if (response && response.data) {
-                this.ui.showDetailsModal(response.data);
-            } else {
+            const preenchimentoResponse = await this.api.getById(id);
+            if (!preenchimentoResponse || !preenchimentoResponse.data) {
                 this.showErrorMessage('Preenchimento não encontrado');
+                return;
             }
+
+            const preenchimento = preenchimentoResponse.data;
+
+            // Busca os dados do formulário se temos o ID
+            if (preenchimento.formulario_id) {
+                try {
+                    const formularioResponse = await this.api.getFormularioById(preenchimento.formulario_id);
+                    if (formularioResponse && formularioResponse.data) {
+                        // Consolida os dados do formulário com os do preenchimento
+                        preenchimento.formulario_detalhes = formularioResponse.data;
+                    }
+                } catch (formularioError) {
+                    console.warn('Erro ao buscar detalhes do formulário:', formularioError);
+                    // Continua mesmo sem os detalhes do formulário
+                }
+            }
+
+            this.ui.showDetailsModal(preenchimento);
         } catch (error) {
             console.error('Erro ao carregar preenchimento:', error);
             this.showErrorMessage(error.message || 'Erro ao carregar preenchimento');
@@ -208,6 +242,23 @@ class App {
                 }
             }, 300);
         }, 5000);
+    }
+
+    clearFilters() {
+        // Limpa todos os filtros
+        const searchInput = document.getElementById('search-input');
+        const formularioFilter = document.getElementById('formulario-filter');
+        const dateFilter = document.getElementById('date-filter');
+
+        if (searchInput) searchInput.value = '';
+        if (formularioFilter) formularioFilter.value = '';
+        if (dateFilter) dateFilter.value = '';
+
+        // Reseta o estado
+        this.state.reset();
+        
+        // Recarrega os preenchimentos
+        this.loadPreenchimentos();
     }
 }
 

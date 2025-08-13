@@ -349,6 +349,12 @@ class PropertiesManager {
             case 'datetime':
                 html += this.renderDatetimeProperties(element);
                 break;
+            case 'nome':
+                html += this.renderNomeProperties(element);
+                break;
+            case 'whatsapp':
+                html += this.renderWhatsappProperties(element);
+                break;
         }
 
         // Botão de deletar
@@ -658,6 +664,62 @@ class PropertiesManager {
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Texto de Ajuda</label>
                     <textarea id="prop-helpText" rows="2" 
                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">${element.props.helpText}</textarea>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="prop-required" ${element.props.required ? 'checked' : ''} 
+                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                    <label for="prop-required" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Campo obrigatório</label>
+                </div>
+            </div>
+        `;
+    }
+
+    // Propriedades para Nome Completo
+    renderNomeProperties(element) {
+        return `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rótulo</label>
+                    <input type="text" id="prop-label" value="${element.props.label}" 
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Placeholder</label>
+                    <input type="text" id="prop-placeholder" value="${element.props.placeholder || ''}" 
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Texto de Ajuda</label>
+                    <textarea id="prop-helpText" rows="2" 
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">${element.props.helpText || ''}</textarea>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="prop-required" ${element.props.required ? 'checked' : ''} 
+                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                    <label for="prop-required" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Campo obrigatório</label>
+                </div>
+            </div>
+        `;
+    }
+
+    // Propriedades para WhatsApp
+    renderWhatsappProperties(element) {
+        return `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rótulo</label>
+                    <input type="text" id="prop-label" value="${element.props.label}" 
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Placeholder</label>
+                    <input type="text" id="prop-placeholder" value="${element.props.placeholder || ''}" 
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Texto de Ajuda</label>
+                    <textarea id="prop-helpText" rows="2" 
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">${element.props.helpText || ''}</textarea>
                 </div>
                 <div class="flex items-center">
                     <input type="checkbox" id="prop-required" ${element.props.required ? 'checked' : ''} 

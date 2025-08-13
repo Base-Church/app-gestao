@@ -63,7 +63,7 @@ class FormBuilder {
         // Definir categorias
         const categories = {
             'Campos de Entrada': ['text', 'number', 'email'],
-            'Campos Especiais': ['cpf', 'birthdate'],
+            'Campos Especiais': ['cpf', 'birthdate', 'nome', 'whatsapp'],
             'Seleção': ['radio', 'select', 'checkbox'],
             'Data e Hora': ['datetime'],
             'Conteúdo': ['title', 'description', 'separator']
@@ -450,7 +450,7 @@ class FormBuilder {
     // Obter todos os elementos que podem ser usados como campos em condições
     getFieldElements() {
         return this.formElements.filter(element => {
-            const fieldTypes = ['text', 'number', 'email', 'radio', 'select', 'checkbox'];
+            const fieldTypes = ['text', 'number', 'email', 'radio', 'select', 'checkbox', 'cpf', 'nome', 'whatsapp'];
             return fieldTypes.includes(element.type);
         });
     }

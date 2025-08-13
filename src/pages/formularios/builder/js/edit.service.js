@@ -38,13 +38,17 @@ window.loadFormForEdit = async function() {
             // Carregar os dados do formulário no editor
             if (response.data.dados && window.formBuilder) {
                 try {
-                    // Parse duplo para lidar com string JSON escapada
-                    let formData = JSON.parse(response.data.dados);
+                    // Os dados já vêm como objeto, não precisam de parse duplo
+                    let formData = response.data.dados;
+                    
+                    // Só faz parse se ainda for string
                     if (typeof formData === 'string') {
                         formData = JSON.parse(formData);
                     }
+                    
                     window.formBuilder.loadFormFromJson(formData);
                 } catch (parseError) {
+                    console.error('Erro ao parsear dados do formulário:', parseError);
                     window.formBuilder.loadFormFromJson({ elements: [] });
                 }
             }

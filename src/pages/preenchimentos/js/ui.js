@@ -39,10 +39,17 @@ class PreenchimentosUI {
         this.preenchimentosGrid.classList.add('hidden');
     }
 
-    renderPreenchimentos(preenchimentos) {
+    renderPreenchimentos(preenchimentos, formularios = []) {
         this.preenchimentosList.innerHTML = '';
+        this.formularios = formularios; // Armazena os formulários para uso na criação das linhas
 
         preenchimentos.forEach(preenchimento => {
+            // Adiciona o nome do formulário ao objeto preenchimento
+            const formulario = formularios.find(f => f.id == preenchimento.formulario_id);
+            if (formulario) {
+                preenchimento.formulario_nome = formulario.nome;
+            }
+            
             const row = this.createPreenchimentoRow(preenchimento);
             this.preenchimentosList.appendChild(row);
         });
@@ -64,47 +71,75 @@ class PreenchimentosUI {
             });
         };
 
-        const getStatusBadge = (status) => {
-            const statusClasses = {
-                'completo': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-                'incompleto': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-                'rascunho': 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
-            };
+        const calculateAge = (birthDateString) => {
+            if (!birthDateString) return 'N/A';
             
-            const statusText = {
-                'completo': 'Completo',
-                'incompleto': 'Incompleto',
-                'rascunho': 'Rascunho'
-            };
+            try {
+                const birthDate = new Date(birthDateString);
+                const today = new Date();
+                
+                // Verifica se a data é válida
+                if (isNaN(birthDate.getTime())) return 'N/A';
+                
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                
+                // Se ainda não chegou o mês de aniversário, ou chegou mas não o dia, subtrai 1
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                
+                return age >= 0 ? `${age} anos` : 'N/A';
+            } catch (error) {
+                return 'N/A';
+            }
+        };
 
-            const className = statusClasses[status] || statusClasses['rascunho'];
-            const text = statusText[status] || 'Desconhecido';
-
-            return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${className}">${text}</span>`;
+        const formatWhatsApp = (whatsapp) => {
+            if (!whatsapp) return 'N/A';
+            
+            // Remove todos os caracteres não numéricos
+            const cleaned = whatsapp.replace(/\D/g, '');
+            
+            // Se tem 11 dígitos (formato brasileiro)
+            if (cleaned.length === 11) {
+                return `(${cleaned.substr(0,2)}) ${cleaned.substr(2,5)}-${cleaned.substr(7,4)}`;
+            }
+            // Se tem 10 dígitos (formato brasileiro antigo)
+            else if (cleaned.length === 10) {
+                return `(${cleaned.substr(0,2)}) ${cleaned.substr(2,4)}-${cleaned.substr(6,4)}`;
+            }
+            // Retorna o valor original se não conseguir formatar
+            return whatsapp;
         };
 
         row.innerHTML = `
             <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm font-medium text-gray-900 dark:text-white">
-                    ${preenchimento.formulario_nome || 'Formulário sem nome'}
-                </div>
-                <div class="text-sm text-gray-500 dark:text-gray-400">
-                    ID: ${preenchimento.formulario_id || 'N/A'}
+                    ${preenchimento.formulario_nome || 'Formulário'}
                 </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm text-gray-900 dark:text-white">
-                    ${preenchimento.usuario_nome || 'Usuário desconhecido'}
-                </div>
-                <div class="text-sm text-gray-500 dark:text-gray-400">
-                    ${preenchimento.usuario_email || 'Email não informado'}
+                    ${preenchimento.nome || 'N/A'}
                 </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                ${formatDate(preenchimento.created_at)}
+                ${preenchimento.cpf || 'N/A'}
             </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-                ${getStatusBadge(preenchimento.status)}
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                ${calculateAge(preenchimento.data_nascimento)}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <a href="https://wa.me/55${preenchimento.whatsapp?.replace(/\D/g, '') || ''}" 
+                   target="_blank" 
+                   class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 transition-colors duration-150"
+                   title="Enviar mensagem no WhatsApp">
+                    ${formatWhatsApp(preenchimento.whatsapp)}
+                </a>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                ${formatDate(preenchimento.created_at)}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex items-center justify-end space-x-2">
@@ -214,40 +249,136 @@ class PreenchimentosUI {
 
     showDetailsModal(preenchimento) {
         const modalTitle = document.getElementById('modal-title');
-        modalTitle.textContent = `Preenchimento - ${preenchimento.formulario_nome || 'Formulário'}`;
+        
+        // Determina o nome do formulário para o título
+        let formularioNome = 'Formulário';
+        if (preenchimento.formulario_detalhes && preenchimento.formulario_detalhes.nome) {
+            formularioNome = preenchimento.formulario_detalhes.nome;
+        }
+        
+        modalTitle.textContent = `Preenchimento - ${formularioNome}`;
 
         let detailsHTML = `
             <div class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Formulário</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.formulario_nome || 'N/A'}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Preenchido por</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.usuario_nome || 'N/A'}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.usuario_email || 'N/A'}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Data de Preenchimento</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.created_at ? new Date(preenchimento.created_at).toLocaleString('pt-BR') : 'N/A'}</p>
-                    </div>
-                </div>
         `;
 
-        if (preenchimento.respostas) {
+        // Se temos dados do preenchimento, vamos relacionar com os campos do formulário
+        if (preenchimento.dados && preenchimento.formulario_detalhes && 
+            preenchimento.formulario_detalhes.dados && 
+            preenchimento.formulario_detalhes.dados.elements) {
+            
+            const elementos = preenchimento.formulario_detalhes.dados.elements;
+            const dadosPreenchimento = preenchimento.dados;
+
             detailsHTML += `
-                <div class="mt-6">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Respostas</label>
-                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                        <pre class="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">${JSON.stringify(preenchimento.respostas, null, 2)}</pre>
+                <div class="bg-white dark:bg-gray-800">
+                    <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Respostas do Formulário</h4>
+                    <div class="space-y-4">
+            `;
+
+            // Para cada elemento do formulário, procura a resposta correspondente
+            elementos.forEach((elemento) => {
+                const valor = dadosPreenchimento[elemento.id];
+                if (valor !== undefined) {
+                    let valorFormatado = valor;
+                    
+                    // Se é um campo de seleção, tenta encontrar o label da opção
+                    if (elemento.type === 'radio' || elemento.type === 'select') {
+                        if (elemento.properties.options) {
+                            const opcao = elemento.properties.options.find(opt => opt.id === valor);
+                            if (opcao) {
+                                valorFormatado = opcao.label;
+                            }
+                        }
+                    }
+                    
+                    detailsHTML += `
+                        <div class="border-b border-gray-200 dark:border-gray-600 pb-4 last:border-b-0">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                ${elemento.properties.label || 'Campo sem nome'}
+                            </label>
+                            <div class="mt-1">
+                                <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md">
+                                    ${valorFormatado}
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            detailsHTML += `
                     </div>
                 </div>
             `;
+        } else if (preenchimento.dados) {
+            // Se não temos o formulário, mostra apenas os dados básicos
+            detailsHTML += `
+                <div class="bg-white dark:bg-gray-800">
+                    <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Dados Preenchidos</h4>
+                    <div class="space-y-3">
+            `;
+
+            Object.entries(preenchimento.dados).forEach(([key, value]) => {
+                detailsHTML += `
+                    <div class="border-b border-gray-200 dark:border-gray-600 pb-3 last:border-b-0">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Campo
+                        </label>
+                        <div class="mt-1">
+                            <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md">
+                                ${value}
+                            </p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            detailsHTML += `
+                    </div>
+                </div>
+            `;
+        } else {
+            detailsHTML += `
+                <div class="text-center py-8">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Nenhum dado de preenchimento encontrado.</p>
+                </div>
+            `;
         }
+
+        // Informações adicionais do formulário (apenas nome e descrição se houver)
+        if (preenchimento.formulario_detalhes) {
+            const formulario = preenchimento.formulario_detalhes;
+            if (formulario.descricao) {
+                detailsHTML += `
+                    <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sobre o Formulário</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">${formulario.descricao}</p>
+                    </div>
+                `;
+            }
+        }
+
+        const formatDate = (dateString) => {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        };
+
+        // Data do preenchimento
+        detailsHTML += `
+            <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <p class="text-xs text-gray-500 dark:text-gray-400">
+                    Preenchido em ${formatDate(preenchimento.created_at)}
+                </p>
+            </div>
+        `;
 
         detailsHTML += '</div>';
         

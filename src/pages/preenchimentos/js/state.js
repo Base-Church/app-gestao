@@ -1,10 +1,10 @@
 class PreenchimentosState {
     constructor() {
         this.currentPage = 1;
-        this.limit = 12;
+        this.limit = 1200;
         this.search = '';
         this.formulario_id = '';
-        this.processo_etapa_id = '';
+        this.status = '';
         this.created_at = '';
         this.preenchimentos = [];
         this.meta = {};
@@ -29,8 +29,8 @@ class PreenchimentosState {
         this.currentPage = 1; // Reset para primeira página ao filtrar
     }
 
-    setProcessoEtapaId(processo_etapa_id) {
-        this.processo_etapa_id = processo_etapa_id;
+    setStatus(status) {
+        this.status = status;
         this.currentPage = 1; // Reset para primeira página ao filtrar
     }
 
@@ -79,8 +79,8 @@ class PreenchimentosState {
         return this.formulario_id;
     }
 
-    getProcessoEtapaId() {
-        return this.processo_etapa_id;
+    getStatus() {
+        return this.status;
     }
 
     getCreatedAt() {
@@ -99,7 +99,7 @@ class PreenchimentosState {
         this.currentPage = 1;
         this.search = '';
         this.formulario_id = '';
-        this.processo_etapa_id = '';
+        this.status = '';
         this.created_at = '';
         this.preenchimentos = [];
         this.meta = {};

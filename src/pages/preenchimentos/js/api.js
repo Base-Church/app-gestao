@@ -4,7 +4,7 @@ class PreenchimentosAPI {
         this.apiPath = `${this.baseUrl}/src/services/api/formulario_preenchimentos`;
     }
 
-    async list(page = 1, limit = 12, search = '', formulario_id = '', processo_etapa_id = '', created_at = '') {
+    async list(page = 1, limit = 1200, search = '', formulario_id = '', status = '', created_at = '') {
         try {
             const ministerio_id = this.getMinisterioId();
             const params = new URLSearchParams();
@@ -16,7 +16,7 @@ class PreenchimentosAPI {
             
             if (search) params.append('search', search);
             if (formulario_id) params.append('formulario_id', formulario_id);
-            if (processo_etapa_id) params.append('processo_etapa_id', processo_etapa_id);
+            if (status) params.append('status', status);
             if (created_at) params.append('created_at', created_at);
 
             const url = `${this.apiPath}/get.php?${params}`;
@@ -111,6 +111,34 @@ class PreenchimentosAPI {
         } catch (error) {
             console.error('Erro ao buscar formulários:', error);
             throw new Error(error.message || 'Erro ao buscar formulários');
+        }
+    }
+
+    async getFormularioById(formulario_id) {
+        try {
+            const ministerio_id = this.getMinisterioId();
+            const params = new URLSearchParams({
+                ministerio_id: ministerio_id,
+                formulario_id: formulario_id
+            });
+            const url = `${this.baseUrl}/src/services/api/formularios/get-id.php?${params}`;
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || `Erro ${response.status} ao buscar formulário`);
+            }
+
+            const data = await response.json();
+            
+            if (!data || typeof data !== 'object') {
+                throw new Error('Resposta inválida da API');
+            }
+
+            return data;
+        } catch (error) {
+            console.error('Erro ao buscar formulário:', error);
+            throw new Error(error.message || 'Erro ao buscar formulário');
         }
     }
 
