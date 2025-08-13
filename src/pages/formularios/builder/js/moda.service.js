@@ -231,7 +231,7 @@ function uploadImage(formData) {
     formData.append('max_size', '10485760'); // 10MB
     
     // Usar o serviço global de upload
-    const uploadUrl = '/base/config/upload.service.php';
+    const uploadUrl = `${window.URL_BASE || ''}/config/upload.service.php`;
     
     fetch(uploadUrl, {
         method: 'POST',
