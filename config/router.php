@@ -38,6 +38,9 @@ return [
     // Liderança
     '/lideres'                              => '/src/pages/lideres/index.php',
 
+        // processos
+    '/processos'                              => '/src/pages/processos/index.php',
+
     // Atividades
     '/categoria-atividade'                  => '/src/pages/categoria-atividade/index.php',
     '/atividades'                           => '/src/pages/atividades/index.php',
