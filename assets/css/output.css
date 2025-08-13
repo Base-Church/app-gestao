@@ -1080,6 +1080,10 @@ select {
   right: 0px;
 }
 
+.right-1 {
+  right: 0.25rem;
+}
+
 .right-2 {
   right: 0.5rem;
 }
@@ -1094,6 +1098,10 @@ select {
 
 .top-0 {
   top: 0px;
+}
+
+.top-1 {
+  top: 0.25rem;
 }
 
 .top-1\/2 {
@@ -1347,6 +1355,10 @@ select {
   display: grid;
 }
 
+.\!grid {
+  display: grid !important;
+}
+
 .contents {
   display: contents;
 }
@@ -1519,6 +1531,10 @@ select {
   min-height: 500px;
 }
 
+.min-h-\[60px\] {
+  min-height: 60px;
+}
+
 .min-h-\[85px\] {
   min-height: 85px;
 }
@@ -1561,6 +1577,10 @@ select {
 
 .w-16 {
   width: 4rem;
+}
+
+.w-2 {
+  width: 0.5rem;
 }
 
 .w-20 {

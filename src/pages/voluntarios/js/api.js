@@ -104,6 +104,95 @@ class VoluntariosAPI {
             throw error;
         }
     }
+
+    static async getHistoricoIndisponibilidade(voluntarioId, mes, ano) {
+        try {
+            const params = new URLSearchParams({
+                organizacao_id: window.USER.organizacao_id,
+                voluntario_id: voluntarioId,
+                mes: mes,
+                ano: ano
+            });
+
+            const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/voluntarios/historico-indisponibilidade.php?${params}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Cache-Control': 'no-cache'
+                },
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao carregar histórico de indisponibilidade');
+            }
+
+            const data = await response.json();
+            // Processa a estrutura específica do histórico de indisponibilidade
+            if (data && data.data && data.data.historico) {
+                const historico = data.data.historico;
+                const datas = [];
+                
+                // Extrai todas as datas de todos os anos e meses
+                Object.keys(historico).forEach(ano => {
+                    Object.keys(historico[ano]).forEach(mes => {
+                        if (historico[ano][mes].datas) {
+                            historico[ano][mes].datas.forEach(data => {
+                                datas.push({ data: data });
+                            });
+                        }
+                    });
+                });
+                
+                return datas;
+            }
+            return [];
+        } catch (error) {
+            console.error('Erro ao carregar histórico de indisponibilidade:', error);
+            return [];
+        }
+    }
+
+    static async getServicosMes(voluntarioId, mes, ano) {
+        try {
+            const params = new URLSearchParams({
+                organizacao_id: window.USER.organizacao_id,
+                voluntario_id: voluntarioId,
+                mes: mes,
+                ano: ano
+            });
+
+            const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/voluntarios/servicos-mes.php?${params}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Cache-Control': 'no-cache'
+                },
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao carregar serviços do mês');
+            }
+
+            const data = await response.json();
+            // Processa a estrutura específica dos serviços do mês
+            if (data && data.data && Array.isArray(data.data.servicos)) {
+                return data.data.servicos.map(servico => ({
+                    data: servico.data,
+                    atividade: servico.atividade ? servico.atividade.nome : 'Atividade não especificada',
+                    ministerio: servico.atividade ? servico.atividade.ministerio : '',
+                    evento: servico.evento ? servico.evento.nome : 'Evento não especificado',
+                    hora: servico.evento ? servico.evento.hora : '',
+                    cor: servico.atividade ? servico.atividade.cor : '#cccccc'
+                }));
+            }
+            return [];
+        } catch (error) {
+            console.error('Erro ao carregar serviços do mês:', error);
+            return [];
+        }
+    }
 }
 
 export default VoluntariosAPI;

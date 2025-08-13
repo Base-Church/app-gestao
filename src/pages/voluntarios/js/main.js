@@ -152,6 +152,20 @@ export class VoluntariosPage {
 
         try {
             if (show && voluntario) {
+                // Limpa dados anteriores
+                this.historicoIndisponibilidade = [];
+                this.servicosMes = [];
+                this.currentCalendarioMes = null;
+                this.currentCalendarioAno = null;
+                this.currentServicosMes = null;
+                this.currentServicosAno = null;
+                
+                // Limpa interfaces visuais
+                const calendarioGrid = document.getElementById('calendario-grid');
+                const servicosLista = document.getElementById('servicos-lista');
+                if (calendarioGrid) calendarioGrid.innerHTML = '';
+                if (servicosLista) servicosLista.innerHTML = '';
+                
                 this.currentVoluntario = typeof voluntario === 'string' 
                     ? JSON.parse(voluntario) 
                     : voluntario;
@@ -159,7 +173,20 @@ export class VoluntariosPage {
                 modal.classList.remove('hidden');
                 this.loadVoluntarioData(this.currentVoluntario);
             } else {
+                // Limpa dados ao fechar
                 this.currentVoluntario = null;
+                this.historicoIndisponibilidade = [];
+                this.servicosMes = [];
+                this.currentCalendarioMes = null;
+                this.currentCalendarioAno = null;
+                this.currentServicosMes = null;
+                this.currentServicosAno = null;
+                
+                // Limpa interfaces visuais
+                const calendarioGrid = document.getElementById('calendario-grid');
+                const servicosLista = document.getElementById('servicos-lista');
+                if (calendarioGrid) calendarioGrid.innerHTML = '';
+                if (servicosLista) servicosLista.innerHTML = '';
                 modal.classList.add('hidden');
             }
         } catch (error) {
@@ -758,6 +785,291 @@ export class VoluntariosPage {
         document.querySelectorAll('.tab-content').forEach(content => {
             content.classList.toggle('hidden', content.dataset.tab !== tabId);
         });
+
+        // Carrega dados específicos da tab
+        if (tabId === 'calendario' && this.currentVoluntario) {
+            this.loadCalendarioData();
+        } else if (tabId === 'servicos' && this.currentVoluntario) {
+            this.loadServicosData();
+        }
+    }
+
+    async loadCalendarioData() {
+        if (!this.currentVoluntario) return;
+
+        try {
+            const now = new Date();
+            const mes = now.getMonth() + 1;
+            const ano = now.getFullYear();
+
+            this.currentCalendarioMes = mes;
+            this.currentCalendarioAno = ano;
+
+            await this.loadHistoricoIndisponibilidade(mes, ano);
+            this.renderCalendario();
+            this.setupCalendarioControls();
+        } catch (error) {
+            console.error('Erro ao carregar dados do calendário:', error);
+        }
+    }
+
+    async loadServicosData() {
+        if (!this.currentVoluntario) return;
+
+        try {
+            const now = new Date();
+            const mes = now.getMonth() + 1;
+            const ano = now.getFullYear();
+
+            this.currentServicosMes = mes;
+            this.currentServicosAno = ano;
+
+            await this.loadServicosMes(mes, ano);
+            this.renderServicos();
+            this.setupServicosControls();
+        } catch (error) {
+            console.error('Erro ao carregar dados dos serviços:', error);
+        }
+    }
+
+    async loadHistoricoIndisponibilidade(mes, ano) {
+        try {
+            this.historicoIndisponibilidade = await VoluntariosAPI.getHistoricoIndisponibilidade(
+                this.currentVoluntario.id, 
+                mes, 
+                ano
+            );
+        } catch (error) {
+            console.error('Erro ao carregar histórico de indisponibilidade:', error);
+            this.historicoIndisponibilidade = [];
+        }
+    }
+
+    async loadServicosMes(mes, ano) {
+        try {
+            this.servicosMes = await VoluntariosAPI.getServicosMes(
+                this.currentVoluntario.id, 
+                mes, 
+                ano
+            );
+        } catch (error) {
+            console.error('Erro ao carregar serviços do mês:', error);
+            this.servicosMes = [];
+        }
+    }
+
+    renderCalendario() {
+        const grid = document.getElementById('calendario-grid');
+        if (!grid) return;
+
+        const mes = this.currentCalendarioMes;
+        const ano = this.currentCalendarioAno;
+        const primeiroDia = new Date(ano, mes - 1, 1);
+        const ultimoDia = new Date(ano, mes, 0);
+        const diasNoMes = ultimoDia.getDate();
+        const diaSemanaInicio = primeiroDia.getDay();
+
+        let html = '';
+
+        // Dias vazios no início
+        for (let i = 0; i < diaSemanaInicio; i++) {
+            html += '<div class="p-2"></div>';
+        }
+
+        // Dias do mês
+        for (let dia = 1; dia <= diasNoMes; dia++) {
+            const dataStr = `${ano}-${mes.toString().padStart(2, '0')}-${dia.toString().padStart(2, '0')}`;
+            const indisponivel = this.historicoIndisponibilidade.some(item => item.data === dataStr);
+            
+            const classes = [
+                'p-2', 'text-center', 'text-sm', 'border-r', 'border-b',
+                'border-gray-200', 'dark:border-gray-700',
+                'hover:bg-gray-50', 'dark:hover:bg-gray-700'
+            ];
+
+            if (indisponivel) {
+                classes.push('bg-red-100', 'dark:bg-red-900/20', 'text-red-800', 'dark:text-red-300');
+            }
+
+            html += `<div class="${classes.join(' ')}">${dia}</div>`;
+        }
+
+        grid.innerHTML = html;
+        this.updateCalendarioSelectors();
+    }
+
+    renderServicos() {
+        const lista = document.getElementById('servicos-lista');
+        if (!lista) return;
+
+        if (!this.servicosMes || this.servicosMes.length === 0) {
+            lista.innerHTML = '<div class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">Nenhum serviço encontrado para este mês.</div>';
+            return;
+        }
+
+        const html = this.servicosMes.map(servico => {
+            const data = new Date(servico.data).toLocaleDateString('pt-BR');
+            return `
+                <div class="px-4 py-3 border-l-4" style="border-left-color: ${servico.cor}">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h5 class="text-sm font-medium text-gray-900 dark:text-white">${servico.atividade}</h5>
+                            ${servico.ministerio ? `<p class="text-xs font-medium text-gray-700 dark:text-gray-200">${servico.ministerio}</p>` : ''}
+                            <p class="text-xs text-gray-600 dark:text-gray-300">${servico.evento}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">${data}${servico.hora ? ` - ${servico.hora}` : ''}</p>
+                        </div>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300">
+                            Confirmado
+                        </span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        lista.innerHTML = html;
+        this.updateServicosSelectors();
+    }
+
+    setupCalendarioControls() {
+        const btnAnterior = document.getElementById('btn-mes-anterior');
+        const btnProximo = document.getElementById('btn-proximo-mes');
+        const selectMes = document.getElementById('select-mes');
+        const selectAno = document.getElementById('select-ano');
+
+        if (btnAnterior) {
+            btnAnterior.onclick = () => this.navegarCalendario(-1);
+        }
+        if (btnProximo) {
+            btnProximo.onclick = () => this.navegarCalendario(1);
+        }
+        if (selectMes) {
+            selectMes.onchange = () => this.atualizarCalendario();
+        }
+        if (selectAno) {
+            selectAno.onchange = () => this.atualizarCalendario();
+        }
+    }
+
+    setupServicosControls() {
+        const btnAnterior = document.getElementById('btn-servicos-mes-anterior');
+        const btnProximo = document.getElementById('btn-servicos-proximo-mes');
+        const selectMes = document.getElementById('select-servicos-mes');
+        const selectAno = document.getElementById('select-servicos-ano');
+
+        if (btnAnterior) {
+            btnAnterior.onclick = () => this.navegarServicos(-1);
+        }
+        if (btnProximo) {
+            btnProximo.onclick = () => this.navegarServicos(1);
+        }
+        if (selectMes) {
+            selectMes.onchange = () => this.atualizarServicos();
+        }
+        if (selectAno) {
+            selectAno.onchange = () => this.atualizarServicos();
+        }
+    }
+
+    navegarCalendario(direcao) {
+        this.currentCalendarioMes += direcao;
+        if (this.currentCalendarioMes > 12) {
+            this.currentCalendarioMes = 1;
+            this.currentCalendarioAno++;
+        } else if (this.currentCalendarioMes < 1) {
+            this.currentCalendarioMes = 12;
+            this.currentCalendarioAno--;
+        }
+        this.loadHistoricoIndisponibilidade(this.currentCalendarioMes, this.currentCalendarioAno)
+            .then(() => this.renderCalendario());
+    }
+
+    navegarServicos(direcao) {
+        this.currentServicosMes += direcao;
+        if (this.currentServicosMes > 12) {
+            this.currentServicosMes = 1;
+            this.currentServicosAno++;
+        } else if (this.currentServicosMes < 1) {
+            this.currentServicosMes = 12;
+            this.currentServicosAno--;
+        }
+        this.loadServicosMes(this.currentServicosMes, this.currentServicosAno)
+            .then(() => this.renderServicos());
+    }
+
+    atualizarCalendario() {
+        const selectMes = document.getElementById('select-mes');
+        const selectAno = document.getElementById('select-ano');
+        
+        if (selectMes && selectAno) {
+            this.currentCalendarioMes = parseInt(selectMes.value);
+            this.currentCalendarioAno = parseInt(selectAno.value);
+            this.loadHistoricoIndisponibilidade(this.currentCalendarioMes, this.currentCalendarioAno)
+                .then(() => this.renderCalendario());
+        }
+    }
+
+    atualizarServicos() {
+        const selectMes = document.getElementById('select-servicos-mes');
+        const selectAno = document.getElementById('select-servicos-ano');
+        
+        if (selectMes && selectAno) {
+            this.currentServicosMes = parseInt(selectMes.value);
+            this.currentServicosAno = parseInt(selectAno.value);
+            this.loadServicosMes(this.currentServicosMes, this.currentServicosAno)
+                .then(() => this.renderServicos());
+        }
+    }
+
+    updateCalendarioSelectors() {
+        const selectMes = document.getElementById('select-mes');
+        const selectAno = document.getElementById('select-ano');
+
+        if (selectMes && selectMes.children.length === 0) {
+            const meses = [
+                'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+            ];
+            selectMes.innerHTML = meses.map((mes, index) => 
+                `<option value="${index + 1}" ${index + 1 === this.currentCalendarioMes ? 'selected' : ''}>${mes}</option>`
+            ).join('');
+        }
+
+        if (selectAno && selectAno.children.length === 0) {
+            const anoAtual = new Date().getFullYear();
+            const anos = [];
+            for (let ano = anoAtual - 2; ano <= anoAtual + 2; ano++) {
+                anos.push(ano);
+            }
+            selectAno.innerHTML = anos.map(ano => 
+                `<option value="${ano}" ${ano === this.currentCalendarioAno ? 'selected' : ''}>${ano}</option>`
+            ).join('');
+        }
+    }
+
+    updateServicosSelectors() {
+        const selectMes = document.getElementById('select-servicos-mes');
+        const selectAno = document.getElementById('select-servicos-ano');
+
+        if (selectMes && selectMes.children.length === 0) {
+            const meses = [
+                'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+            ];
+            selectMes.innerHTML = meses.map((mes, index) => 
+                `<option value="${index + 1}" ${index + 1 === this.currentServicosMes ? 'selected' : ''}>${mes}</option>`
+            ).join('');
+        }
+
+        if (selectAno && selectAno.children.length === 0) {
+            const anoAtual = new Date().getFullYear();
+            const anos = [];
+            for (let ano = anoAtual - 2; ano <= anoAtual + 2; ano++) {
+                anos.push(ano);
+            }
+            selectAno.innerHTML = anos.map(ano => 
+                `<option value="${ano}" ${ano === this.currentServicosAno ? 'selected' : ''}>${ano}</option>`
+            ).join('');
+        }
     }
 }
 
