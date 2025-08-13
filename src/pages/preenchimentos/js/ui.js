@@ -64,31 +64,29 @@ class PreenchimentosUI {
             });
         };
 
-        const getStatusBadge = (processo_etapa_id) => {
-            const status = processo_etapa_id === "0" ? 'completo' : 'incompleto';
+        const getStatusBadge = (status) => {
             const statusClasses = {
                 'completo': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-                'incompleto': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                'incompleto': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+                'rascunho': 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
             };
             
             const statusText = {
                 'completo': 'Completo',
-                'incompleto': 'Em andamento'
+                'incompleto': 'Incompleto',
+                'rascunho': 'Rascunho'
             };
 
-            const className = statusClasses[status];
-            const text = statusText[status];
+            const className = statusClasses[status] || statusClasses['rascunho'];
+            const text = statusText[status] || 'Desconhecido';
 
             return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${className}">${text}</span>`;
         };
 
-        // Busca o nome do formulário na lista de formulários
-        const formularioNome = this.getFormularioNome(preenchimento.formulario_id);
-
         row.innerHTML = `
             <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm font-medium text-gray-900 dark:text-white">
-                    ${formularioNome}
+                    ${preenchimento.formulario_nome || 'Formulário sem nome'}
                 </div>
                 <div class="text-sm text-gray-500 dark:text-gray-400">
                     ID: ${preenchimento.formulario_id || 'N/A'}
@@ -96,17 +94,17 @@ class PreenchimentosUI {
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm text-gray-900 dark:text-white">
-                    ${preenchimento.cpf || 'CPF não informado'}
+                    ${preenchimento.usuario_nome || 'Usuário desconhecido'}
                 </div>
                 <div class="text-sm text-gray-500 dark:text-gray-400">
-                    ID: ${preenchimento.id}
+                    ${preenchimento.usuario_email || 'Email não informado'}
                 </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                 ${formatDate(preenchimento.created_at)}
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-                ${getStatusBadge(preenchimento.processo_etapa_id)}
+                ${getStatusBadge(preenchimento.status)}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex items-center justify-end space-x-2">
@@ -130,13 +128,6 @@ class PreenchimentosUI {
         `;
 
         return row;
-    }
-
-    getFormularioNome(formulario_id) {
-        // Busca o formulário na lista de formulários carregados
-        const formularios = window.app?.state?.getFormularios() || [];
-        const formulario = formularios.find(f => f.id == formulario_id);
-        return formulario ? formulario.nome : `Formulário ${formulario_id}`;
     }
 
     renderPagination(meta) {
@@ -223,67 +214,36 @@ class PreenchimentosUI {
 
     showDetailsModal(preenchimento) {
         const modalTitle = document.getElementById('modal-title');
-        
-        // Busca o nome do formulário
-        const formularioNome = this.getFormularioNome(preenchimento.formulario_id);
-        modalTitle.textContent = `Detalhes - ${formularioNome}`;
-
-        const formatDate = (dateString) => {
-            if (!dateString) return 'N/A';
-            const date = new Date(dateString);
-            return date.toLocaleString('pt-BR', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        };
-
-        const getStatusText = (processo_etapa_id) => {
-            return processo_etapa_id === "0" ? 'Completo' : 'Em andamento';
-        };
+        modalTitle.textContent = `Preenchimento - ${preenchimento.formulario_nome || 'Formulário'}`;
 
         let detailsHTML = `
             <div class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Formulário</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${formularioNome}</p>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.formulario_nome || 'N/A'}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">ID do Preenchimento</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.id}</p>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Preenchido por</label>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.usuario_nome || 'N/A'}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">CPF</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.cpf || 'CPF não informado'}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${getStatusText(preenchimento.processo_etapa_id)}</p>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.usuario_email || 'N/A'}</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Data de Preenchimento</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${formatDate(preenchimento.created_at)}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Ministério ID</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.ministerio_id || 'N/A'}</p>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Organização ID</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.organizacao_id || 'N/A'}</p>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white">${preenchimento.created_at ? new Date(preenchimento.created_at).toLocaleString('pt-BR') : 'N/A'}</p>
                     </div>
                 </div>
         `;
 
-        if (preenchimento.dados) {
+        if (preenchimento.respostas) {
             detailsHTML += `
                 <div class="mt-6">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Dados do Preenchimento</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Respostas</label>
                     <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                        <pre class="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">${JSON.stringify(preenchimento.dados, null, 2)}</pre>
+                        <pre class="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">${JSON.stringify(preenchimento.respostas, null, 2)}</pre>
                     </div>
                 </div>
             `;
