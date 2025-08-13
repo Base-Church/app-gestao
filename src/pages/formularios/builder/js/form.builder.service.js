@@ -340,9 +340,9 @@ class FormBuilder {
     async saveForm() {
         try {
             if (this.formElements.length === 0) {
-                alert('Adicione pelo menos um elemento ao formulário antes de salvar.');
-                return;
-            }
+            this.showNotification('Adicione pelo menos um elemento ao formulário antes de salvar.', 'error');
+            return;
+        }
 
             const formTitle = document.getElementById('form-title-input')?.value || 'Formulário Personalizado';
             const processoEtapaInput = document.getElementById('processo-etapa-select');
@@ -358,11 +358,25 @@ class FormBuilder {
             const urlParams = new URLSearchParams(window.location.search);
             const formularioId = urlParams.get('id');
 
+            // Obter dados de configuração do modal se existirem
+            const configData = {
+                slug: document.getElementById('form-slug')?.value?.trim() || null,
+                descricao: document.getElementById('form-descricao')?.value?.trim() || null,
+                redirect_url: document.getElementById('form-redirect-url')?.value?.trim() || null,
+                cor_active: document.getElementById('form-cor-active')?.value || null,
+                img_url: document.getElementById('form-img-url')?.value?.trim() || null
+            };
+
             const formData = {
                 nome: formTitle,
-                processo_etapa_ids: processoEtapaIds,
+                processo_etapa_id: processoEtapaIds.length > 0 ? processoEtapaIds[0] : null,
                 ministerio_id: ministerioId,
-                dados: {
+                slug: configData.slug,
+                descricao: configData.descricao,
+                redirect_url: configData.redirect_url,
+                cor_active: configData.cor_active,
+                img_url: configData.img_url ? configData.img_url.split('/').pop() : null,
+                dados: JSON.stringify({
                     elements: this.formElements.map(element => {
                         const properties = { ...element.props };
                         // Substituir helpText por placeholder no JSON final
@@ -384,25 +398,30 @@ class FormBuilder {
                             properties: properties
                         };
                     })
-                }
+                })
             };
 
-            // Não precisa adicionar ID ao formData pois será passado como parâmetro
+            // Se for edição, adicionar o ID
+            if (formularioId) {
+                formData.id = formularioId;
+            }
 
             // Usa a API para salvar ou atualizar o formulário
             const result = formularioId 
                 ? await window.formulariosAPI.updateFormulario(formularioId, formData)
                 : await window.formulariosAPI.createFormulario(formData);
             
-            const message = formularioId ? 'Formulário atualizado com sucesso!' : 'Formulário salvo com sucesso!';
-            alert(message);
-            
-            // Redirecionar para a lista de formulários
-            window.location.href = `${window.location.origin}${window.location.pathname.replace('/criar', '').replace('/editar', '')}`;
+            if (formularioId) {
+                // Para edição: mostrar apenas notificação
+                this.showNotification('Formulário salvo com sucesso!', 'success');
+            } else {
+                // Para criação: mostrar modal de sucesso
+                this.showSuccessModal(result.data);
+            }
 
         } catch (error) {
             console.error('Erro ao salvar formulário:', error);
-            alert('Erro ao salvar formulário: ' + error.message);
+            this.showNotification('Erro ao salvar formulário: ' + error.message, 'error');
         }
     }
 
@@ -470,9 +489,23 @@ class FormBuilder {
     // Carrega um formulário a partir de JSON
     loadFormFromJson(jsonData) {
         try {
+            // Verificar se jsonData e elements existem
+            if (!jsonData || !jsonData.elements || !Array.isArray(jsonData.elements)) {
+                this.formElements = [];
+                this.renderForm();
+                this.updateJsonOutput();
+                this.deselectElement();
+                return;
+            }
+            
             this.formElements = jsonData.elements.map(element => {
                 const elementConfig = this.elements.getElementType(element.type);
                 const props = { ...element.properties };
+                
+                // Mapear placeholder do JSON para helpText interno (se não existir helpText)
+                if (props.placeholder !== undefined && props.helpText === undefined) {
+                    props.helpText = props.placeholder;
+                }
                 
                 // Para elementos com opções (select, radio, checkbox), garantir que options existe e está no formato correto
                 if (['select', 'radio', 'checkbox'].includes(element.type)) {
@@ -508,8 +541,195 @@ class FormBuilder {
             
         } catch (error) {
             console.error('Erro ao carregar formulário:', error);
-            alert('Erro ao carregar o formulário. Verifique se o JSON está correto.');
+            this.showNotification('Erro ao carregar o formulário. Verifique se o JSON está correto.', 'error');
         }
+    }
+
+    // Mostra notificação
+    showNotification(message, type = 'info') {
+        // Remove notificação existente se houver
+        const existingNotification = document.querySelector('.form-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+
+        // Cria a notificação
+        const notification = document.createElement('div');
+        notification.className = `form-notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-message">${message}</span>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
+            </div>
+        `;
+
+        // Adiciona estilos inline
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            font-family: Arial, sans-serif;
+            animation: slideInRight 0.3s ease-out;
+        `;
+
+        // Define cores baseadas no tipo
+        if (type === 'success') {
+            notification.style.backgroundColor = '#d4edda';
+            notification.style.color = '#155724';
+            notification.style.border = '1px solid #c3e6cb';
+        } else if (type === 'error') {
+            notification.style.backgroundColor = '#f8d7da';
+            notification.style.color = '#721c24';
+            notification.style.border = '1px solid #f5c6cb';
+        } else {
+            notification.style.backgroundColor = '#d1ecf1';
+            notification.style.color = '#0c5460';
+            notification.style.border = '1px solid #bee5eb';
+        }
+
+        // Adiciona ao body
+        document.body.appendChild(notification);
+
+        // Remove automaticamente após 5 segundos
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+
+    // Mostra modal de sucesso para criação
+    showSuccessModal(formData) {
+        const baseUrl = window.URL_BASE || '';
+        const formId = formData.id;
+        const formSlug = formData.slug;
+
+        // Remove modal existente se houver
+        const existingModal = document.querySelector('.success-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        // Cria o modal
+        const modal = document.createElement('div');
+        modal.className = 'success-modal';
+        modal.innerHTML = `
+            <div class="modal-overlay">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>✅ Formulário Criado com Sucesso!</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p>Seu formulário foi criado e está pronto para uso.</p>
+                        <div class="modal-actions">
+                            <button class="btn btn-secondary" onclick="window.location.href='${baseUrl}/formularios'">Voltar à Lista</button>
+                            <button class="btn btn-primary" onclick="window.location.href='${baseUrl}/formularios/editar?id=${formId}'">Editar Formulário</button>
+                            <button class="btn btn-success" onclick="window.open('https://forms.basechurch.com.br/${formSlug}', '_blank')">Acessar Formulário</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Adiciona estilos inline
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+
+        const overlay = modal.querySelector('.modal-overlay');
+        overlay.style.cssText = `
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+
+        const content = modal.querySelector('.modal-content');
+        content.style.cssText = `
+            background: white;
+            border-radius: 8px;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            animation: modalFadeIn 0.3s ease-out;
+        `;
+
+        const header = modal.querySelector('.modal-header');
+        header.style.cssText = `
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        `;
+
+        const body = modal.querySelector('.modal-body');
+        body.style.cssText = `
+            padding: 20px;
+            text-align: center;
+        `;
+
+        const actions = modal.querySelector('.modal-actions');
+        actions.style.cssText = `
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        `;
+
+        // Estiliza os botões
+        const buttons = modal.querySelectorAll('.btn');
+        buttons.forEach(btn => {
+            btn.style.cssText = `
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 14px;
+                text-decoration: none;
+                display: inline-block;
+                transition: background-color 0.3s;
+            `;
+            
+            if (btn.classList.contains('btn-primary')) {
+                btn.style.backgroundColor = '#007bff';
+                btn.style.color = 'white';
+            } else if (btn.classList.contains('btn-success')) {
+                btn.style.backgroundColor = '#28a745';
+                btn.style.color = 'white';
+            } else {
+                btn.style.backgroundColor = '#6c757d';
+                btn.style.color = 'white';
+            }
+        });
+
+        // Adiciona ao body
+        document.body.appendChild(modal);
+
+        // Fecha modal ao clicar no overlay
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                modal.remove();
+            }
+        });
     }
 }
 
@@ -518,5 +738,5 @@ window.FormBuilder = FormBuilder;
 
 // Inicializa quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', () => {
-    new FormBuilder();
+    window.formBuilder = new FormBuilder();
 });

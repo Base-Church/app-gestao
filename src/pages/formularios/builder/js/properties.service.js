@@ -378,8 +378,13 @@ class PropertiesManager {
                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
                 </div>
                 <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Placeholder</label>
+                    <input type="text" id="prop-placeholder" value="${element.props.placeholder || ''}" 
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
+                </div>
+                <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Texto de Ajuda</label>
-                    <input type="text" id="prop-placeholder" value="${element.props.placeholder}" 
+                    <input type="text" id="prop-helptext" value="${element.props.helpText || ''}" 
                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
                 </div>
 
@@ -398,12 +403,17 @@ class PropertiesManager {
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rótulo</label>
-                    <input type="text" id="prop-label" value="${element.props.label}" 
+                    <input type="text" id="prop-label" value="${element.props.label || ''}" 
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Placeholder</label>
+                    <input type="text" id="prop-placeholder" value="${element.props.placeholder || ''}" 
                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Texto de Ajuda</label>
-                    <input type="text" id="prop-placeholder" value="${element.props.placeholder}" 
+                    <input type="text" id="prop-helptext" value="${element.props.helpText || ''}" 
                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
                 </div>
 
@@ -422,12 +432,17 @@ class PropertiesManager {
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rótulo</label>
-                    <input type="text" id="prop-label" value="${element.props.label}" 
+                    <input type="text" id="prop-label" value="${element.props.label || ''}" 
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Placeholder</label>
+                    <input type="text" id="prop-placeholder" value="${element.props.placeholder || ''}" 
                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Texto de Ajuda</label>
-                    <input type="text" id="prop-placeholder" value="${element.props.placeholder}" 
+                    <input type="text" id="prop-helptext" value="${element.props.helpText || ''}" 
                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
                 </div>
                 <div class="flex items-center">
@@ -477,7 +492,7 @@ class PropertiesManager {
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Texto de Ajuda</label>
                     <textarea id="prop-helpText" rows="2" 
-                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">${element.props.helpText}</textarea>
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">${element.props.helpText || ''}</textarea>
                 </div>
                 <div class="flex items-center">
                     <input type="checkbox" id="prop-required" ${element.props.required ? 'checked' : ''} 
@@ -504,7 +519,7 @@ class PropertiesManager {
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Texto</label>
-                    <input type="text" id="prop-text" value="${element.props.text}" 
+                    <input type="text" id="prop-text" value="${element.props.text || ''}" 
                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
                 </div>
                 <div>
@@ -532,7 +547,7 @@ class PropertiesManager {
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Texto</label>
                     <textarea id="prop-text" rows="3" 
-                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">${element.props.text}</textarea>
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">${element.props.text || ''}</textarea>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Alinhamento</label>
@@ -765,6 +780,8 @@ class PropertiesManager {
                     }
                     if (window.NotificationSystem) {
                         window.NotificationSystem.show('ID copiado: ' + id, 'success', 2000);
+                    } else if (window.formBuilder && window.formBuilder.showNotification) {
+                        window.formBuilder.showNotification('ID copiado: ' + id, 'success');
                     } else {
                         alert('ID copiado: ' + id);
                     }

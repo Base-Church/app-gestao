@@ -1,6 +1,6 @@
 class FormulariosAPI {
     constructor() {
-        this.baseUrl = window.APP_CONFIG.baseUrl;
+        this.baseUrl = window.URL_BASE || window.APP_CONFIG?.baseUrl || '';
         this.apiPath = `${this.baseUrl}/src/services/api/formularios`;
         this.processosEtapasPath = `${this.baseUrl}/src/services/api/processos_etapas`;
     }

@@ -11,7 +11,7 @@ require_once __DIR__ . '/../../../components/layout/header.php';
         <!-- Cabeçalho da Página -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
             <div class="flex items-center justify-between mb-4">
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Construtor de Formulários</h1>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Formulário</h1>
                 <div class="flex gap-2">
                         <button id="save-form-btn" 
                                 class="inline-flex items-center justify-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800 transition-all duration-200 hover:shadow-md">
@@ -422,6 +422,57 @@ require_once __DIR__ . '/../../../components/layout/header.php';
     .sortable-drag {
         transform: rotate(3deg) scale(1.05);
         transition: transform 0.2s ease;
+    }
+    
+    /* Animações para notificações e modal */
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes modalFadeIn {
+        from {
+            transform: scale(0.9);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+    
+    .form-notification {
+        animation: slideInRight 0.3s ease-out;
+    }
+    
+    .modal-content {
+        animation: modalFadeIn 0.3s ease-out;
+    }
+    
+    .notification-close {
+        background: none;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        padding: 0;
+        margin-left: 10px;
+        opacity: 0.7;
+    }
+    
+    .notification-close:hover {
+        opacity: 1;
+    }
+    
+    .notification-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 </style>
 

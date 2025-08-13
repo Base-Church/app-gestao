@@ -107,9 +107,9 @@
                                                 <span>Enviar uma imagem</span>
                                                 <input id="form-image-upload" name="form_image" type="file" class="sr-only" accept="image/*">
                                             </label>
-                                            <p class="pl-1">ou arraste e solte</p>
+                                          
                                         </div>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF até 10MB</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF até 3MB</p>
                                         <p class="text-xs text-gray-500 dark:text-gray-400">Tamanho recomendado: 650x270px</p>
                                     </div>
                                 </div>

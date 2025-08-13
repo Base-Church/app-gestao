@@ -75,15 +75,27 @@ function openConfigModal(formData = null) {
 
 // Função para popular os campos do modal com dados do formulário
 function populateFormFields(data) {
-    if (data.slug) document.getElementById('form-slug').value = data.slug;
-    if (data.descricao) document.getElementById('form-descricao').value = data.descricao;
-    if (data.redirect_url) document.getElementById('form-redirect-url').value = data.redirect_url;
+    if (data.slug) {
+        const slugField = document.getElementById('form-slug');
+        if (slugField) slugField.value = data.slug;
+    }
+    if (data.descricao) {
+        const descricaoField = document.getElementById('form-descricao');
+        if (descricaoField) descricaoField.value = data.descricao;
+    }
+    if (data.redirect_url) {
+        const redirectField = document.getElementById('form-redirect-url');
+        if (redirectField) redirectField.value = data.redirect_url;
+    }
     if (data.cor_active) {
-        document.getElementById('form-cor-active').value = data.cor_active;
-        document.getElementById('form-cor-active-text').value = data.cor_active;
+        const corField = document.getElementById('form-cor-active');
+        const corTextField = document.getElementById('form-cor-active-text');
+        if (corField) corField.value = data.cor_active;
+        if (corTextField) corTextField.value = data.cor_active;
     }
     if (data.img_url) {
-        document.getElementById('form-img-url').value = data.img_url;
+        const imgField = document.getElementById('form-img-url');
+        if (imgField) imgField.value = data.img_url;
         showImagePreview(data.img_url);
     }
 }
@@ -111,13 +123,21 @@ function handleImageSelect(event) {
     
     // Validar tipo de arquivo
     if (!file.type.startsWith('image/')) {
-        alert('Por favor, selecione apenas arquivos de imagem.');
+        if (window.formBuilder && window.formBuilder.showNotification) {
+            window.formBuilder.showNotification('Por favor, selecione apenas arquivos de imagem.', 'error');
+        } else {
+            alert('Por favor, selecione apenas arquivos de imagem.');
+        }
         return;
     }
     
     // Validar tamanho (10MB)
     if (file.size > 10 * 1024 * 1024) {
-        alert('A imagem deve ter no máximo 10MB.');
+        if (window.formBuilder && window.formBuilder.showNotification) {
+            window.formBuilder.showNotification('A imagem deve ter no máximo 10MB.', 'error');
+        } else {
+            alert('A imagem deve ter no máximo 10MB.');
+        }
         return;
     }
     
@@ -229,14 +249,26 @@ function uploadImage(formData) {
             // Fechar área de crop
             closeCropArea();
             
-            alert('Imagem enviada com sucesso!');
+            if (window.formBuilder && window.formBuilder.showNotification) {
+                window.formBuilder.showNotification('Imagem enviada com sucesso!', 'success');
+            } else {
+                alert('Imagem enviada com sucesso!');
+            }
         } else {
-            alert('Erro ao fazer upload: ' + data.error);
+            if (window.formBuilder && window.formBuilder.showNotification) {
+                window.formBuilder.showNotification('Erro ao fazer upload: ' + data.error, 'error');
+            } else {
+                alert('Erro ao fazer upload: ' + data.error);
+            }
         }
     })
     .catch(error => {
         console.error('Erro:', error);
-        alert('Erro ao fazer upload da imagem.');
+        if (window.formBuilder && window.formBuilder.showNotification) {
+            window.formBuilder.showNotification('Erro ao fazer upload da imagem.', 'error');
+        } else {
+            alert('Erro ao fazer upload da imagem.');
+        }
     });
 }
 
@@ -299,7 +331,7 @@ function saveFormConfig() {
         img_url: document.getElementById('form-img-url').value
     };
     
-    console.log('Configurações salvas:', formData);
+    // Configurações salvas
     closeConfigModal();
 }
 

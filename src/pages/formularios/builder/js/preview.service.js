@@ -44,7 +44,11 @@ class FormPreview {
         const formData = window.formBuilder.getFormJson();
         
         if (!formData.elements || formData.elements.length === 0) {
-            alert('Adicione elementos ao formulário antes de visualizar o preview.');
+            if (window.formBuilder && window.formBuilder.showNotification) {
+                window.formBuilder.showNotification('Adicione elementos ao formulário antes de visualizar o preview.', 'error');
+            } else {
+                alert('Adicione elementos ao formulário antes de visualizar o preview.');
+            }
             return;
         }
         
