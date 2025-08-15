@@ -7,6 +7,7 @@ class DadosState {
         this.searchTerm = '';
     this.filterDateFrom = null;
     this.filterDateTo = null;
+    this.selectedIds = new Set();
     }
 
     setFormularioId(id) {
@@ -97,6 +98,7 @@ class DadosState {
     removePreenchimento(id) {
         this.preenchimentos = this.preenchimentos.filter(p => p.id != id);
         this.filteredPreenchimentos = this.filteredPreenchimentos.filter(p => p.id != id);
+    this.selectedIds.delete(Number(id));
     }
 
     reset() {
@@ -105,6 +107,31 @@ class DadosState {
         this.preenchimentos = [];
         this.filteredPreenchimentos = [];
         this.searchTerm = '';
+        this.filterDateFrom = null;
+        this.filterDateTo = null;
+        this.selectedIds.clear();
+    }
+
+    // seleção
+    toggleSelection(id, checked) {
+        const numId = Number(id);
+        if (checked) this.selectedIds.add(numId); else this.selectedIds.delete(numId);
+    }
+
+    isSelected(id) {
+        return this.selectedIds.has(Number(id));
+    }
+
+    selectAllCurrent() {
+        this.filteredPreenchimentos.forEach(p => this.selectedIds.add(Number(p.id)));
+    }
+
+    clearSelection() {
+        this.selectedIds.clear();
+    }
+
+    getSelectedIds() {
+        return Array.from(this.selectedIds);
     }
 }
 

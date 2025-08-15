@@ -101,14 +101,8 @@ class DadosAPI {
 
     async deletePreenchimento(id) {
         try {
-            const url = `${this.apiPath}/formulario_preenchimentos/delete.php`;
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `id=${encodeURIComponent(id)}`
-            });
+            const url = `${this.apiPath}/formulario_preenchimentos/delete.php?id=${encodeURIComponent(id)}`;
+            const response = await fetch(url, { method: 'DELETE' });
 
             const data = await response.json();
 
@@ -121,6 +115,33 @@ class DadosAPI {
             console.error('Erro ao excluir preenchimento:', error);
             throw new Error(error.message || 'Erro ao excluir preenchimento');
         }
+    }
+
+    async exportPreenchimentos(ids, formularioId) {
+        if (!ids || ids.length === 0) throw new Error('Nenhum item selecionado');
+        const ministerio_id = this.getMinisterioId();
+        const params = new URLSearchParams({
+            ministerio_id: ministerio_id,
+        });
+        if (formularioId) params.append('formulario_id', formularioId);
+        ids.forEach(id => params.append('ids[]', id));
+        const url = `${this.apiPath}/formulario_preenchimentos/export.php?${params.toString()}`;
+        const resp = await fetch(url, { method: 'GET' });
+        if (!resp.ok) {
+            let msg = `Erro ${resp.status} ao exportar`;
+            try { const j = await resp.json(); if (j.error) msg = j.error; } catch {}
+            throw new Error(msg);
+        }
+        // Download
+        const blob = await resp.blob();
+        const a = document.createElement('a');
+        const objectUrl = URL.createObjectURL(blob);
+        a.href = objectUrl;
+        a.download = `preenchimentos_${new Date().toISOString().replace(/[:T]/g,'-').slice(0,16)}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(objectUrl);
     }
 
     getMinisterioId() {

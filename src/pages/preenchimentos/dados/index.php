@@ -38,9 +38,15 @@ require_once __DIR__ . '/../../../components/layout/header.php';
                         </div>
                     </div>
 
-                    <div class="mt-3 sm:mt-0 w-full sm:w-1/2 grid grid-cols-2 gap-2">
+                    <div class="mt-3 sm:mt-0 w-full sm:w-1/2 grid grid-cols-3 gap-2 items-center">
                         <input type="date" id="filter-date-from" class="block w-full rounded-md border-0 py-2 px-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 sm:text-sm" placeholder="De" />
                         <input type="date" id="filter-date-to" class="block w-full rounded-md border-0 py-2 px-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 sm:text-sm" placeholder="Até" />
+                        <button id="export-selected" class="inline-flex items-center justify-center gap-2 px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed" title="Exportar selecionados para Excel" disabled>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M8 12l4 4m0 0l4-4m-4 4V4" />
+                            </svg>
+                            Exportar
+                        </button>
                     </div>
                 </div>
             </div>

@@ -1833,6 +1833,12 @@ select {
   touch-action: var(--tw-pan-x) var(--tw-pan-y) var(--tw-pinch-zoom);
 }
 
+.select-all {
+  -webkit-user-select: all;
+     -moz-user-select: all;
+          user-select: all;
+}
+
 .appearance-none {
   -webkit-appearance: none;
      -moz-appearance: none;

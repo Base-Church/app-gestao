@@ -29,6 +29,13 @@ class DadosUI {
     showTable() {
         this.hideAll();
         if (this.preenchimentosGrid) this.preenchimentosGrid.classList.remove('hidden');
+        // forçar layout automático para que colunas se alinhem ao conteúdo (evita distorções com table-fixed)
+        try {
+            const table = document.querySelector('#preenchimentos-table table');
+            if (table) table.style.tableLayout = 'auto';
+        } catch (e) {
+            // ignore
+        }
     }
 
     hideAll() {
@@ -58,8 +65,9 @@ class DadosUI {
         // Monta um array de colunas para usar na renderização das linhas
         const columns = [];
 
-        // Sempre começa com índice
-        columns.push({ type: 'index' });
+    // Seleção e índice (marcadas como 'special' para não conflitar com elementos do formulário)
+    columns.push({ special: 'select' });
+    columns.push({ special: 'index' });
 
         if (formulario && formulario.dados && formulario.dados.elements) {
             formulario.dados.elements.forEach(element => {
@@ -75,13 +83,15 @@ class DadosUI {
 
         // Campos fixos que podem vir fora do objeto `dados`
         // Adiciona apenas se não houver uma coluna equivalente (por type ou label)
-        const hasType = (t) => columns.some(c => c.type === 'index' ? false : (c.type === t || c.type === undefined) && (c.type === t || c.type === undefined));
-
         const existsByTypeOrLabel = (type, labelMatches) => {
             return columns.some(c => {
-                if (c.source === 'element') {
-                    if (c.type && c.type === type) return true;
-                    if (c.label && labelMatches.some(l => String(c.label).toLowerCase().includes(l))) return true;
+                // Verifica tipo exato
+                if (c.type === type) return true;
+                // Verifica label por palavras-chave (apenas para elementos do formulário)
+                if (c.source === 'element' && c.label) {
+                    return labelMatches.some(keyword => 
+                        String(c.label).toLowerCase().includes(keyword.toLowerCase())
+                    );
                 }
                 return false;
             });
@@ -103,7 +113,7 @@ class DadosUI {
         // Data de preenchimento
         columns.push({ source: 'fixed', key: 'created_at', label: 'Enviado', type: 'datetime' });
 
-        // Ações
+    // Ações
         columns.push({ source: 'actions', label: 'Ações' });
 
         // Guarda colunas para renderTable
@@ -115,7 +125,10 @@ class DadosUI {
 
         let headerHTML = '<tr>';
         columns.forEach(col => {
-            if (col.type === 'index') {
+            if (col.special === 'select') {
+                // Cabeçalho para seleção em massa (apenas um checkbox global)
+                headerHTML += `<th class="px-3 py-3"><input id="select-all" type="checkbox" class="h-4 w-4 text-primary-600 border-gray-300 rounded" /></th>`;
+            } else if (col.special === 'index') {
                 headerHTML += `<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">#</th>`;
             } else if (col.source === 'actions') {
                 headerHTML += `<th scope="col" class="relative px-6 py-3"><span class="sr-only">Ações</span></th>`;
@@ -130,6 +143,16 @@ class DadosUI {
         headerHTML += '</tr>';
 
         tableHeader.innerHTML = headerHTML;
+
+        // Evento selecionar todos
+        const selectAll = document.getElementById('select-all');
+        if (selectAll) {
+            selectAll.addEventListener('change', (e) => {
+                const checked = e.target.checked;
+                const checkboxes = document.querySelectorAll('.row-select');
+                checkboxes.forEach(cb => { cb.checked = checked; cb.dispatchEvent(new Event('change')); });
+            });
+        }
     }
 
     renderTable(preenchimentos, formulario) {
@@ -153,7 +176,14 @@ class DadosUI {
         const cols = this.columns || [];
 
         cols.forEach(col => {
-            if (col.type === 'index') {
+            if (col.special === 'select') {
+                const checkedAttr = (window.app && window.app.isSelected && window.app.isSelected(preenchimento.id)) ? 'checked' : '';
+                rowHTML += `<td class="px-3 py-4 whitespace-nowrap">
+                    <input data-id="${preenchimento.id}" type="checkbox" class="row-select h-4 w-4 text-primary-600 border-gray-300 rounded" ${checkedAttr} />
+                </td>`;
+                return;
+            }
+            if (col.special === 'index') {
                 rowHTML += `<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">${index}</td>`;
                 return;
             }
@@ -186,6 +216,15 @@ class DadosUI {
         });
 
         row.innerHTML = rowHTML;
+        // wire selection checkbox
+        const cb = row.querySelector('.row-select');
+        if (cb) {
+            cb.addEventListener('change', (e) => {
+                if (window.app && window.app.toggleSelection) {
+                    window.app.toggleSelection(preenchimento.id, e.target.checked);
+                }
+            });
+        }
         return row;
     }
 
@@ -255,6 +294,29 @@ class DadosUI {
             if (opcao) {
                 return opcao.label;
             }
+        }
+
+        // Campos do tipo checkbox: não renderizamos inputs na tabela, apenas labels
+        if (element.type === 'checkbox') {
+            // valor pode ser array (opções marcadas) ou boolean/string
+            if (Array.isArray(valor)) {
+                if (element.properties && element.properties.options) {
+                    const labels = valor.map(v => {
+                        const opt = element.properties.options.find(o => o.id === v || o.id === String(v));
+                        return opt ? opt.label : String(v);
+                    });
+                    return labels.join(', ');
+                }
+                return valor.join(', ');
+            }
+            // booleano ou string
+            if (typeof valor === 'boolean') return valor ? 'Sim' : 'Não';
+            if (element.properties && element.properties.options) {
+                // tenta mapear para opção
+                const opt = element.properties.options.find(o => o.id === valor || o.id === String(valor));
+                if (opt) return opt.label;
+            }
+            return String(valor);
         }
 
         // Formatação especial para tipos específicos
@@ -347,7 +409,13 @@ class DadosUI {
     showTable() {
         this.hideAll();
         const table = document.getElementById('preenchimentos-table');
-        if (table) table.classList.remove('hidden');
+        if (table) {
+            table.classList.remove('hidden');
+            try {
+                const inner = table.querySelector('table');
+                if (inner) inner.style.tableLayout = 'auto';
+            } catch (e) {}
+        }
     }
 
     hideAll() {

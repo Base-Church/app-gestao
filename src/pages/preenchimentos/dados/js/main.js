@@ -30,7 +30,9 @@ class PreenchimentosDadosApp {
         // Expõe funções globalmente
         window.app = {
             deletePreenchimento: this.deletePreenchimento.bind(this),
-            goBack: this.goBack.bind(this)
+            goBack: this.goBack.bind(this),
+            toggleSelection: this.toggleSelection.bind(this),
+            isSelected: (id) => this.state.isSelected(id)
         };
 
         await this.loadData();
@@ -69,6 +71,12 @@ class PreenchimentosDadosApp {
 
             if (dateFrom) dateFrom.addEventListener('change', applyDateFilter);
             if (dateTo) dateTo.addEventListener('change', applyDateFilter);
+        }
+
+        // Botão exportar
+        const exportBtn = document.getElementById('export-selected');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => this.exportSelected());
         }
     }
 
@@ -109,6 +117,9 @@ class PreenchimentosDadosApp {
         } else {
             this.ui.showEmpty();
         }
+
+    // Atualiza estado do botão exportar
+    this.updateExportButtonState();
     }
 
     async deletePreenchimento(id) {
@@ -133,6 +144,28 @@ class PreenchimentosDadosApp {
     goBack() {
         const baseUrl = window.APP_CONFIG?.baseUrl || window.location.origin;
         window.location.href = `${baseUrl}/src/pages/preenchimentos/`;
+    }
+
+    toggleSelection(id, checked) {
+        this.state.toggleSelection(id, checked);
+        this.updateExportButtonState();
+    }
+
+    updateExportButtonState() {
+        const exportBtn = document.getElementById('export-selected');
+        if (!exportBtn) return;
+        const hasSelection = this.state.getSelectedIds().length > 0;
+        exportBtn.disabled = !hasSelection;
+    }
+
+    async exportSelected() {
+        const ids = this.state.getSelectedIds();
+        if (!ids.length) return;
+        try {
+            await this.api.exportPreenchimentos(ids, this.formularioId);
+        } catch (e) {
+            this.showErrorMessage(e.message || 'Falha ao exportar');
+        }
     }
 
     showSuccessMessage(message) {
