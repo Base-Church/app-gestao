@@ -91,7 +91,8 @@ class PreenchimentosAPI {
         try {
             const ministerio_id = this.getMinisterioId();
             const params = new URLSearchParams({
-                ministerio_id: ministerio_id
+                ministerio_id: ministerio_id,
+                organizacao_id: window.USER.organizacao_id
             });
             const url = `${this.baseUrl}/src/services/api/formularios/get.php?${params}`;
             const response = await fetch(url);
@@ -105,6 +106,13 @@ class PreenchimentosAPI {
             
             if (!data || typeof data !== 'object') {
                 throw new Error('Resposta inválida da API');
+            }
+
+            // Verifica se a resposta tem o formato esperado
+            if (data.code === 200 && data.data) {
+                return data;
+            } else if (data.error) {
+                throw new Error(data.error);
             }
 
             return data;

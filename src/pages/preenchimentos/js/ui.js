@@ -6,9 +6,6 @@ class PreenchimentosUI {
         this.preenchimentosGrid = document.getElementById('preenchimentos-grid');
         this.preenchimentosList = document.getElementById('preenchimentos-list');
         this.paginationContainer = document.getElementById('pagination-container');
-        this.detailsModal = document.getElementById('details-modal');
-        this.modalContent = document.getElementById('modal-content');
-        this.formularioFilter = document.getElementById('formulario-filter');
     }
 
     showLoading() {
@@ -39,162 +36,110 @@ class PreenchimentosUI {
         this.preenchimentosGrid.classList.add('hidden');
     }
 
-    renderPreenchimentos(preenchimentos, formularios = []) {
+    renderPreenchimentos(formularios) {
         this.preenchimentosList.innerHTML = '';
-        this.formularios = formularios; // Armazena os formulários para uso na criação das linhas
 
-        preenchimentos.forEach(preenchimento => {
-            // Adiciona o nome do formulário ao objeto preenchimento
-            const formulario = formularios.find(f => f.id == preenchimento.formulario_id);
-            if (formulario) {
-                preenchimento.formulario_nome = formulario.nome;
-            }
-            
-            const row = this.createPreenchimentoRow(preenchimento);
-            this.preenchimentosList.appendChild(row);
+        formularios.forEach(formulario => {
+            const card = this.createFormularioCard(formulario);
+            this.preenchimentosList.appendChild(card);
         });
     }
 
-    createPreenchimentoRow(preenchimento) {
-        const row = document.createElement('tr');
-        row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150';
-
+    createFormularioCard(formulario) {
+        const card = document.createElement('div');
+        card.className = 'bg-white dark:bg-gray-700 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md transition-shadow duration-200 cursor-pointer';
+        
         const formatDate = (dateString) => {
-            if (!dateString) return 'N/A';
+            if (!dateString) return '';
             const date = new Date(dateString);
-            return date.toLocaleString('pt-BR', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
+            return date.toLocaleDateString('pt-BR', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
             });
         };
 
-        const calculateAge = (birthDateString) => {
-            if (!birthDateString) return 'N/A';
-            
-            try {
-                const birthDate = new Date(birthDateString);
-                const today = new Date();
-                
-                // Verifica se a data é válida
-                if (isNaN(birthDate.getTime())) return 'N/A';
-                
-                let age = today.getFullYear() - birthDate.getFullYear();
-                const monthDiff = today.getMonth() - birthDate.getMonth();
-                
-                // Se ainda não chegou o mês de aniversário, ou chegou mas não o dia, subtrai 1
-                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                    age--;
-                }
-                
-                return age >= 0 ? `${age} anos` : 'N/A';
-            } catch (error) {
-                return 'N/A';
-            }
-        };
-
-        const formatWhatsApp = (whatsapp) => {
-            if (!whatsapp) return 'N/A';
-            
-            // Remove todos os caracteres não numéricos
-            const cleaned = whatsapp.replace(/\D/g, '');
-            
-            // Se tem 11 dígitos (formato brasileiro)
-            if (cleaned.length === 11) {
-                return `(${cleaned.substr(0,2)}) ${cleaned.substr(2,5)}-${cleaned.substr(7,4)}`;
-            }
-            // Se tem 10 dígitos (formato brasileiro antigo)
-            else if (cleaned.length === 10) {
-                return `(${cleaned.substr(0,2)}) ${cleaned.substr(2,4)}-${cleaned.substr(6,4)}`;
-            }
-            // Retorna o valor original se não conseguir formatar
-            return whatsapp;
-        };
-
-        row.innerHTML = `
-            <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900 dark:text-white">
-                    ${preenchimento.formulario_nome || 'Formulário'}
+        card.innerHTML = `
+            <div class="p-6">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                            ${formulario.nome || 'Formulário sem nome'}
+                        </h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
+                            ${formulario.descricao || 'Sem descrição'}
+                        </p>
+                    </div>
                 </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900 dark:text-white">
-                    ${preenchimento.nome || 'N/A'}
+                
+                <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                        <svg class="mr-1.5 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Slug: ${formulario.slug || 'N/A'}
+                    </div>
+                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                        <svg class="mr-1.5 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                        ID: ${formulario.id}
+                    </div>
                 </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                ${preenchimento.cpf || 'N/A'}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                ${calculateAge(preenchimento.data_nascimento)}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                <a href="https://wa.me/55${preenchimento.whatsapp?.replace(/\D/g, '') || ''}" 
-                   target="_blank" 
-                   class="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 transition-colors duration-150"
-                   title="Enviar mensagem no WhatsApp">
-                    ${formatWhatsApp(preenchimento.whatsapp)}
-                </a>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                ${formatDate(preenchimento.created_at)}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div class="flex items-center justify-end space-x-2">
-                    <button onclick="window.app.viewPreenchimento(${preenchimento.id})" 
-                            class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300 transition-colors duration-150"
-                            title="Visualizar detalhes">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                        </svg>
-                    </button>
-                    <button onclick="window.app.deletePreenchimento(${preenchimento.id})" 
-                            class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors duration-150"
-                            title="Excluir preenchimento">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                        </svg>
+                
+                <div class="mt-4">
+                    <button 
+                        onclick="window.app.viewFormulario(${formulario.id})" 
+                        class="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                        Ver Preenchimentos
                     </button>
                 </div>
-            </td>
+            </div>
         `;
 
-        return row;
+        return card;
     }
 
     renderPagination(meta) {
-        if (!meta || meta.totalPages <= 1) {
+        if (!meta || !this.paginationContainer) return;
+
+        const { current_page, total_pages, total_items, per_page } = meta;
+        
+        if (total_pages <= 1) {
             this.paginationContainer.innerHTML = '';
             return;
         }
 
-        const { page, totalPages, total, limit } = meta;
-        const startItem = ((page - 1) * limit) + 1;
-        const endItem = Math.min(page * limit, total);
+        const startItem = ((current_page - 1) * per_page) + 1;
+        const endItem = Math.min(current_page * per_page, total_items);
 
         let paginationHTML = `
             <div class="flex-1 flex justify-between sm:hidden">
-                ${page > 1 ? `<button onclick="window.app.changePage(${page - 1})" class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">Anterior</button>` : '<div></div>'}
-                ${page < totalPages ? `<button onclick="window.app.changePage(${page + 1})" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">Próximo</button>` : '<div></div>'}
+                ${current_page > 1 ? 
+                    `<button onclick="window.app.changePage(${current_page - 1})" class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">Anterior</button>` : 
+                    '<span></span>'
+                }
+                ${current_page < total_pages ? 
+                    `<button onclick="window.app.changePage(${current_page + 1})" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">Próximo</button>` : 
+                    '<span></span>'
+                }
             </div>
             <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
                     <p class="text-sm text-gray-700 dark:text-gray-300">
-                        Mostrando <span class="font-medium">${startItem}</span> a <span class="font-medium">${endItem}</span> de <span class="font-medium">${total}</span> resultados
+                        Mostrando <span class="font-medium">${startItem}</span> a <span class="font-medium">${endItem}</span> de <span class="font-medium">${total_items}</span> resultados
                     </p>
                 </div>
                 <div>
-                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
         `;
 
-        // Botão Anterior
-        if (page > 1) {
+        // Botão anterior
+        if (current_page > 1) {
             paginationHTML += `
-                <button onclick="window.app.changePage(${page - 1})" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <button onclick="window.app.changePage(${current_page - 1})" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <span class="sr-only">Anterior</span>
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
                     </svg>
                 </button>
@@ -202,23 +147,24 @@ class PreenchimentosUI {
         }
 
         // Números das páginas
-        const startPage = Math.max(1, page - 2);
-        const endPage = Math.min(totalPages, page + 2);
+        const startPage = Math.max(1, current_page - 2);
+        const endPage = Math.min(total_pages, current_page + 2);
 
         for (let i = startPage; i <= endPage; i++) {
-            const isActive = i === page;
+            const isActive = i === current_page;
             paginationHTML += `
-                <button onclick="window.app.changePage(${i})" class="relative inline-flex items-center px-4 py-2 border ${isActive ? 'border-primary-500 bg-primary-50 dark:bg-primary-900 text-primary-600 dark:text-primary-200' : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'} text-sm font-medium">
+                <button onclick="window.app.changePage(${i})" class="relative inline-flex items-center px-4 py-2 border ${isActive ? 'border-primary-500 bg-primary-50 dark:bg-primary-900 text-primary-600 dark:text-primary-200' : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'} text-sm font-medium">
                     ${i}
                 </button>
             `;
         }
 
-        // Botão Próximo
-        if (page < totalPages) {
+        // Botão próximo
+        if (current_page < total_pages) {
             paginationHTML += `
-                <button onclick="window.app.changePage(${page + 1})" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <button onclick="window.app.changePage(${current_page + 1})" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <span class="sr-only">Próximo</span>
+                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                     </svg>
                 </button>
@@ -232,162 +178,6 @@ class PreenchimentosUI {
         `;
 
         this.paginationContainer.innerHTML = paginationHTML;
-    }
-
-    renderFormularioOptions(formularios) {
-        this.formularioFilter.innerHTML = '<option value="">Todos os formulários</option>';
-        
-        if (formularios && formularios.length > 0) {
-            formularios.forEach(formulario => {
-                const option = document.createElement('option');
-                option.value = formulario.id;
-                option.textContent = formulario.nome || `Formulário ${formulario.id}`;
-                this.formularioFilter.appendChild(option);
-            });
-        }
-    }
-
-    showDetailsModal(preenchimento) {
-        const modalTitle = document.getElementById('modal-title');
-        
-        // Determina o nome do formulário para o título
-        let formularioNome = 'Formulário';
-        if (preenchimento.formulario_detalhes && preenchimento.formulario_detalhes.nome) {
-            formularioNome = preenchimento.formulario_detalhes.nome;
-        }
-        
-        modalTitle.textContent = `Preenchimento - ${formularioNome}`;
-
-        let detailsHTML = `
-            <div class="space-y-4">
-        `;
-
-        // Se temos dados do preenchimento, vamos relacionar com os campos do formulário
-        if (preenchimento.dados && preenchimento.formulario_detalhes && 
-            preenchimento.formulario_detalhes.dados && 
-            preenchimento.formulario_detalhes.dados.elements) {
-            
-            const elementos = preenchimento.formulario_detalhes.dados.elements;
-            const dadosPreenchimento = preenchimento.dados;
-
-            detailsHTML += `
-                <div class="bg-white dark:bg-gray-800">
-                    <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Respostas do Formulário</h4>
-                    <div class="space-y-4">
-            `;
-
-            // Para cada elemento do formulário, procura a resposta correspondente
-            elementos.forEach((elemento) => {
-                const valor = dadosPreenchimento[elemento.id];
-                if (valor !== undefined) {
-                    let valorFormatado = valor;
-                    
-                    // Se é um campo de seleção, tenta encontrar o label da opção
-                    if (elemento.type === 'radio' || elemento.type === 'select') {
-                        if (elemento.properties.options) {
-                            const opcao = elemento.properties.options.find(opt => opt.id === valor);
-                            if (opcao) {
-                                valorFormatado = opcao.label;
-                            }
-                        }
-                    }
-                    
-                    detailsHTML += `
-                        <div class="border-b border-gray-200 dark:border-gray-600 pb-4 last:border-b-0">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                ${elemento.properties.label || 'Campo sem nome'}
-                            </label>
-                            <div class="mt-1">
-                                <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md">
-                                    ${valorFormatado}
-                                </p>
-                            </div>
-                        </div>
-                    `;
-                }
-            });
-
-            detailsHTML += `
-                    </div>
-                </div>
-            `;
-        } else if (preenchimento.dados) {
-            // Se não temos o formulário, mostra apenas os dados básicos
-            detailsHTML += `
-                <div class="bg-white dark:bg-gray-800">
-                    <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Dados Preenchidos</h4>
-                    <div class="space-y-3">
-            `;
-
-            Object.entries(preenchimento.dados).forEach(([key, value]) => {
-                detailsHTML += `
-                    <div class="border-b border-gray-200 dark:border-gray-600 pb-3 last:border-b-0">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Campo
-                        </label>
-                        <div class="mt-1">
-                            <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md">
-                                ${value}
-                            </p>
-                        </div>
-                    </div>
-                `;
-            });
-
-            detailsHTML += `
-                    </div>
-                </div>
-            `;
-        } else {
-            detailsHTML += `
-                <div class="text-center py-8">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Nenhum dado de preenchimento encontrado.</p>
-                </div>
-            `;
-        }
-
-        // Informações adicionais do formulário (apenas nome e descrição se houver)
-        if (preenchimento.formulario_detalhes) {
-            const formulario = preenchimento.formulario_detalhes;
-            if (formulario.descricao) {
-                detailsHTML += `
-                    <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sobre o Formulário</h4>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">${formulario.descricao}</p>
-                    </div>
-                `;
-            }
-        }
-
-        const formatDate = (dateString) => {
-            if (!dateString) return 'N/A';
-            const date = new Date(dateString);
-            return date.toLocaleString('pt-BR', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        };
-
-        // Data do preenchimento
-        detailsHTML += `
-            <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <p class="text-xs text-gray-500 dark:text-gray-400">
-                    Preenchido em ${formatDate(preenchimento.created_at)}
-                </p>
-            </div>
-        `;
-
-        detailsHTML += '</div>';
-        
-        this.modalContent.innerHTML = detailsHTML;
-        this.detailsModal.classList.remove('hidden');
-    }
-
-    hideDetailsModal() {
-        this.detailsModal.classList.add('hidden');
     }
 }
 

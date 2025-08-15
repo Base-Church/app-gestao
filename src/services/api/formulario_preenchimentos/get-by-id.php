@@ -28,6 +28,7 @@ if (!SessionService::hasToken()) {
 $organizacao_id = SessionService::getOrganizacaoId();
 $ministerio_id = $_GET['ministerio_id'] ?? SessionService::getMinisterioAtual();
 $preenchimento_id = $_GET['id'] ?? null;
+$formulario_id = $_GET['formulario_id'] ?? null;
 
 if (!$organizacao_id) {
     returnError('Organização não encontrada');
@@ -47,6 +48,11 @@ $params = [
     'organizacao_id' => $organizacao_id,
     'ministerio_id' => $ministerio_id
 ];
+
+// Se formulario_id foi fornecido, inclua nos parâmetros para garantir retorno correto
+if ($formulario_id) {
+    $params['formulario_id'] = $formulario_id;
+}
 
 $url = $apiUrl . '?' . http_build_query($params);
 

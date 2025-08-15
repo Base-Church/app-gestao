@@ -9,7 +9,7 @@
 <div id="loading-indicator" class="flex justify-center py-12">
     <div class="flex flex-col items-center">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Carregando preenchimentos...</p>
+        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Carregando formulários...</p>
     </div>
 </div>
 
@@ -25,7 +25,7 @@
             <div class="flex justify-between items-start">
                 <div>
                     <h3 class="text-sm font-medium text-red-800 dark:text-red-200" id="error-message">
-                        Erro ao carregar preenchimentos
+                        Erro ao carregar formulários
                     </h3>
                     <p class="mt-1 text-sm text-red-700 dark:text-red-300">
                         Tente recarregar a página ou entre em contato com o suporte.
@@ -47,9 +47,9 @@
         <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
-        <h3 class="mt-4 text-sm font-medium text-gray-900 dark:text-white">Nenhum preenchimento encontrado</h3>
+        <h3 class="mt-4 text-sm font-medium text-gray-900 dark:text-white">Nenhum formulário encontrado</h3>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Não há preenchimentos de formulários que correspondam aos critérios de busca.
+            Não há formulários que correspondam aos critérios de busca.
         </p>
         <div class="mt-4">
             <button type="button" 

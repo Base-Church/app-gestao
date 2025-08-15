@@ -11,8 +11,8 @@ require_once __DIR__ . '/../../components/layout/header.php';
         <!-- Cabeçalho da Página -->
         <div class="sm:flex sm:items-center sm:justify-between mb-8">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Preenchimentos de Formulários</h1>
-                <p class="mt-2 text-sm text-gray-700 dark:text-gray-400">Visualize e gerencie os preenchimentos dos formulários</p>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Formulários</h1>
+                <p class="mt-2 text-sm text-gray-700 dark:text-gray-400">Visualize e acesse os preenchimentos dos seus formulários</p>
             </div>
             
             <!-- Componente de Filtros -->
@@ -26,14 +26,13 @@ require_once __DIR__ . '/../../components/layout/header.php';
         <?php include __DIR__ . '/components/tabela-preenchimentos.php'; ?>
     </div>
 
-    <!-- Componente do Modal de Detalhes -->
-    <?php include __DIR__ . '/components/modal-detalhes.php'; ?>
+
 </main>
 
 <!-- Scripts da página -->
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/preenchimentos/js/api.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/preenchimentos/js/ui.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/preenchimentos/js/state.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/preenchimentos/js/main.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/preenchimentos/js/formularios-main.js"></script>
 
 <?php require_once __DIR__ . '/../../components/layout/footer.php'; ?>
