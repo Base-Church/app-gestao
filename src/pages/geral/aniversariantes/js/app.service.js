@@ -73,10 +73,7 @@ function renderVisaoGeral(visao, totalOverride = null) {
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Visão geral</h3>
                 <p class="text-sm text-gray-500 dark:text-gray-400">Quantidade de aniversariantes no mês corrente</p>
             </div>
-            <div class="text-center">
-                <div id="total-aniversariantes" class="text-3xl font-bold text-primary-600">${totalMesAtual}</div>
-                <div class="text-xs text-gray-500">Aniversariantes em ${mesNames[mesAtual-1]}</div>
-            </div>
+            
         </div>
         <div>
             ${criarGraficoMeses(porMes)}
