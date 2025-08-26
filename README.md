@@ -1,3 +1,4 @@
 # Base Escalas
-npm run dev
-novo
+npm run start
+
+npm run tailwind:dev

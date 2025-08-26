@@ -2,6 +2,7 @@
 // Carrega variáveis de ambiente sem Composer
 require_once __DIR__ . '/../../../config/load_env.php';
 require_once __DIR__ . '/../../../config/auth/session.service.php';
+require_once __DIR__ . '/../../realtime/realtime.service.php';
 
 // Iniciar sessão
 SessionService::start();
@@ -108,6 +109,13 @@ if (SessionService::isLoggedIn() && !SessionService::hasMinisterios() && strpos(
             document.documentElement.classList.remove('dark');
         }
     </script>
+
+    <?php 
+    // Incluir script do Socket.IO se o usuário estiver logado
+    if (SessionService::isLoggedIn()) {
+        echo RealtimeService::generateClientScript();
+    }
+    ?>
 </head>
 <body class="h-full bg-white dark:bg-gray-900">
     <!-- Modals Container - Adicionado container para modais com z-index maior -->
