@@ -26,3 +26,5 @@ RUN composer install --optimize-autoloader --no-scripts --no-interaction
 RUN chown -R www-data:www-data /var/www/html
 
 EXPOSE 80
+
+FROM php:8.4-apache
