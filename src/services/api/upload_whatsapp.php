@@ -1,12 +1,7 @@
 <?php
-require_once __DIR__ . '/../../../vendor/autoload.php';
+require_once __DIR__ . '/../../../config/load_env.php';
 require_once __DIR__ . '/../../../config/auth/session.service.php';
 
-// Carrega as variáveis de ambiente
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
-$dotenv->load();
-
-// Verifica a autenticação
 SessionService::start();
 if (!SessionService::isLoggedIn()) {
     http_response_code(401);
@@ -53,7 +48,8 @@ try {
     }
     
     // Constrói a URL completa
-    $fileUrl = $_ENV['URL_BASE'] . '/assets/disparos/' . $newFileName;
+    $urlBase = $_ENV['URL_BASE'] ?? ($_SERVER['URL_BASE'] ?? '');
+    $fileUrl = rtrim($urlBase, '/') . '/assets/disparos/' . $newFileName;
     
     // Retorna a URL completa do arquivo
     echo json_encode([

@@ -1,14 +1,12 @@
+
 <?php
-require_once __DIR__ . '/../../../../vendor/autoload.php';
+require_once __DIR__ . '/../../../../config/load_env.php';
 require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 // Ativa logs de erro para debug
 ini_set('display_errors', 1);
 ini_set('log_errors', 1);
 error_reporting(E_ALL);
-
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
-$dotenv->load();
 
 // Define o header da resposta como JSON
 header('Content-Type: application/json');
@@ -135,7 +133,11 @@ $updateData = array_filter([
 });
 
 // Log da URL da API
-$apiUrl = $_ENV['API_BASE_URL'] . "/usuarios/{$userId}";
+$apiBaseUrl = isset($_ENV['API_BASE_URL']) ? $_ENV['API_BASE_URL'] : (isset($_SERVER['API_BASE_URL']) ? $_SERVER['API_BASE_URL'] : '');
+if (!$apiBaseUrl) {
+    returnError('API_BASE_URL não configurado no ambiente', 500);
+}
+$apiUrl = $apiBaseUrl . "/usuarios/{$userId}";
 error_log("URL da API: " . $apiUrl);
 
 // Log dos dados que serão enviados

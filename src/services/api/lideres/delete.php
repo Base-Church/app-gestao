@@ -1,9 +1,7 @@
 <?php
-require_once __DIR__ . '/../../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
-$dotenv->load();
+require_once __DIR__ . '/../../../../config/load_env.php';
+require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Methods: DELETE, OPTIONS');
@@ -44,9 +42,11 @@ if (!$organizacao_id) {
     returnError('Organização não identificada');
 }
 
+
+$apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
 $ch = curl_init();
 curl_setopt_array($ch, [
-    CURLOPT_URL => $_ENV['API_BASE_URL'] . "/lideres/{$id}?organizacao_id={$organizacao_id}",
+    CURLOPT_URL => rtrim($apiBase, '/') . "/lideres/{$id}?organizacao_id={$organizacao_id}",
     CURLOPT_CUSTOMREQUEST => 'DELETE',
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [

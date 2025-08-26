@@ -1,9 +1,7 @@
 <?php
-require_once __DIR__ . '/../../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
-$dotenv->load();
+require_once __DIR__ . '/../../../../config/load_env.php';
+require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 header('Content-Type: application/json');
 
@@ -35,7 +33,8 @@ if (!$processo_id) {
     returnError('ID do processo não informado');
 }
 
-$apiUrl = $_ENV['API_BASE_URL'] . '/processos/' . urlencode($processo_id);
+$apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
+$apiUrl = rtrim($apiBase, '/') . '/processos/' . urlencode($processo_id);
 $params = [
     'organizacao_id' => $organizacao_id,
     'ministerio_id' => $ministerio_id

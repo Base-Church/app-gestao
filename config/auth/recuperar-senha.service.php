@@ -1,12 +1,9 @@
 <?php
-require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+require_once dirname(__DIR__) . '/load_env.php';
 
 header('Content-Type: application/json');
 
-$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__, 2));
-$dotenv->load();
-
-$apiBaseUrl = $_ENV['API_BASE_URL'];
+$apiBaseUrl = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);

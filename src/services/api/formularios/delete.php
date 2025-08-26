@@ -1,10 +1,7 @@
 <?php
-require_once __DIR__ . '/../../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
-// Carrega as variáveis de ambiente
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
-$dotenv->load();
+require_once __DIR__ . '/../../../../config/load_env.php';
+require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 header('Content-Type: application/json');
 
@@ -42,7 +39,8 @@ if (!$organizacao_id) {
     returnError('Organização não encontrada');
 }
 
-$apiUrl = $_ENV['API_BASE_URL'] . '/formularios/' . $formulario_id;
+$apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
+$apiUrl = rtrim($apiBase, '/') . '/formularios/' . $formulario_id;
 
 $ch = curl_init();
 curl_setopt_array($ch, [

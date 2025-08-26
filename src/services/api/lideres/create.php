@@ -1,10 +1,7 @@
 <?php
-require_once __DIR__ . '/../../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
-// Carrega variáveis de ambiente
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
-$dotenv->load();
+require_once __DIR__ . '/../../../../config/load_env.php';
+require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 header('Content-Type: application/json');
 
@@ -59,9 +56,11 @@ $payload = [
 ];
 
 // Configuração da requisição
+
+$apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
 $ch = curl_init();
 curl_setopt_array($ch, [
-    CURLOPT_URL => $_ENV['API_BASE_URL'] . '/lideres',
+    CURLOPT_URL => rtrim($apiBase, '/') . '/lideres',
     CURLOPT_POST => true,
     CURLOPT_POSTFIELDS => json_encode($payload),
     CURLOPT_RETURNTRANSFER => true,

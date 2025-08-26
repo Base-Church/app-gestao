@@ -1,23 +1,25 @@
 <?php
-require_once __DIR__ . '/../../../vendor/autoload.php';
+// Carrega variáveis de ambiente sem Composer
+require_once __DIR__ . '/../../../config/load_env.php';
 require_once __DIR__ . '/../../../config/auth/session.service.php';
 
-// Carrega as variáveis de ambiente
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
-$dotenv->load();
+// Iniciar sessão
+SessionService::start();
 
-// Forçar redirecionamento se não estiver logado
-if (!SessionService::isLoggedIn() && $_SERVER['REQUEST_URI'] !== '/login') {
-    header('Location: ' . $_ENV['URL_BASE'] . '/login');
-    exit;
+// Fallbacks seguros para variáveis de ambiente
+$urlBase = $_ENV['URL_BASE'] ?? ($_SERVER['URL_BASE'] ?? '');
+
+// Forçar redirecionamento se não estiver logado (comparando somente o path)
+$currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+if (!SessionService::isLoggedIn() && $currentPath !== ($urlBase ? parse_url($urlBase, PHP_URL_PATH) . '/login' : '/login') && strpos($currentPath, '/login') === false) {
+  header('Location: ' . rtrim($urlBase, '/') . '/login');
+  exit;
 }
 
 // Forçar redirecionamento se não tiver ministério e não estiver na página sem-ministerio
-if (SessionService::isLoggedIn() && 
-    !SessionService::hasMinisterios() && 
-    strpos($_SERVER['REQUEST_URI'], 'sem-ministerio') === false) {
-    header('Location: ' . $_ENV['URL_BASE'] . '/sem-ministerio');
-    exit;
+if (SessionService::isLoggedIn() && !SessionService::hasMinisterios() && strpos($currentPath, 'sem-ministerio') === false) {
+  header('Location: ' . rtrim($urlBase, '/') . '/sem-ministerio');
+  exit;
 }
 ?>
 <!DOCTYPE html>

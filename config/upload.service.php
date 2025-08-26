@@ -2,14 +2,9 @@
 // Serviço global de upload de arquivos
 // Permite upload flexível com diferentes configurações de rota
 
-// Carregar variáveis de ambiente se não estiverem carregadas
-if (!isset($_ENV['URL_BASE'])) {
-    require_once __DIR__ . '/../vendor/autoload.php';
-    if (file_exists(__DIR__ . '/../.env')) {
-        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
-        $dotenv->load();
-    }
-}
+// Carrega variáveis de ambiente simples (sem Composer)
+require_once __DIR__ . '/load_env.php';
+$urlBase = $_ENV['URL_BASE'] ?? ($_SERVER['URL_BASE'] ?? '');
 
 // Verificar se é uma requisição POST para upload
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES)) {
@@ -80,7 +75,7 @@ function handleFileUpload() {
         echo json_encode([
             'success' => true,
             'filename' => $filename,
-            'url' => $_ENV['URL_BASE'] . '/' . $uploadPath . '/' . $filename,
+            'url' => rtrim($urlBase, '/') . '/' . $uploadPath . '/' . $filename,
             'path' => $uploadPath . '/' . $filename,
             'size' => $file['size'],
             'type' => $file['type']

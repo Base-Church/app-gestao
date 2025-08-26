@@ -1,9 +1,7 @@
 <?php
-require_once __DIR__ . '/../../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
-$dotenv->load();
+require_once __DIR__ . '/../../../../config/load_env.php';
+require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 header('Content-Type: application/json');
 
@@ -43,9 +41,11 @@ $params = http_build_query([
     'organizacao_id' => $organizacao_id
 ]);
 
+
+$apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
 $ch = curl_init();
 curl_setopt_array($ch, [
-    CURLOPT_URL => $_ENV['API_BASE_URL'] . "/lideres?{$params}",
+    CURLOPT_URL => rtrim($apiBase, '/') . "/lideres?{$params}",
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [
         'Accept: application/json',

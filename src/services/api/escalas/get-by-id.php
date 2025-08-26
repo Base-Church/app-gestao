@@ -1,10 +1,7 @@
 <?php
-require_once __DIR__ . '/../../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
-// Carrega as variáveis de ambiente
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
-$dotenv->load();
+require_once __DIR__ . '/../../../../config/load_env.php';
+require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 header('Content-Type: application/json');
 
@@ -41,7 +38,8 @@ if (!$escala_id) {
 }
 
 // Monta a URL da API para buscar escala específica
-$apiUrl = $_ENV['API_BASE_URL'] . "/escalas/{$escala_id}";
+$apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
+$apiUrl = rtrim($apiBase, '/') . "/escalas/{$escala_id}";
 $params = [
     'organizacao_id' => $organizacao_id,
     'ministerio_id' => $ministerio_id

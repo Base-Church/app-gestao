@@ -1,7 +1,6 @@
 <?php
-require_once __DIR__ . '/../../../../vendor/autoload.php';
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
-$dotenv->load();
+
+require_once __DIR__ . '/../../../../config/load_env.php';
 require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 header('Content-Type: application/json');
@@ -36,7 +35,8 @@ if (!$organizacao_id) {
 }
 $data['organizacao_id'] = $organizacao_id;
 
-$apiUrl = $_ENV['API_BASE_URL'] . '/processos';
+$apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
+$apiUrl = rtrim($apiBase, '/') . '/processos';
 $ch = curl_init();
 curl_setopt_array($ch, [
     CURLOPT_URL => $apiUrl,

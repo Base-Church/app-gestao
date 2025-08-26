@@ -1,13 +1,10 @@
 <?php
-require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+require_once dirname(__DIR__) . '/load_env.php';
 require_once dirname(__DIR__) . '/auth/session.service.php';
 
 header('Content-Type: application/json');
 
-$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__, 2));
-$dotenv->load();
-
-$apiBaseUrl = $_ENV['API_BASE_URL'];
+$apiBaseUrl = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
 
 SessionService::start();
 

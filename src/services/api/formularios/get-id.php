@@ -1,10 +1,7 @@
 <?php
-require_once __DIR__ . '/../../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
-// Carrega as variáveis de ambiente
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
-$dotenv->load();
+require_once __DIR__ . '/../../../../config/load_env.php';
+require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 header('Content-Type: application/json');
 
@@ -43,7 +40,8 @@ if (!$formulario_id) {
     returnError('ID do formulário não informado');
 }
 
-$apiUrl = $_ENV['API_BASE_URL'] . '/formularios/' . urlencode($formulario_id);
+$apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
+$apiUrl = rtrim($apiBase, '/') . '/formularios/' . urlencode($formulario_id);
 
 // Monta os parâmetros da query
 $params = [

@@ -73,7 +73,7 @@ return [
     '/login'                                => '/src/pages/login/index.php',
     '/cadastro'                             => '/src/pages/cadastro/index.php',
     '/recuperar'                            => '/src/pages/recuperar-senha/index.php',
-    '/logout'                               => '/config/auth/login.logout.php',
+    '/logout'                               => '/config/auth/logout.service.php',
 
     // Sem ministério
     '/sem-ministerio'                       => '/src/pages/sem-ministerio/index.php',

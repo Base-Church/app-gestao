@@ -1,14 +1,15 @@
 <?php
-require_once __DIR__ . '/vendor/autoload.php';
-if (file_exists(__DIR__ . '/.env')) {
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-    $dotenv->load();
-}
+// Carrega variáveis de ambiente simples (sem Composer)
+require_once __DIR__ . '/config/load_env.php';
+
 $routes = require __DIR__ . '/config/router.php';
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 // Remove o prefixo base se necessário
-$base = rtrim(parse_url($_ENV['URL_BASE'] ?? '', PHP_URL_PATH), '/');
+$base = '';
+if (isset($_ENV['URL_BASE'])) {
+    $base = rtrim(parse_url($_ENV['URL_BASE'], PHP_URL_PATH), '/');
+}
 if ($base && strpos($uri, $base) === 0) {
     $uri = substr($uri, strlen($base));
     if ($uri === '') $uri = '/inicio';
@@ -20,6 +21,7 @@ if (isset($routes[$uri])) {
 }
 
 // Fallback padrão (login)
-header('Location: ' . ($_ENV['URL_BASE'] ?? '') . '/login');
+$urlBase = isset($_ENV['URL_BASE']) ? $_ENV['URL_BASE'] : '';
+header('Location: ' . $urlBase . '/login');
 exit;
 ?>

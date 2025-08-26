@@ -1,9 +1,6 @@
 <?php
-// Carrega o dotenv antes de qualquer operação
-require_once __DIR__ . '/../../../../vendor/autoload.php';
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
-$dotenv->load();
 
+require_once __DIR__ . '/../../../../config/load_env.php';
 require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 header('Content-Type: application/json');
@@ -39,7 +36,8 @@ if (!$data || !isset($data['id'])) {
 }
 
 // Configura requisição para API usando variáveis do .env
-$apiUrl = $_ENV['API_BASE_URL'] . '/ministerios/' . $data['id'];
+$apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
+$apiUrl = rtrim($apiBase, '/') . '/ministerios/' . $data['id'];
 $ch = curl_init();
 curl_setopt_array($ch, [
     CURLOPT_URL => $apiUrl,

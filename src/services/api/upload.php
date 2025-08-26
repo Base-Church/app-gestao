@@ -1,12 +1,7 @@
 <?php
-require_once __DIR__ . '/../../../vendor/autoload.php';
+require_once __DIR__ . '/../../../config/load_env.php';
 require_once __DIR__ . '/../../../config/auth/session.service.php';
 
-// Carrega as variáveis de ambiente
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
-$dotenv->load();
-
-// Verifica a autenticação (corrigido para usar isLoggedIn)
 SessionService::start();
 if (!SessionService::isLoggedIn()) {
     http_response_code(401);
@@ -41,9 +36,11 @@ try {
     }
     
     // Retorna o nome do arquivo
+    $urlBase = $_ENV['URL_BASE'] ?? ($_SERVER['URL_BASE'] ?? '');
     echo json_encode([
         'success' => true,
-        'filename' => $newFileName
+        'filename' => $newFileName,
+        'url' => rtrim($urlBase, '/') . '/assets/img/eventos/' . $newFileName
     ]);
 
 } catch (Exception $e) {

@@ -1,10 +1,7 @@
 <?php
-require_once __DIR__ . '/../../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
-// Carrega as variáveis de ambiente
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
-$dotenv->load();
+require_once __DIR__ . '/../../../../config/load_env.php';
+require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 header('Content-Type: application/json');
 
@@ -46,7 +43,8 @@ if ($limit < 1 || $limit > 10000) {
 }
 
 // Monta a URL da API
-$apiUrl = $_ENV['API_BASE_URL'] . '/voluntarios';
+$apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
+$apiUrl = rtrim($apiBase, '/') . '/voluntarios';
 $params = http_build_query([
     'organizacao_id' => $organizacao_id,
     'limit' => $limit

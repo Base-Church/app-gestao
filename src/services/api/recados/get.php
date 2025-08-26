@@ -1,9 +1,7 @@
 <?php
-require_once __DIR__ . '/../../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
-$dotenv->load();
+require_once __DIR__ . '/../../../../config/load_env.php';
+require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 header('Content-Type: application/json');
 
@@ -42,10 +40,12 @@ try {
         }
 
         // Adiciona o ministério_id na URL da API
-        $url = $_ENV['API_BASE_URL'] . '/recados/ministerio/' . $ministerio_id;
+    $apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
+    $url = rtrim($apiBase, '/') . '/recados/ministerio/' . $ministerio_id;
     } else {
         // Para superadmin sem ministério específico, lista todos
-        $url = $_ENV['API_BASE_URL'] . '/recados';
+    $apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
+    $url = rtrim($apiBase, '/') . '/recados';
     }
 
     // Adiciona organizacao_id como query parameter

@@ -1,14 +1,11 @@
 <?php
-require_once __DIR__ . '/../../../vendor/autoload.php';
+// Configurações da página
+$pageTitle = "Inicio";
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
-$dotenv->load();
-
-$pageTitle = 'Início';
-
-// Include header (que já inclui navbar e sidemenu)
-include __DIR__ . '/../../components/layout/header.php';
+// Incluir o header
+require_once __DIR__ . '/../../components/layout/header.php';
 ?>
+
 
 <main class="mt-24 lg:ml-64 px-6 pb-8 dark:bg-gray-900">
     <div class="max-w-7xl mx-auto">

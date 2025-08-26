@@ -1,13 +1,8 @@
 <?php
-require_once __DIR__ . '/../../../../vendor/autoload.php';
+
+require_once __DIR__ . '/../../../../config/load_env.php';
 require_once __DIR__ . '/../../../../config/auth/session.service.php';
-
-// IMPORTANTE: Primeira coisa antes de qualquer output
 header('Content-Type: application/json');
-
-// Carregar dotenv e configurações
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
-$dotenv->load();
 
 // Habilitar log de erros mas não exibir
 error_reporting(E_ALL);
@@ -66,9 +61,11 @@ try {
     error_log("Payload preparado: " . json_encode($payload));
 
     // Fazer requisição para API externa
+
+    $apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
     $ch = curl_init();
     curl_setopt_array($ch, [
-        CURLOPT_URL => $_ENV['API_BASE_URL'] . '/recados/' . $id,
+        CURLOPT_URL => rtrim($apiBase, '/') . '/recados/' . $id,
         CURLOPT_CUSTOMREQUEST => 'PUT',
         CURLOPT_POSTFIELDS => json_encode($payload),
         CURLOPT_RETURNTRANSFER => true,

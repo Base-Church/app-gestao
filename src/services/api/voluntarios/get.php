@@ -1,10 +1,7 @@
-<?php
-require_once __DIR__ . '/../../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
-// Carrega as variáveis de ambiente
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
-$dotenv->load();
+<?php
+require_once __DIR__ . '/../../../../config/load_env.php';
+require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 header('Content-Type: application/json');
 
@@ -51,7 +48,11 @@ if ($limit < 1 || $limit > 100) {
 }
 
 // Monta a URL da API
-$apiUrl = $_ENV['API_BASE_URL'] . '/voluntarios';
+$apiBaseUrl = isset($_ENV['API_BASE_URL']) ? $_ENV['API_BASE_URL'] : (isset($_SERVER['API_BASE_URL']) ? $_SERVER['API_BASE_URL'] : '');
+if (!$apiBaseUrl) {
+    returnError('API_BASE_URL não configurado no ambiente', 500);
+}
+$apiUrl = $apiBaseUrl . '/voluntarios';
 $params = http_build_query([
     'organizacao_id' => $organizacao_id,
     'ministerios' => $ministerio_id,

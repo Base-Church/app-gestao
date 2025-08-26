@@ -1,9 +1,6 @@
 <?php
-// Carrega o dotenv antes de qualquer operação
-require_once __DIR__ . '/../../../../vendor/autoload.php';
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
-$dotenv->load();
-
+// Carrega variáveis de ambiente simples (sem Composer)
+require_once __DIR__ . '/../../../../config/load_env.php';
 require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 header('Content-Type: application/json');
@@ -51,7 +48,8 @@ $data['ministerio_id'] = $ministerioId;
 $data['organizacao_id'] = $organizacaoId;
 
 // Configura requisição para API
-$apiUrl = $_ENV['API_BASE_URL'] . '/escalas/v2/';
+$apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
+$apiUrl = rtrim($apiBase, '/') . '/escalas/v2/';
 $ch = curl_init();
 curl_setopt_array($ch, [
     CURLOPT_URL => $apiUrl,

@@ -1,9 +1,7 @@
 <?php
-require_once __DIR__ . '/../../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
-$dotenv->load();
+require_once __DIR__ . '/../../../../config/load_env.php';
+require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 header('Content-Type: application/json');
 
@@ -32,7 +30,8 @@ if (!$ministerio_id) {
     returnError('Ministério não informado');
 }
 
-$apiUrl = $_ENV['API_BASE_URL'] . '/processos';
+$apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
+$apiUrl = rtrim($apiBase, '/') . '/processos';
 $params = [
     'organizacao_id' => $organizacao_id,
     'ministerio_id' => $ministerio_id

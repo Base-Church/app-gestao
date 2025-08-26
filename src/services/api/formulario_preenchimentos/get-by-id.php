@@ -1,9 +1,7 @@
 <?php
-require_once __DIR__ . '/../../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
-$dotenv->load();
+require_once __DIR__ . '/../../../../config/load_env.php';
+require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 header('Content-Type: application/json');
 
@@ -41,7 +39,9 @@ if (!$preenchimento_id) {
 }
 
 // Monta a URL para buscar o preenchimento específico
-$apiUrl = $_ENV['API_BASE_URL'] . '/formulario_preenchimentos/' . urlencode($preenchimento_id);
+
+$apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
+$apiUrl = rtrim($apiBase, '/') . '/formulario_preenchimentos/' . urlencode($preenchimento_id);
 
 // Monta os parâmetros da query
 $params = [

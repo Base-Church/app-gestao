@@ -1,9 +1,7 @@
 <?php
-require_once __DIR__ . '/../../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
-$dotenv->load();
+require_once __DIR__ . '/../../../../config/load_env.php';
+require_once __DIR__ . '/../../../../config/auth/session.service.php';
 
 function returnJsonError($message, $code = 400) {
     http_response_code($code);
@@ -62,7 +60,8 @@ if ($formulario_id) {
         'organizacao_id' => $organizacao_id,
         'ministerio_id' => $ministerio_id,
     ]);
-    $url = $_ENV['API_BASE_URL'] . '/formularios/' . urlencode($formulario_id) . '?' . $params;
+    $apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
+    $url = rtrim($apiBase, '/') . '/formularios/' . urlencode($formulario_id) . '?' . $params;
     $ch = curl_init();
     curl_setopt_array($ch, [
         CURLOPT_URL => $url,
@@ -89,7 +88,8 @@ foreach ($ids as $pid) {
         'ministerio_id' => $ministerio_id,
     ];
     if ($formulario_id) $params['formulario_id'] = $formulario_id;
-    $url = $_ENV['API_BASE_URL'] . '/formulario_preenchimentos/' . urlencode($pid) . '?' . http_build_query($params);
+    $apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
+    $url = rtrim($apiBase, '/') . '/formulario_preenchimentos/' . urlencode($pid) . '?' . http_build_query($params);
     $ch = curl_init();
     curl_setopt_array($ch, [
         CURLOPT_URL => $url,

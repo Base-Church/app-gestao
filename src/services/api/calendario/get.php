@@ -1,10 +1,6 @@
 <?php
-require_once __DIR__ . '/../../../../vendor/autoload.php';
+require_once __DIR__ . '/../../../../config/load_env.php';
 require_once __DIR__ . '/../../../../config/auth/session.service.php';
-
-// Carrega as variáveis de ambiente
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../../');
-$dotenv->load();
 
 // Define o header da resposta como JSON
 header('Content-Type: application/json');
@@ -49,7 +45,8 @@ if (!$organizacao_id) {
 }
 
 // Monta a URL da API
-$apiUrl = $_ENV['API_BASE_URL'] . '/indisponibilidades/voluntarios-por-dia';
+$apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
+$apiUrl = rtrim($apiBase, '/') . '/indisponibilidades/voluntarios-por-dia';
 $params = http_build_query([
     'organizacao_id' => $organizacao_id,
     'ministerios' => $ministerio_id,
