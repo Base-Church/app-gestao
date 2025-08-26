@@ -19,8 +19,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copiar arquivos do projeto
 COPY . /var/www/html/
 
-# Instalar dependências ignorando requisitos de plataforma
-RUN composer install --no-scripts --no-interaction --ignore-platform-reqs
+# Remover composer.lock problemático e instalar
+RUN rm -f composer.lock && composer install --no-scripts --no-interaction
 
 # Configurar permissões
 RUN chown -R www-data:www-data /var/www/html
