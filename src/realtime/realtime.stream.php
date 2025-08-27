@@ -2,12 +2,22 @@
 // src/realtime/realtime.stream.php
 declare(strict_types=1);
 
-// Headers SSE
+// Desligar exibição de erros (eles viram HTML e quebram o SSE)
+ini_set('display_errors', '0');
+error_reporting(0);
+
+// Headers SSE ANTES de qualquer output
 header('Content-Type: text/event-stream');
 header('Cache-Control: no-cache');
 header('Connection: keep-alive');
 header('X-Accel-Buffering: no');
 header('Access-Control-Allow-Origin: *');
+
+// Força envio dos headers imediatamente
+ob_start();
+echo "data: " . json_encode(['type' => 'init', 'ts' => time()]) . "\n\n";
+ob_end_flush();
+flush();
 
 ignore_user_abort(true);
 set_time_limit(0);

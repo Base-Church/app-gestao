@@ -2,6 +2,15 @@
 // Carrega variáveis de ambiente simples (sem Composer)
 require_once __DIR__ . '/config/load_env.php';
 
+// Se for um endpoint SSE ou API, não processar pelo router
+if (strpos($_SERVER['REQUEST_URI'], '/src/realtime/') !== false) {
+    $file = __DIR__ . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    if (file_exists($file)) {
+        require $file;
+        exit;
+    }
+}
+
 $routes = require __DIR__ . '/config/router.php';
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
