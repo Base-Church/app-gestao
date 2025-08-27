@@ -10,6 +10,7 @@ class SessionService {
     public static function createUserSession($userData) {
         self::start();
         $_SESSION['user'] = [
+            'id' => $userData['id'] ?? ($userData['token'] ?? null),
             'nome' => $userData['nome'],
             'ministerio_atual' => $userData['ministerios'][0]['id'] ?? null,
             'ministerios' => $userData['ministerios'],

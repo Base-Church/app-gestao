@@ -3,10 +3,10 @@
   "provider": "node",
   "steps": {
     "install": {
-      "commands": ["node src/realtime/server.js"]
+      "commands": ["npm install"]
     }
   },
   "deploy": {
-    "startCommand": ""
+    "startCommand": "node src/realtime/server.js"
   }
 }

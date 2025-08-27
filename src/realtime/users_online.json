@@ -1,13 +1,15 @@
 {
-  "nkf2dgnkngm6dp086o2o2b74mu": {
-    "userId": "82f9294f09a2b87c764a53c36e7d88cb",
-    "userName": "Matheus",
-    "organizacaoId": 1,
-    "socketId": "2mhnr1ym-IcO0RBeAAAZ",
-    "connectedAt": "2025-08-26T16:54:48.644Z",
-    "lastActivity": "2025-08-26T17:07:37.075Z",
-    "currentPage": "index.php",
-    "status": "online",
-    "activity": "away"
-  }
+    "327e4f33-201e-4640-81f4-d68f180737c1": {
+        "userId": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwibm9tZSI6Ik1hdGhldXMiLCJvcmdhbml6YWNhb19pZCI6MSwibml2ZWwiOiJzdXBlcmFkbWluIiwicGVybWlzc29lcyI6WyIxIiwiMiIsIjMiLCI0IiwiNSIsIjYiLCI3IiwiOSIsIjEwIiwiMTEiLCIxMiIsIjEzIiwiMTQiLCIxNSIsIjE2IiwiMTciLCI4IiwiMTgiXSwiaWF0IjoxNzU2MzMxNjI2LCJleHAiOjE3NTY0MTgwMjZ9.Qc4OQ1gDGhfVwVl4MM2dsMiH5HxVkRzF18wOFsK0ywY",
+        "userName": "Matheus",
+        "organizacaoId": 1,
+        "currentPage": "inicio",
+        "status": "online",
+        "activity": "away",
+        "tabActive": false,
+        "socketId": null,
+        "connectedAt": "2025-08-27T22:00:21+00:00",
+        "lastActivity": "2025-08-27T22:00:27+00:00",
+        "disconnectedAt": null
+    }
 }

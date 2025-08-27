@@ -38,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($httpCode === 200 && isset($responseData['data']['nome'])) {
         // Garantir que todos os dados necessários estejam na sessão
         $sessionData = [
+            'id' => $responseData['data']['id'] ?? session_id(),
             'nome' => $responseData['data']['nome'],
             'ministerios' => $responseData['data']['ministerios'] ?? [],
             'ministerio_atual' => $responseData['data']['ministerios'][0]['id'] ?? null,
