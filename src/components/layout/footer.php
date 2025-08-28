@@ -1,18 +1,25 @@
 <?php 
 // Garantir que a sessão está iniciada
+require_once __DIR__ . '/../../../config/auth/session.service.php';
 SessionService::start();
 ?>
 
 <script>
-// Dados do usuário
-window.USER = {
-    ministerios: <?php echo json_encode(SessionService::getMinisterios()); ?>,
-    ministerio_atual: <?php echo json_encode(SessionService::getMinisterioAtual()); ?>,
-    organizacao_id: <?php echo json_encode(SessionService::getOrganizacaoId()); ?>,
-    nivel: <?php echo json_encode(SessionService::getNivel()); ?>,
-    permissoes: <?php echo json_encode(SessionService::getPermissoes()); ?>,
-    token: <?php echo json_encode(SessionService::getToken()); ?>
-};
+// Dados do usuário (compatível com header.php)
+window.USER = window.USER || <?php
+    $user = SessionService::getUser();
+    $sessionId = session_id() ?: 'session_' . uniqid();
+    echo json_encode([
+      'id' => $user['id'] ?? $sessionId,
+      'name' => $user['nome'] ?? 'Usuário',
+      'organizacao_id' => $user['organizacao_id'] ?? null,
+      'ministerios' => $user['ministerios'] ?? [],
+      'ministerio_atual' => $user['ministerio_atual'] ?? null,
+      'nivel' => $user['nivel'] ?? null,
+      'permissoes' => $user['permissoes'] ?? [],
+      'token' => $user['token'] ?? null
+    ]);
+  ?>;
 
 // Função de validação de ministério
 window.validateMinisterio = function() {
