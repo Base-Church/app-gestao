@@ -4,8 +4,8 @@ import { DragDrop } from './dragdrop.js';
 
 class CriarModelo {
     constructor() {
-        const baseUrl = document.querySelector('meta[name="base-url"]')?.content;
-        if (!baseUrl) throw new Error('Base URL não encontrada');
+        const baseUrl = window.APP_CONFIG.baseUrl;
+        if (!baseUrl) console.warn('Base URL não encontrada');
 
         this.api = new API(baseUrl);
         this.ui = new UI();

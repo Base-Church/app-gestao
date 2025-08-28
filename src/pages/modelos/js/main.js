@@ -8,9 +8,9 @@ class App {
             return;
         }
 
-        const baseUrl = document.querySelector('meta[name="base-url"]')?.content;
+        const baseUrl = window.APP_CONFIG.baseUrl;
         if (!baseUrl) {
-            throw new Error('Base URL não encontrada');
+            console.warn('Base URL não encontrada');
         }
 
         this.api = new ModelosAPI(baseUrl);

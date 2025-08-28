@@ -69,3 +69,7 @@ require_once __DIR__ . '/../../components/layout/header.php';
 
 <script type="module" src="<?= $_ENV['URL_BASE'] ?>/src/pages/configuracoes/js/main.js"></script>
 
+<?php
+// Incluir o footer com os scripts
+require_once __DIR__ . '/../../components/layout/footer.php';
+?>

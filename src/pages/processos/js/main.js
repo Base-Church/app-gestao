@@ -4,7 +4,8 @@ import { UI } from './ui.js';
 // Import SortableJS
 // SortableJS será carregado via CDN, usar global Sortable
 
-const baseUrl = document.querySelector('meta[name="base-url"]')?.content;
+const baseUrl = window.APP_CONFIG.baseUrl;
+if (!baseUrl) console.warn('Base URL não encontrada');
 const api = new ProcessosAPI(baseUrl);
 const ui = new UI();
 

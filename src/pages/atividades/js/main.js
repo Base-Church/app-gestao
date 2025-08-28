@@ -11,7 +11,7 @@ class App {
         // Usa o baseUrl do footer
         const baseUrl = window.APP_CONFIG.baseUrl;
         if (!baseUrl) {
-            throw new Error('Base URL não encontrada');
+            console.warn('Base URL não encontrada');
         }
 
         // Inicializa o ministério atual
