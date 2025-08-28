@@ -5,6 +5,17 @@ SessionService::start();
 ?>
 
 <script>
+// Configurações globais para compatibilidade com códigos antigos
+window.APP_CONFIG = window.APP_CONFIG || {
+    baseUrl: <?php echo json_encode($_ENV['URL_BASE'] ?? ''); ?>,
+    apiBaseUrl: <?php echo json_encode($_ENV['API_BASE_URL'] ?? ''); ?>,
+    apiWhatsapp: <?php echo json_encode($_ENV['API_WHATSAPP'] ?? ''); ?>,
+    apiTokenWhatsapp: <?php echo json_encode($_ENV['API_TOKEN_WHATSAPP'] ?? ''); ?>
+};
+
+// Alias para compatibilidade
+window.ENV = window.ENV || window.APP_CONFIG;
+
 // Dados do usuário (compatível com header.php)
 window.USER = window.USER || <?php
     $user = SessionService::getUser();
@@ -20,6 +31,14 @@ window.USER = window.USER || <?php
       'token' => $user['token'] ?? null
     ]);
   ?>;
+
+// Garantir que existe uma meta tag base-url para compatibilidade
+if (!document.querySelector('meta[name="base-url"]')) {
+    const meta = document.createElement('meta');
+    meta.name = 'base-url';
+    meta.content = window.APP_CONFIG.baseUrl;
+    document.head.appendChild(meta);
+}
 
 // Função de validação de ministério
 window.validateMinisterio = function() {
