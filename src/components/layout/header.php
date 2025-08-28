@@ -25,9 +25,9 @@ if (SessionService::isLoggedIn() && !SessionService::hasMinisterios() && strpos(
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="base-url" content="<?php echo $_ENV['URL_BASE']; ?>">
-  <title><?php echo isset($pageTitle) ? $pageTitle . ' - ' : ''; ?><?php echo $_ENV['APP_NAME']; ?></title>
-  <link href="<?php echo $_ENV['URL_BASE']; ?>/assets/css/output.css" rel="stylesheet">
+  <meta name="base-url" content="<?php echo $_ENV['URL_BASE'] ?? ''; ?>">
+  <title><?php echo isset($pageTitle) ? $pageTitle . ' - ' : ''; ?><?php echo $_ENV['APP_NAME'] ?? 'App'; ?></title>
+  <link href="<?php echo $_ENV['URL_BASE'] ?? ''; ?>/assets/css/output.css" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -43,10 +43,10 @@ if (SessionService::isLoggedIn() && !SessionService::hasMinisterios() && strpos(
   <script>
   // Config global
   window.APP_CONFIG = {
-    baseUrl: <?php echo json_encode($_ENV['URL_BASE']); ?>,
-    apiBaseUrl: <?php echo json_encode($_ENV['API_BASE_URL']); ?>,
-    apiWhatsapp: <?php echo json_encode($_ENV['API_WHATSAPP']); ?>,
-    apiTokenWhatsapp: <?php echo json_encode($_ENV['API_TOKEN_WHATSAPP']); ?>
+    baseUrl: <?php echo json_encode($_ENV['URL_BASE'] ?? ''); ?>,
+    apiBaseUrl: <?php echo json_encode($_ENV['API_BASE_URL'] ?? ''); ?>,
+    apiWhatsapp: <?php echo json_encode($_ENV['API_WHATSAPP'] ?? ''); ?>,
+    apiTokenWhatsapp: <?php echo json_encode($_ENV['API_TOKEN_WHATSAPP'] ?? ''); ?>
   };
   window.ENV = {
     URL_BASE: window.APP_CONFIG.baseUrl,
@@ -84,8 +84,8 @@ if (SessionService::isLoggedIn() && !SessionService::hasMinisterios() && strpos(
   <script>
   // Endpoints SSE/atividade
   window.REALTIME_CONFIG = {
-    sseUrl: '<?php echo rtrim($_ENV['URL_BASE'], '/'); ?>/src/realtime/realtime.stream.php',
-    activityUrl: '<?php echo rtrim($_ENV['URL_BASE'], '/'); ?>/src/realtime/user-activity.php'
+    sseUrl: '<?php echo rtrim($_ENV['URL_BASE'] ?? '', '/'); ?>/src/realtime/realtime.stream.php',
+    activityUrl: '<?php echo rtrim($_ENV['URL_BASE'] ?? '', '/'); ?>/src/realtime/user-activity.php'
   };
 
   // sessionId por aba

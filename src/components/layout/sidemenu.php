@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 
 // Detectar submenus ativos conforme a URL
@@ -23,8 +23,8 @@ $ferramentasActive = strpos($currentPath, '/formularios') !== false || strpos($c
         <!-- Logo -->
         <div class="flex items-center justify-center h-24 border-b dark:border-gray-700 relative overflow-hidden">
             <div class="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-primary-600/10"></div>
-            <img src="<?php echo $_ENV['URL_BASE']; ?>/assets/img/logo-preta.svg" alt="Logo" class="h-16 w-auto relative z-10 block dark:hidden">
-            <img src="<?php echo $_ENV['URL_BASE']; ?>/assets/img/logo-branca.svg" alt="Logo" class="h-16 w-auto relative z-10 hidden dark:block">
+            <img src="<?php echo $_ENV['URL_BASE'] ?? ''; ?>/assets/img/logo-preta.svg" alt="Logo" class="h-16 w-auto relative z-10 block dark:hidden">
+            <img src="<?php echo $_ENV['URL_BASE'] ?? ''; ?>/assets/img/logo-branca.svg" alt="Logo" class="h-16 w-auto relative z-10 hidden dark:block">
         </div>
         <!-- Seletor de Ministérios -->
         <div class="px-4 py-3 border-b dark:border-gray-700">

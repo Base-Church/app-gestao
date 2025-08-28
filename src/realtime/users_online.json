@@ -1,7 +1,7 @@
 {
     "327e4f33-201e-4640-81f4-d68f180737c1": {
-        "userId": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwibm9tZSI6Ik1hdGhldXMiLCJvcmdhbml6YWNhb19pZCI6MSwibml2ZWwiOiJzdXBlcmFkbWluIiwicGVybWlzc29lcyI6WyIxIiwiMiIsIjMiLCI0IiwiNSIsIjYiLCI3IiwiOSIsIjEwIiwiMTEiLCIxMiIsIjEzIiwiMTQiLCIxNSIsIjE2IiwiMTciLCI4IiwiMTgiXSwiaWF0IjoxNzU2MzMxNjI2LCJleHAiOjE3NTY0MTgwMjZ9.Qc4OQ1gDGhfVwVl4MM2dsMiH5HxVkRzF18wOFsK0ywY",
-        "userName": "Matheus",
+        "userId": "user_327e4f33",
+        "userName": "Usuário",
         "organizacaoId": 1,
         "currentPage": "inicio",
         "status": "online",
@@ -9,7 +9,7 @@
         "tabActive": false,
         "socketId": null,
         "connectedAt": "2025-08-27T22:02:46+00:00",
-        "lastActivity": "2025-08-27T22:02:53+00:00",
+        "lastActivity": "2025-08-28T14:22:19+00:00",
         "disconnectedAt": null
     }
 }
