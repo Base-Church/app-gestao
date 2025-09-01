@@ -1,6 +1,6 @@
 {
     "327e4f33-201e-4640-81f4-d68f180737c1": {
-        "userId": "hsh2kjld21j8grr7p6m0f67lqj",
+        "userId": "ctgk6nkvbq5pntc1dpj2ifjcpk",
         "userName": "Matheus",
         "organizacaoId": 1,
         "currentPage": "inicio",
@@ -8,8 +8,8 @@
         "activity": "away",
         "tabActive": false,
         "socketId": null,
-        "connectedAt": "2025-08-28T14:41:36+00:00",
-        "lastActivity": "2025-08-28T14:41:36+00:00",
+        "connectedAt": "2025-09-01T01:51:14+00:00",
+        "lastActivity": "2025-09-01T01:51:48+00:00",
         "disconnectedAt": null
     }
 }

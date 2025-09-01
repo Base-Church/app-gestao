@@ -299,17 +299,8 @@ class EscalaEditarService {
                 console.error('Erro ao processar evento:', eventoData, error);
             }
         }
-        
-        // Atualiza o botão para "Salvar" no modo edição
-        const botaoSalvar = document.querySelector('[data-action="salvar-escala"]');
-        if (botaoSalvar) {
-            botaoSalvar.innerHTML = `
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                Salvar
-            `;
-        }
+            
+        // Botão é configurado automaticamente pelo submit.service.js
         
         this.escalaCarregada = true;
         console.log('Escala carregada com sucesso para edição');

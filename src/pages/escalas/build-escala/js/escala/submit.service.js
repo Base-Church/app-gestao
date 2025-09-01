@@ -7,139 +7,211 @@ class SubmitEscalaService {
     }
 
     init() {
-        // Configura o botão de salvar escala
-        document.querySelector('[data-action="salvar-escala"]')?.addEventListener('click', () => {
-            this.confirmarESalvarEscala();
-        });
+        // Configura o botão baseado na URL
+        this.configurarBotao();
+        
+        // Adiciona event listener e armazena referência do botão
+        this.botao = document.querySelector('[data-action="salvar-escala"]');
+        if (this.botao) {
+            this.botao.addEventListener('click', () => {
+                this.handleClick();
+            });
+        }
     }
 
-    /**
-     * Abre modal de confirmação e salva escala
-     */
-    async confirmarESalvarEscala() {
-        try {
-            // Detecta se estamos no modo edição
-            const hasEditPath = window.location.pathname.includes('/editar') || window.location.pathname.includes('escalas/editar');
-            const hasIdParam = new URLSearchParams(window.location.search).has('id');
-            const hasEscalaCarregada = window.EscalaEditarService && window.EscalaEditarService.escalaCarregada;
-            
-            // Verifica também se o botão foi alterado para "Salvar" (indicativo de modo edição)
-            const submitButton = document.querySelector('[data-action="salvar-escala"]');
-            const buttonTextIsSalvar = submitButton && submitButton.textContent.trim().includes('Salvar');
-            
-            const isEditMode = (hasEditPath && hasIdParam) || hasEscalaCarregada || buttonTextIsSalvar;
-            
-            if (isEditMode) {
-                // Modo edição - salvar diretamente sem modal
-                const submitButton = document.querySelector('[data-action="salvar-escala"]');
-                const originalText = submitButton.innerHTML;
-                
-                try {
-                    // Adiciona loading no botão
-                    submitButton.disabled = true;
-                    submitButton.innerHTML = `
-                        <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
-                        </svg>
-                        <span>Salvando...</span>
-                    `;
+    configurarBotao() {
+        const botao = document.querySelector('[data-action="salvar-escala"]');
+        if (!botao) return;
 
-                    const estado = window.escalaManagerService.getEstadoAtual();
-                    const resultado = await this.salvarEscala(estado);
-                    
-                    if (resultado.code === 200) {
-                        this.exibirNotificacaoSucesso(resultado, true); // true indica modo edição
-                    }
-                    
-                } catch (error) {
-                    console.error('Erro ao salvar:', error);
-                    alert('Erro ao salvar escala. Tente novamente.');
-                } finally {
-                    // Restaurar estado original do botão
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = originalText;
-                }
-                return;
+        const isEditMode = this.isEditMode();
+        
+        if (isEditMode) {
+            // Modo edição - botão "Salvar"
+            botao.innerHTML = `
+                Salvar
+            `;
+        } else {
+            // Modo criação - botão "Criar escala"
+            botao.innerHTML = `
+                Criar escala
+            `;
+        }
+    }
+
+    isEditMode() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const escalaId = urlParams.get('id');
+        const isEditPath = window.location.pathname.includes('/editar');
+        return isEditPath && escalaId;
+    }
+
+    async handleClick() {
+        const isEditMode = this.isEditMode();
+        
+        if (isEditMode) {
+            // Modo edição - salvar diretamente
+            const botao = this.botao;
+            const textoOriginal = botao.innerHTML;
+            
+            // Mostrar loading
+            botao.disabled = true;
+            botao.innerHTML = `
+                <svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                Salvando...
+            `;
+            
+            try {
+                await this.salvarEscala();
+            } finally {
+                // Restaurar botão
+                botao.disabled = false;
+                botao.innerHTML = textoOriginal;
             }
+        } else {
+            // Modo criação - abrir modal
+            await this.abrirModalCriar();
+        }
+    }
+
+    async abrirModalCriar() {
+        try {
+            const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/pages/escalas/build-escala/components/criar-escala-modal.php`);
+            if (!response.ok) throw new Error('Erro ao carregar modal');
             
-            // Modo criação - usar modal
-            const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/pages/escalas/build-escala/components/salvar-escala-modal.php`);
             const html = await response.text();
-            
             const modalDiv = document.createElement('div');
             modalDiv.innerHTML = html;
             document.body.appendChild(modalDiv);
 
-            const fecharModal = () => modalDiv.remove();
+            // Configurar botões de fechar
             modalDiv.querySelectorAll('.fechar-modal-salvar').forEach(btn => 
-                btn.addEventListener('click', fecharModal)
+                btn.addEventListener('click', () => modalDiv.remove())
             );
 
-            // Evento de confirmação
+            // Configurar botão de confirmação
             const btnConfirmar = modalDiv.querySelector('#btn-confirmar-salvar');
-            if (!btnConfirmar) {
-                console.error('Botão confirmar não encontrado no modal');
-                return;
-            }
-            btnConfirmar.onclick = async () => {
-                try {
-                    // Adiciona loading no botão
+            if (btnConfirmar) {
+                btnConfirmar.onclick = async () => {
                     btnConfirmar.disabled = true;
                     btnConfirmar.innerHTML = `
                         <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
                         </svg>
-                        <span>Salvando...</span>
+                        <span>Criando...</span>
                     `;
 
-                    const estado = window.escalaManagerService.getEstadoAtual();
-                    const resultado = await this.salvarEscala(estado);
-
-                    // Fecha o modal e exibe notificação
-                    fecharModal();
-                    this.exibirNotificacaoSucesso(resultado, false); // false indica modo criação
-
-                } catch (error) {
-                    console.error('Erro ao salvar:', error);
-                    alert('Erro ao salvar escala. Tente novamente.');
-                    btnConfirmar.disabled = false;
-                    btnConfirmar.innerHTML = '<span>Confirmar</span>';
-                }
-            };
-
+                    try {
+                        const resultado = await this.salvarEscala();
+                        
+                        // Mostrar modal de sucesso
+                        const modalContent = modalDiv.querySelector('#modal-content-salvar');
+                        const modalSuccess = modalDiv.querySelector('#modal-success-salvar');
+                        
+                        modalContent.classList.add('hidden');
+                        modalSuccess.classList.remove('hidden');
+                        
+                        // Configurar botões com dados da resposta
+                        const escalaId = resultado.data.escala_id;
+                        const slug = resultado.data.slug;
+                        const prefixo = resultado.data.prefixo;
+                        
+                        // Botão Ver Link
+                        const btnLinkEscala = modalDiv.querySelector('#btn-link-escala');
+                        if (btnLinkEscala) {
+                            btnLinkEscala.addEventListener('click', () => {
+                                const linkEscala = `https://escalas.basechurch.com.br/ver?ec=${prefixo}-${slug}`;
+                                window.open(linkEscala, '_blank');
+                            });
+                        }
+                        
+                        // Botão Copiar Link
+                        const btnCopiarLink = modalDiv.querySelector('#btn-copiar-link');
+                        if (btnCopiarLink) {
+                            btnCopiarLink.addEventListener('click', async () => {
+                                const linkEscala = `https://escalas.basechurch.com.br/ver?ec=${prefixo}-${slug}`;
+                                try {
+                                    await navigator.clipboard.writeText(linkEscala);
+                                    btnCopiarLink.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Copiado!';
+                                    setTimeout(() => {
+                                        btnCopiarLink.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>Copiar';
+                                    }, 2000);
+                                } catch (err) {
+                                    alert('Erro ao copiar link');
+                                }
+                            });
+                        }
+                        
+                        // Botão Continuar Editando
+                        const btnContinuarEditando = modalDiv.querySelector('#btn-continuar-editando');
+                        if (btnContinuarEditando) {
+                            btnContinuarEditando.addEventListener('click', () => {
+                                window.location.href = `${window.APP_CONFIG.baseUrl}/escalas/editar?id=${escalaId}`;
+                            });
+                        }
+                        
+                        // Botão Voltar à Listagem
+                        const btnVoltarListagem = modalDiv.querySelector('#btn-voltar-listagem');
+                        if (btnVoltarListagem) {
+                            btnVoltarListagem.addEventListener('click', () => {
+                                window.location.href = `${window.APP_CONFIG.baseUrl}/escalas`;
+                            });
+                        }
+                        
+                        // Configurar botão de fechar no modal de sucesso
+                        const btnFecharSucesso = modalSuccess.querySelector('.fechar-modal-salvar');
+                        if (btnFecharSucesso) {
+                            btnFecharSucesso.addEventListener('click', () => modalDiv.remove());
+                        }
+                    } catch (error) {
+                        console.error('Erro ao criar escala:', error);
+                        alert('Erro ao criar escala: ' + error.message);
+                        btnConfirmar.disabled = false;
+                        btnConfirmar.innerHTML = '<span>Confirmar</span>';
+                    }
+                };
+            }
         } catch (error) {
             console.error('Erro ao abrir modal:', error);
+            alert('Erro ao abrir modal: ' + error.message);
         }
     }
 
-    /**
-     * Salva a escala na API
-     */
-    async salvarEscala(estado) {
+    async salvarEscala() {
         try {
-            // Detecta se estamos no modo edição
-        const hasEditPath = window.location.pathname.includes('/editar') || window.location.pathname.includes('escalas/editar');
-        const hasIdParam = new URLSearchParams(window.location.search).has('id');
-        const hasEscalaCarregada = window.EscalaEditarService && window.EscalaEditarService.escalaCarregada;
-        
-        // Verifica também se o botão foi alterado para "Salvar" (indicativo de modo edição)
-        const submitButton = document.querySelector('[data-action="salvar-escala"]');
-        const buttonTextIsSalvar = submitButton && submitButton.textContent.trim().includes('Salvar');
-        
-        const isEditMode = (hasEditPath && hasIdParam) || hasEscalaCarregada || buttonTextIsSalvar;
-            const escalaId = isEditMode ? new URLSearchParams(window.location.search).get('id') : null;
-
-            if (isEditMode && escalaId) {
-                // Modo edição - atualizar escala existente
-                if (!window.EscalaEditarService) {
-                    throw new Error('Serviço de edição não encontrado');
-                }
-                return await window.EscalaEditarService.atualizar(escalaId, estado);
+            const estado = window.escalaManagerService.getEstadoAtual();
+            const isEditMode = this.isEditMode();
+            
+            let response;
+            
+            if (isEditMode) {
+                // Modo edição - usar put-v2.php
+                const urlParams = new URLSearchParams(window.location.search);
+                const escalaId = urlParams.get('id');
+                
+                const payload = {
+                    id: escalaId,
+                    nome: estado.cabecalho.nome,
+                    tipo: estado.cabecalho.tipo,
+                    data_inicio: estado.cabecalho.dataInicio,
+                    data_fim: estado.cabecalho.dataTermino,
+                    eventos: estado.itens || []
+                };
+                
+                response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/escalas/put-v2.php`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'MINISTERIO-ID': window.USER.ministerio_atual,
+                        'ORGANIZACAO-ID': window.USER.organizacao_id
+                    },
+                    body: JSON.stringify(payload)
+                });
             } else {
-                // Modo criação - criar nova escala
-                const response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/escalas/create.php`, {
+                // Modo criação - usar create.php
+                response = await fetch(`${window.APP_CONFIG.baseUrl}/src/services/api/escalas/create.php`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -153,221 +225,104 @@ class SubmitEscalaService {
                         organizacao_id: window.USER.organizacao_id || '1'
                     })
                 });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`Erro ao salvar escala: ${errorData.error || response.statusText}`);
-                }
-
-                return await response.json();
             }
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Erro HTTP ${response.status}: ${errorText}`);
+            }
+
+            const resultado = await response.json();
+            
+            // Verificar se há erro real (não confundir mensagem de sucesso com erro)
+            if (resultado.code && resultado.code !== 200 && resultado.code !== 201) {
+                throw new Error(resultado.message || 'Erro ao salvar escala');
+            }
+
+            // Se for modo edição, mostrar notificação de sucesso
+            if (isEditMode) {
+                this.exibirNotificacaoSucesso(resultado);
+            }
+
+            return resultado;
         } catch (error) {
             console.error('Erro ao salvar escala:', error);
             throw error;
         }
     }
 
-    /**
-     * Exibe notificação de sucesso com botões de ação
-     */
-    exibirNotificacaoSucesso(resultado, isEditMode = false) {
-        // Remove notificações existentes
-        const existingNotification = document.querySelector('.notification-sucesso-escala');
-        if (existingNotification) {
-            this.removerNotificacao(existingNotification);
-        }
-
-        // Criar notificação
+    exibirNotificacaoSucesso(resultado) {
         const notification = document.createElement('div');
-        notification.className = 'notification-sucesso-escala fixed bottom-16 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 border border-green-200 dark:border-green-700 rounded-lg shadow-lg p-4 z-50 max-w-lg opacity-0 translate-y-4 transition-all duration-300 ease-out';
+        notification.className = 'fixed bottom-8 left-1/2 transform -translate-x-1/2 z-[6000] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl p-4 max-w-sm w-full mx-4';
         
+        // Extrair dados da resposta
         const escalaId = resultado.data?.escala_id || resultado.data?.id;
-        const prefixo = resultado.data?.prefixo;
         const slug = resultado.data?.slug;
+        const prefixo = resultado.data?.prefixo;
         
         notification.innerHTML = `
-            <div class="flex items-center gap-3">
-                <div class="flex-shrink-0">
-                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+            <div class="text-center">
+                <div class="flex items-center justify-center gap-3 mb-3">
+                    <div class="flex items-center justify-center h-8 w-8 rounded-full bg-green-100 dark:bg-green-900">
+                        <svg class="h-4 w-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-medium text-gray-900 dark:text-white">Escala salva com sucesso!</h3>
                 </div>
-                <div class="flex-1">
-                    <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-3">
-                        ${isEditMode ? 'Escala atualizada com sucesso!' : 'Escala criada com sucesso!'}
-                    </h3>
-                    <div class="flex gap-2 flex-wrap">
-                        ${prefixo && slug ? `
-                            <button type="button" id="notif-ver-escala" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-md flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                                </svg>
+                
+                <div class="grid gap-2">
+                    ${slug && prefixo ? `
+                        <div class="grid grid-cols-2 gap-2">
+                            <button id="btn-ver-escala-notif" class="bg-primary-600 hover:bg-primary-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors">
                                 Ver Escala
                             </button>
-                            <button type="button" id="notif-copiar-link" class="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white text-xs rounded-md flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                                </svg>
-                                Copiar URL
+                            <button id="btn-voltar-listagem-notif" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-3 py-2 rounded text-sm font-medium transition-colors">
+                                Listagem
                             </button>
-                        ` : ''}
-                        <button type="button" id="notif-voltar-lista" class="px-3 py-2 bg-gray-500 hover:bg-gray-600 text-white text-xs rounded-md flex items-center gap-1">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
-                            </svg>
+                        </div>
+                    ` : `
+                        <button id="btn-voltar-listagem-notif" class="w-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-3 py-2 rounded text-sm font-medium transition-colors">
                             Voltar à Listagem
                         </button>
-                    </div>
+                    `}
                 </div>
-                <button type="button" id="notif-fechar" class="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 ml-2">
+                
+                <button class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" onclick="this.parentElement.parentElement.remove()">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
             </div>
         `;
-        
+
         document.body.appendChild(notification);
         
-        // Animação de entrada
-        setTimeout(() => {
-            notification.classList.remove('opacity-0', 'translate-y-4');
-            notification.classList.add('opacity-100', 'translate-y-0');
-        }, 10);
+        // Configurar botões
+        const btnVerEscala = notification.querySelector('#btn-ver-escala-notif');
+        if (btnVerEscala && slug && prefixo) {
+            btnVerEscala.addEventListener('click', () => {
+                window.open(`https://escalas.basechurch.com.br/ver?ec=${prefixo}-${slug}`, '_blank');
+            });
+        }
         
-        // Configurar eventos dos botões
-        this.configurarBotoesNotificacao(notification, resultado, escalaId, prefixo, slug);
-        
-        // Auto-remover após 8 segundos
+        const btnVoltarListagem = notification.querySelector('#btn-voltar-listagem-notif');
+        if (btnVoltarListagem) {
+            btnVoltarListagem.addEventListener('click', () => {
+                window.location.href = `${window.APP_CONFIG.baseUrl}/escalas`;
+            });
+        }
+
+        // Remove automaticamente após 8 segundos
         setTimeout(() => {
-            if (notification.parentNode) {
-                this.removerNotificacao(notification);
+            if (notification.parentElement) {
+                notification.remove();
             }
         }, 8000);
     }
-
-    /**
-     * Remove notificação com animação
-     */
-    removerNotificacao(notification) {
-        notification.classList.remove('opacity-100', 'translate-y-0');
-        notification.classList.add('opacity-0', 'translate-y-4');
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.remove();
-            }
-        }, 300);
-    }
-
-    /**
-     * Configura os eventos dos botões da notificação
-     */
-    configurarBotoesNotificacao(notification, resultado, escalaId, prefixo, slug) {
-        // Botão fechar
-        const btnFechar = notification.querySelector('#notif-fechar');
-        if (btnFechar) {
-            btnFechar.onclick = () => this.removerNotificacao(notification);
-        }
-        
-        // Botão ver escala
-        const btnVerEscala = notification.querySelector('#notif-ver-escala');
-        if (btnVerEscala && prefixo && slug) {
-            const linkEscala = `https://escalas.basechurch.com.br/ver?ec=${prefixo}-${slug}`;
-            btnVerEscala.onclick = () => {
-                window.open(linkEscala, '_blank');
-            };
-        }
-        
-        // Botão copiar link
-        const btnCopiarLink = notification.querySelector('#notif-copiar-link');
-        if (btnCopiarLink && prefixo && slug) {
-            const linkEscala = `https://escalas.basechurch.com.br/ver?ec=${prefixo}-${slug}`;
-            btnCopiarLink.onclick = () => {
-                navigator.clipboard.writeText(linkEscala).then(() => {
-                    const originalHTML = btnCopiarLink.innerHTML;
-                    btnCopiarLink.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
-                    btnCopiarLink.classList.remove('bg-blue-500', 'hover:bg-blue-600');
-                    btnCopiarLink.classList.add('bg-green-500', 'hover:bg-green-600');
-                    
-                    setTimeout(() => {
-                        btnCopiarLink.innerHTML = originalHTML;
-                        btnCopiarLink.classList.remove('bg-green-500', 'hover:bg-green-600');
-                        btnCopiarLink.classList.add('bg-blue-500', 'hover:bg-blue-600');
-                    }, 2000);
-                }).catch(() => {
-                    alert('Erro ao copiar o link');
-                });
-            };
-        }
-        
-        // Botão voltar à listagem (não abre nova aba)
-        const btnVoltarLista = notification.querySelector('#notif-voltar-lista');
-        if (btnVoltarLista) {
-            btnVoltarLista.onclick = () => {
-                window.location.href = `${window.APP_CONFIG.baseUrl}/escalas`;
-            };
-        }
-    }
-
-    /**
-     * Configura os botões de ação no modal de sucesso
-     */
-    configurarBotoesAcaoModal(modalDiv, resultado) {
-        const escalaData = resultado.data || resultado;
-        const escalaId = escalaData?.escala_id || escalaData?.id;
-        const prefixo = escalaData?.prefixo;
-        const slug = escalaData?.slug;
-        
-        // Botão Link da Escala
-        const btnLinkEscala = modalDiv.querySelector('#btn-link-escala');
-        const btnCopiarLink = modalDiv.querySelector('#btn-copiar-link');
-        
-        if (btnLinkEscala && prefixo && slug) {
-            const linkEscala = `https://escalas.basechurch.com.br/ver?ec=${prefixo}-${slug}`;
-            
-            // Botão para abrir o link
-            btnLinkEscala.onclick = () => {
-                window.open(linkEscala, '_blank');
-            };
-            
-            // Botão para copiar o link
-            if (btnCopiarLink) {
-                btnCopiarLink.onclick = () => {
-                    navigator.clipboard.writeText(linkEscala).then(() => {
-                        // Feedback visual temporário
-                        const originalHTML = btnCopiarLink.innerHTML;
-                        btnCopiarLink.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
-                        btnCopiarLink.classList.remove('bg-blue-500', 'hover:bg-blue-600');
-                        btnCopiarLink.classList.add('bg-green-500', 'hover:bg-green-600');
-                        
-                        setTimeout(() => {
-                            btnCopiarLink.innerHTML = originalHTML;
-                            btnCopiarLink.classList.remove('bg-green-500', 'hover:bg-green-600');
-                            btnCopiarLink.classList.add('bg-blue-500', 'hover:bg-blue-600');
-                        }, 2000);
-                    }).catch(() => {
-                        alert('Erro ao copiar o link');
-                    });
-                };
-            }
-        } else if (btnLinkEscala) {
-            // Se não tiver prefixo/slug, desabilita o botão
-            btnLinkEscala.disabled = true;
-            btnLinkEscala.textContent = 'Link não disponível';
-            btnLinkEscala.classList.add('opacity-50', 'cursor-not-allowed');
-            if (btnCopiarLink) {
-                btnCopiarLink.disabled = true;
-            }
-        }
-        
-        // Botão Continuar Editando
-        const btnContinuarEditando = modalDiv.querySelector('#btn-continuar-editando');
-        if (btnContinuarEditando && escalaId) {
-            btnContinuarEditando.onclick = () => {
-                window.location.href = `${window.URL_BASE}/escalas/editar?id=${escalaId}`;
-            };
-        }
-    }
 }
 
-window.submitEscalaService = new SubmitEscalaService();
+// Inicializar quando DOM estiver pronto
+document.addEventListener('DOMContentLoaded', () => {
+    window.submitEscalaService = new SubmitEscalaService();
+});

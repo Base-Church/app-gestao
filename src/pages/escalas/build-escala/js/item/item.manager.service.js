@@ -206,14 +206,33 @@ class ItemManagerService {
         detalhesContainer.querySelectorAll('.espaco-atividades').forEach(el => {
             el.onclick = async (e) => {
                 e.stopPropagation();
-                await window.atividadesService.mostrarListaAtividades(el, (atividadeSelecionada) => {
-                    const idx = parseInt(el.dataset.conjuntoIdx, 10);
-                    const conjuntos = window.escalaService.getConjuntosDoItem(itemId);
-                    if (conjuntos[idx]) {
-                        conjuntos[idx].atividade = atividadeSelecionada;
-                        this.renderizarConjuntos(itemId, seletorId);
-                    }
-                });
+                
+                // Mostra loading
+                const originalContent = el.innerHTML;
+                el.innerHTML = `<div class="flex items-center justify-center gap-2 p-4 text-center w-full">
+                    <svg class="animate-spin h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="text-sm text-gray-500">Carregando...</span>
+                </div>`;
+                
+                try {
+                    await window.atividadesService.mostrarListaAtividades(el, (atividadeSelecionada) => {
+                        const idx = parseInt(el.dataset.conjuntoIdx, 10);
+                        const conjuntos = window.escalaService.getConjuntosDoItem(itemId);
+                        if (conjuntos[idx]) {
+                            conjuntos[idx].atividade = atividadeSelecionada;
+                            this.renderizarConjuntos(itemId, seletorId);
+                        }
+                    });
+                    // Remove loading após requisição concluída
+                    el.innerHTML = originalContent;
+                } catch (error) {
+                    // Restaura conteúdo original em caso de erro
+                    el.innerHTML = originalContent;
+                    console.error('Erro ao carregar atividades:', error);
+                }
             };
         });
         // Voluntário
@@ -243,19 +262,38 @@ class ItemManagerService {
                         dataISO = eventoData;
                     }
                 }
-                await window.voluntariosService.abrirSidebarVoluntarios({
-                    organizacao_id: window.USER.organizacao_id,
-                    ministerio_id: window.USER.ministerio_atual,
-                    atividade_id: conjunto.atividade.id,
-                    data: dataISO,
-                    data_evento: dataISO,
-                    evento_id: evento.id,
-                    page: 1,
-                    limit: 100
-                }, (voluntarioSelecionado) => {
-                    conjunto.voluntario = voluntarioSelecionado;
-                    this.renderizarConjuntos(itemId, seletorId);
-                });
+                
+                // Mostra loading
+                const originalContent = el.innerHTML;
+                el.innerHTML = `<div class="flex items-center justify-center gap-2 p-4 text-center w-full">
+                    <svg class="animate-spin h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="text-sm text-gray-500">Carregando...</span>
+                </div>`;
+                
+                try {
+                    await window.voluntariosService.abrirSidebarVoluntarios({
+                        organizacao_id: window.USER.organizacao_id,
+                        ministerio_id: window.USER.ministerio_atual,
+                        atividade_id: conjunto.atividade.id,
+                        data: dataISO,
+                        data_evento: dataISO,
+                        evento_id: evento.id,
+                        page: 1,
+                        limit: 100
+                    }, (voluntarioSelecionado) => {
+                        conjunto.voluntario = voluntarioSelecionado;
+                        this.renderizarConjuntos(itemId, seletorId);
+                    });
+                    // Remove loading após requisição concluída
+                    el.innerHTML = originalContent;
+                } catch (error) {
+                    // Restaura conteúdo original em caso de erro
+                    el.innerHTML = originalContent;
+                    console.error('Erro ao carregar voluntários:', error);
+                }
             };
         });
         // Remover conjunto

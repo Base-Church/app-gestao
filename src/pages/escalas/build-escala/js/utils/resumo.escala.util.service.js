@@ -59,12 +59,46 @@
 
     // Abre o modal de resumo e popula os dados
     function abrirModalResumo() {
+        console.log('Debug - Tentando carregar modal de resumo');
+        console.log('Debug - APP_CONFIG.baseUrl:', window.APP_CONFIG?.baseUrl);
+        
         fetch(window.APP_CONFIG.baseUrl + '/src/pages/escalas/build-escala/components/resumo-escala-modal.php')
-            .then(r => r.text())
+            .then(r => {
+                console.log('Debug - Response status resumo:', r.status);
+                if (!r.ok) {
+                    throw new Error(`HTTP ${r.status}: ${r.statusText}`);
+                }
+                return r.text();
+            })
             .then(html => {
+                console.log('Debug - HTML resumo carregado, tamanho:', html.length);
+                
                 const modalDiv = document.createElement('div');
                 modalDiv.innerHTML = html;
                 document.body.appendChild(modalDiv);
+                
+                console.log('Debug - Modal resumo adicionado ao DOM');
+                console.log('Debug - Modal resumo element:', modalDiv.querySelector('#modal-resumo-escala'));
+                
+                // Verificar se o modal de resumo está visível
+                const modalElement = modalDiv.querySelector('#modal-resumo-escala');
+                if (modalElement) {
+                    console.log('Debug - Modal resumo styles:', {
+                        display: getComputedStyle(modalElement).display,
+                        visibility: getComputedStyle(modalElement).visibility,
+                        opacity: getComputedStyle(modalElement).opacity,
+                        zIndex: getComputedStyle(modalElement).zIndex,
+                        position: getComputedStyle(modalElement).position
+                    });
+                    
+                    // Forçar exibição do modal de resumo
+                    modalElement.style.display = 'flex';
+                    modalElement.style.visibility = 'visible';
+                    modalElement.style.opacity = '1';
+                    modalElement.style.zIndex = '9999';
+                    
+                    console.log('Debug - Modal resumo forçado a aparecer');
+                }
 
                 // Darkmode e setup inicial
                 const modal = modalDiv.querySelector('.bg-white');
@@ -82,6 +116,10 @@
 
                 // Popular dados do resumo
                 popularResumoEscala(modalDiv);
+            })
+            .catch(error => {
+                console.error('Erro ao carregar modal de resumo:', error);
+                alert('Erro ao carregar modal de resumo: ' + error.message);
             });
     }
 
