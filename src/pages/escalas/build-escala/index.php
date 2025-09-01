@@ -113,41 +113,41 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 
 
 <!-- Geral -->
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/api.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/cabecalho/cabecalho.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/api.service.js?v=<?= date('Ymd') ?>"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/cabecalho/cabecalho.service.js?v=<?= date('Ymd') ?>"></script>
 
 <!-- Eventos -->
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/eventos/eventos.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/eventos/eventos.componentes.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/eventos/eventos.service.js?v=<?= date('Ymd') ?>"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/eventos/eventos.componentes.service.js?v=<?= date('Ymd') ?>"></script>
 
 <!-- Escala -->
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/escala/escala.manager.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/escala/escala.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/escala/submit.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/escala/escala.manager.service.js?v=<?= date('Ymd') ?>"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/escala/escala.service.js?v=<?= date('Ymd') ?>"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/escala/submit.service.js?v=<?= date('Ymd') ?>"></script>
 
 <!-- Atividades -->
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/atividades/atividades.componentes.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/atividades/atividades.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/atividades/atividades.componentes.service.js?v=<?= date('Ymd') ?>"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/atividades/atividades.service.js?v=<?= date('Ymd') ?>"></script>
 
 <!-- Itens -->
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/item/item.componentes.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/item/item.manager.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/item/item.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/item/item.componentes.service.js?v=<?= date('Ymd') ?>"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/item/item.manager.service.js?v=<?= date('Ymd') ?>"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/item/item.service.js?v=<?= date('Ymd') ?>"></script>
 
 <!-- voluntarios -->
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/voluntarios/voluntarios.componentes.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/voluntarios/voluntarios.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/voluntarios/historico-indisponibilidade.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/voluntarios/voluntarios.componentes.service.js?v=<?= date('Ymd') ?>"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/voluntarios/voluntarios.service.js?v=<?= date('Ymd') ?>"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/voluntarios/historico-indisponibilidade.service.js?v=<?= date('Ymd') ?>"></script>
 
 <!-- Utilitários -->
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/item.duplicar.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/item.modelos.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/resumo.escala.util.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/json.debug.util.service.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/eventos.combinacao.util.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/item.duplicar.service.js?v=<?= date('Ymd') ?>"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/item.modelos.service.js?v=<?= date('Ymd') ?>"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/resumo.escala.util.service.js?v=<?= date('Ymd') ?>"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/json.debug.util.service.js?v=<?= date('Ymd') ?>"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/eventos.combinacao.util.service.js?v=<?= date('Ymd') ?>"></script>
 
 <!-- Escala Editar: Popula campos ao carregar se for edição -->
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/escala/escala.editar.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/escala/escala.editar.service.js?v=<?= date('Ymd') ?>"></script>
 
 <!-- Inicialização: Detecta modo de edição -->
 <script>
