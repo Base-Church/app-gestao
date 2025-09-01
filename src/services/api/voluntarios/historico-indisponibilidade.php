@@ -25,6 +25,8 @@ if (!SessionService::hasToken()) {
 // Pega os parâmetros da requisição
 $organizacao_id = SessionService::getOrganizacaoId();
 $voluntario_id = isset($_GET['voluntario_id']) ? $_GET['voluntario_id'] : null;
+$mes = isset($_GET['mes']) ? $_GET['mes'] : null;
+$ano = isset($_GET['ano']) ? $_GET['ano'] : null;
 
 // Validações
 if (!$organizacao_id) {
@@ -38,12 +40,22 @@ if (!$voluntario_id) {
 // Monta a URL da API
 $apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
 $apiUrl = rtrim($apiBase, '/') . '/calendario/indisponibilidade/historico';
-$params = http_build_query([
+
+// Monta os parâmetros
+$params = [
     'organizacao_id' => $organizacao_id,
     'voluntario_id' => $voluntario_id
-]);
+];
 
-$url = "{$apiUrl}?{$params}";
+// Adiciona mês e ano se fornecidos
+if ($mes !== null) {
+    $params['mes'] = $mes;
+}
+if ($ano !== null) {
+    $params['ano'] = $ano;
+}
+
+$url = "{$apiUrl}?" . http_build_query($params);
 
 // Configuração do cURL
 $ch = curl_init();

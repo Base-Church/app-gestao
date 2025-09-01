@@ -1,0 +1,89 @@
+/* Estilos específicos para o histórico de indisponibilidade */
+
+.historico-indisponibilidade-offcanvas {
+    box-shadow: -20px 0 40px rgba(0, 0, 0, 0.15);
+}
+
+.historico-indisponibilidade-offcanvas .calendario-container {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.historico-indisponibilidade-offcanvas .calendario-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.historico-indisponibilidade-offcanvas .calendario-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.historico-indisponibilidade-offcanvas .calendario-container::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5);
+    border-radius: 3px;
+}
+
+.historico-indisponibilidade-offcanvas .calendario-container::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(156, 163, 175, 0.8);
+}
+
+/* Animação do calendário */
+.calendario-dia {
+    transition: all 0.2s ease;
+}
+
+.calendario-dia:hover {
+    transform: scale(1.05);
+}
+
+/* Melhorias para o tema escuro */
+@media (prefers-color-scheme: dark) {
+    .historico-indisponibilidade-offcanvas {
+        box-shadow: -20px 0 40px rgba(0, 0, 0, 0.5);
+    }
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 480px) {
+    .historico-indisponibilidade-offcanvas {
+        max-width: 100% !important;
+    }
+}
+
+/* Animação de loading customizada */
+.loading-historico .animate-spin {
+    animation-duration: 1s;
+}
+
+/* Estilos para os botões de navegação do mês */
+.btn-mes-anterior,
+.btn-mes-proximo {
+    transition: all 0.2s ease;
+}
+
+.btn-mes-anterior:hover,
+.btn-mes-proximo:hover {
+    transform: scale(1.1);
+}
+
+/* Estilo para o botão de histórico no card do voluntário */
+.btn-historico-indisponibilidade {
+    transition: all 0.2s ease;
+}
+
+.btn-historico-indisponibilidade:hover {
+    transform: translateX(2px);
+}
+
+/* Animação suave para a área de seleção do voluntário */
+.selecionar-voluntario {
+    transition: all 0.15s ease;
+}
+
+/* Melhorias para a legenda */
+.legenda-item {
+    transition: all 0.2s ease;
+}
+
+.legenda-item:hover {
+    transform: scale(1.05);
+}

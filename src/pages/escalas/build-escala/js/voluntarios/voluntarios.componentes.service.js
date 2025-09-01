@@ -44,8 +44,9 @@ class VoluntariosComponentesService {
         };
 
         // Evento selecionar voluntário
-        sidebar.querySelectorAll('.voluntario-card').forEach(card => {
-            card.onclick = () => {
+        sidebar.querySelectorAll('.selecionar-voluntario').forEach(area => {
+            area.onclick = () => {
+                const card = area.closest('.voluntario-card');
                 const voluntarioId = card.dataset.voluntarioId;
                 const nome = card.querySelector('h4').textContent;
                 const img = card.querySelector('img').src;
@@ -53,6 +54,42 @@ class VoluntariosComponentesService {
                 if (typeof onSelecionar === 'function') onSelecionar(voluntario);
                 sidebar.classList.add('translate-x-full');
                 setTimeout(() => sidebar.remove(), 300);
+            };
+        });
+
+        // Evento histórico de indisponibilidade
+        sidebar.querySelectorAll('.btn-historico-indisponibilidade').forEach(btn => {
+            btn.onclick = async (e) => {
+                e.stopPropagation(); // Evita que dispare o evento de seleção
+                
+                // Adiciona loading no botão
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = `
+                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                `;
+                btn.disabled = true;
+                
+                try {
+                    const voluntario = {
+                        id: btn.dataset.voluntarioId,
+                        nome: btn.dataset.voluntarioNome,
+                        img: btn.dataset.voluntarioImg
+                    };
+                    
+                    if (window.historicoIndisponibilidadeService) {
+                        await window.historicoIndisponibilidadeService.abrirHistoricoIndisponibilidade(voluntario);
+                    } else {
+                        console.error('Serviço de histórico de indisponibilidade não encontrado');
+                        alert('Erro: Serviço não disponível');
+                    }
+                } catch (error) {
+                    console.error('Erro ao abrir histórico:', error);
+                    alert('Erro ao carregar histórico');
+                } finally {
+                    // Restaura o botão
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
+                }
             };
         });
 
@@ -94,13 +131,24 @@ class VoluntariosComponentesService {
             : `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`;
 
         return `
-        <div class="voluntario-card flex items-center p-3 cursor-pointer hover:bg-primary-50 dark:hover:bg-primary-900/20 border-b border-gray-200 dark:border-gray-700 rounded transition-all duration-200" data-voluntario-id="${voluntario.id}">
+        <div class="voluntario-card flex items-center p-3 border-b border-gray-200 dark:border-gray-700 rounded transition-all duration-200" data-voluntario-id="${voluntario.id}">
             <div class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex-shrink-0">
                 <img src="${imagemPath}" alt="${voluntario.nome}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
             </div>
-            <div class="ml-3 flex-1">
+            <div class="ml-3 flex-1 selecionar-voluntario cursor-pointer hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded p-1 -m-1">
                 <h4 class="text-sm font-medium text-gray-800 dark:text-white truncate">${voluntario.nome}</h4>
                 <span class="inline-block px-2 py-0.5 rounded border text-xs font-semibold ${statusClass}">${status}</span>
+            </div>
+            <div class="ml-2 flex-shrink-0">
+                <button type="button" class="btn-historico-indisponibilidade p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors" 
+                        data-voluntario-id="${voluntario.id}" 
+                        data-voluntario-nome="${voluntario.nome}" 
+                        data-voluntario-img="${imagemPath}"
+                        title="Ver histórico de indisponibilidade">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
             </div>
         </div>`;
     }
