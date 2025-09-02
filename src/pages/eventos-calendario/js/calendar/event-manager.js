@@ -22,22 +22,14 @@ class EventManager {
             moreIndicator.textContent = `+${hiddenCount} mais`;
             container.appendChild(moreIndicator);
         }
-
-        // Adicionar espaçamento vazio no final para modo semana
-        if (this.calendar.currentView === 'week') {
-            const spacer = document.createElement('div');
-            spacer.className = 'h-8'; // 2rem de altura
-            container.appendChild(spacer);
-        }
     }
 
     createEventoCard(evento, dateStr) {
         const card = document.createElement('div');
-        const isWeekView = this.calendar.currentView === 'week';
         
         card.className = `
             bg-white dark:bg-gray-700 rounded-lg border p-2 text-xs group
-            hover:shadow-md transition-all cursor-grab
+            hover:shadow-md transition-all cursor-grab evento-card
             ${evento.tipo === 'culto' ? 'border-l-4 border-l-purple-500' : 'border-l-4 border-l-blue-500'}
         `.trim();
 
@@ -59,11 +51,11 @@ class EventManager {
         tipo.textContent = evento.tipo === 'culto' ? 'C' : 'E';
 
         const removeBtn = document.createElement('button');
-        removeBtn.className = 'opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 transition-all';
+        removeBtn.className = 'opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 transition-all text-sm font-bold';
         removeBtn.innerHTML = '×';
         removeBtn.onclick = (e) => {
             e.stopPropagation();
-            this.removerEventoDoCalendario(evento._id || evento.id, dateStr);
+            this.calendar.removerEventoDoCalendario(evento.id, dateStr);
         };
 
         header.appendChild(tipo);
@@ -85,94 +77,98 @@ class EventManager {
     }
 
     adicionarEventoAoCalendario(evento, dateStr) {
+        console.log('adicionarEventoAoCalendario chamado:', { eventoId: evento.id, dateStr });
+        
         if (!this.calendar.eventosAgendados.has(dateStr)) {
             this.calendar.eventosAgendados.set(dateStr, []);
         }
         
         const eventosNaData = this.calendar.eventosAgendados.get(dateStr);
-        const eventoCopia = { 
-            ...evento, 
-            _id: `${evento.id}-${Date.now()}`
-        };
-        eventosNaData.push(eventoCopia);
         
-        // Buscar e atualizar o container de eventos
-        const dropZone = document.querySelector(`.drop-zone[data-date="${dateStr}"]`);
-        if (dropZone) {
-            this.renderEventosNoDia(dropZone, dateStr);
-            
-            // Forçar re-renderização específica para modo semana
-            if (this.calendar.currentView === 'week') {
-                setTimeout(() => {
-                    this.calendar.renderWeekView();
-                    setTimeout(() => {
-                        if (window.app && window.app.dragDrop) {
-                            window.app.dragDrop.updateDropZones();
-                        }
-                    }, 50);
-                }, 10);
-            }
+        // REMOVER verificação de duplicata para permitir movimentação
+        // A verificação será feita no DragDropManager antes de chamar este método
+        
+        eventosNaData.push({ ...evento });
+        console.log('Evento adicionado aos dados:', { dateStr, totalEventos: eventosNaData.length });
+        
+        // Re-renderizar IMEDIATAMENTE com base na vista atual
+        if (this.calendar.currentView === 'week') {
+            // No modo semana, forçar refresh completo
+            this.calendar.refreshWeekEvents();
         } else {
-            // Forçar re-renderização do calendário
-            setTimeout(() => {
-                this.calendar.render();
-            }, 50);
+            // No modo mês, renderizar apenas a data específica
+            this.renderEventosNaData(dateStr);
         }
         
+        this.salvarEventosDoDia(dateStr);
         return true;
     }
 
     removerEventoDoCalendario(eventoId, dateStr) {
+        console.log('removerEventoDoCalendario chamado:', { eventoId, dateStr });
+        
         if (this.calendar.eventosAgendados.has(dateStr)) {
             const eventosNaData = this.calendar.eventosAgendados.get(dateStr);
-            const index = eventosNaData.findIndex(e => e.id == eventoId || e._id == eventoId);
+            const index = eventosNaData.findIndex(e => e.id == eventoId);
+            
             if (index > -1) {
                 eventosNaData.splice(index, 1);
+                console.log('Evento removido dos dados:', { dateStr, totalEventos: eventosNaData.length });
                 
-                const dropZone = document.querySelector(`.drop-zone[data-date="${dateStr}"]`);
-                if (dropZone) {
-                    this.renderEventosNoDia(dropZone, dateStr);
-                    
-                    // Forçar re-renderização específica para modo semana
-                    if (this.calendar.currentView === 'week') {
-                        setTimeout(() => {
-                            this.calendar.renderWeekView();
-                            setTimeout(() => {
-                                if (window.app && window.app.dragDrop) {
-                                    window.app.dragDrop.updateDropZones();
-                                }
-                            }, 50);
-                        }, 10);
-                    }
+                // Re-renderizar com base na vista atual
+                if (this.calendar.currentView === 'week') {
+                    // No modo semana, forçar refresh completo
+                    this.calendar.refreshWeekEvents();
                 } else {
-                    // Forçar re-renderização do calendário
-                    setTimeout(() => {
-                        this.calendar.render();
-                    }, 50);
+                    // No modo mês, renderizar apenas a data específica
+                    this.renderEventosNaData(dateStr);
                 }
+                
+                this.salvarEventosDoDia(dateStr);
                 return true;
             }
         }
+        console.log('Evento não encontrado para remoção:', { eventoId, dateStr });
         return false;
     }
 
-    carregarEventosAgendados(eventos) {
-        this.calendar.eventosAgendados.clear();
+    renderEventosNaData(dateStr) {
+        const dropZone = document.querySelector(`.drop-zone[data-date="${dateStr}"]`);
+        console.log('renderEventosNaData:', { dateStr, dropZoneFound: !!dropZone, currentView: this.calendar.currentView });
         
-        eventos.forEach(evento => {
-            if (evento.valido) {
-                const dataEvento = new Date(evento.valido);
-                const dateStr = this.calendar.formatDateKey(dataEvento);
-                
-                if (!this.calendar.eventosAgendados.has(dateStr)) {
-                    this.calendar.eventosAgendados.set(dateStr, []);
-                }
-                
-                this.calendar.eventosAgendados.get(dateStr).push(evento);
+        if (dropZone) {
+            // Limpar container antes de re-renderizar
+            dropZone.innerHTML = '';
+            this.renderEventosNoDia(dropZone, dateStr);
+            console.log('✓ Eventos renderizados para', dateStr);
+        } else {
+            console.error('✗ Drop zone não encontrada para', dateStr);
+            
+            // Se não encontrou drop zone na vista semanal, forçar re-renderização completa
+            if (this.calendar.currentView === 'week') {
+                console.log('Drop zone não encontrada - re-renderizando vista semanal...');
+                setTimeout(() => {
+                    this.calendar.refreshWeekEvents();
+                }, 10);
             }
-        });
+        }
+    }
 
-        this.calendar.render();
+    async salvarEventosDoDia(dateStr) {
+        try {
+            const eventosNaData = this.calendar.eventosAgendados.get(dateStr) || [];
+            const eventoIds = eventosNaData.map(evento => evento.id);
+            
+            const date = new Date(dateStr);
+            const mes = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            const organizacaoId = window.USER?.organizacao_id || 1;
+            
+            const api = new EventosCalendarioAPI();
+            await api.salvarEventosDoDia(mes, organizacaoId, dateStr, eventoIds);
+            
+        } catch (error) {
+            console.error('Erro ao salvar eventos do dia:', error);
+        }
     }
 }
 

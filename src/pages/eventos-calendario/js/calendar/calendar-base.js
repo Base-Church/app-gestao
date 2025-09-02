@@ -22,11 +22,13 @@ class CalendarBase {
         document.getElementById('prev-month').addEventListener('click', () => {
             this.currentDate.setMonth(this.currentDate.getMonth() - 1);
             this.render();
+            this.loadMonthData();
         });
 
         document.getElementById('next-month').addEventListener('click', () => {
             this.currentDate.setMonth(this.currentDate.getMonth() + 1);
             this.render();
+            this.loadMonthData();
         });
 
         document.getElementById('btn-hoje').addEventListener('click', () => {
@@ -59,12 +61,27 @@ class CalendarBase {
 
         if (nextWeek) {
             nextWeek.addEventListener('click', () => {
-                if (this.currentView === 'week') {
-                    this.currentWeekStart.setDate(this.currentWeekStart.getDate() + 7);
-                }
+                this.currentWeekStart.setDate(this.currentWeekStart.getDate() + 7);
                 this.render();
+                this.loadMonthData();
             });
         }
+    }
+
+    async loadMonthData() {
+        const mes = this.formatDateKey(this.currentDate).substring(0, 7);
+        const organizacaoId = window.app.getOrganizacaoId();
+        const eventosAgendados = await window.app.api.getEventosAgendados(mes, organizacaoId);
+
+        const eventosMap = new Map();
+        if (eventosAgendados && eventosAgendados.data) {
+            for (const [dateStr, eventoIds] of Object.entries(eventosAgendados.data)) {
+                const eventosDoDia = eventoIds.map(id => window.app.getEventoById(id)).filter(Boolean);
+                eventosMap.set(dateStr, eventosDoDia);
+            }
+        }
+        this.eventosAgendados = eventosMap;
+        this.render();
     }
 
     switchToMonthView() {
@@ -73,11 +90,7 @@ class CalendarBase {
         document.getElementById('view-week').classList.remove('active');
         document.getElementById('calendar-month-view').classList.remove('hidden');
         document.getElementById('calendar-week-view').classList.add('hidden');
-        
-        // Forçar re-renderização imediata
-        setTimeout(() => {
-            this.render();
-        }, 10);
+        this.render();
     }
 
     switchToWeekView() {
@@ -87,11 +100,7 @@ class CalendarBase {
         document.getElementById('view-month').classList.remove('active');
         document.getElementById('calendar-week-view').classList.remove('hidden');
         document.getElementById('calendar-month-view').classList.add('hidden');
-        
-        // Forçar re-renderização imediata
-        setTimeout(() => {
-            this.render();
-        }, 10);
+        this.render();
     }
 
     render() {
@@ -102,19 +111,10 @@ class CalendarBase {
             this.renderWeekView();
         }
         
-        // Garantir que o drag-drop seja atualizado imediatamente
-        setTimeout(() => {
-            if (window.app && window.app.dragDrop) {
-                window.app.dragDrop.updateDropZones();
-            }
-        }, 50);
-        
-        // Segunda atualização para garantir que funcione na mudança de view
-        setTimeout(() => {
-            if (window.app && window.app.dragDrop) {
-                window.app.dragDrop.updateDropZones();
-            }
-        }, 200);
+        // Atualizar drag-drop
+        if (window.app && window.app.dragDrop) {
+            window.app.dragDrop.updateDropZones();
+        }
     }
 
     updateHeader() {

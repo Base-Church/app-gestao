@@ -69,7 +69,7 @@ class MonthRenderer {
         eventsContainer.className = 'space-y-1 min-h-[80px] overflow-y-auto drop-zone';
         eventsContainer.dataset.date = dateStr;
 
-        this.calendar.renderEventosNoDia(eventsContainer, dateStr);
+        this.calendar.eventManager.renderEventosNoDia(eventsContainer, dateStr);
 
         dayDiv.appendChild(dayHeader);
         dayDiv.appendChild(eventsContainer);

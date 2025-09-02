@@ -107,7 +107,7 @@ require_once __DIR__ . '/../../components/layout/header.php';
 
                         <!-- Grid da semana -->
                         <div class="flex h-[calc(100%-5rem)]">
-                            <div id="week-days" class="flex-1 grid grid-cols-7 gap-1 p-2">
+                            <div id="week-days" class="flex-1 flex gap-1 p-2">
                                 <!-- Colunas dos dias da semana -->
                             </div>
                         </div>
@@ -153,6 +153,9 @@ require_once __DIR__ . '/../../components/layout/header.php';
         </div>
     </div>
 </main>
+
+<!-- Container para Toasts/Notificações -->
+<div id="toast-container" class="fixed top-5 right-5 z-[100]"></div>
 
 <!-- Importar SortableJS para drag and drop -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>

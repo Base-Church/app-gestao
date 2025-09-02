@@ -23,6 +23,15 @@ class Calendar extends CalendarBase {
         }
     }
 
+    // Método para forçar atualização da vista atual
+    forceRefresh() {
+        if (this.currentView === 'week') {
+            this.refreshWeekEvents();
+        } else {
+            this.renderCalendarGrid();
+        }
+    }
+
     renderEventosNoDia(container, dateStr) {
         this.eventManager.renderEventosNoDia(container, dateStr);
     }
@@ -32,15 +41,34 @@ class Calendar extends CalendarBase {
     }
 
     adicionarEventoAoCalendario(evento, dateStr) {
-        return this.eventManager.adicionarEventoAoCalendario(evento, dateStr);
+        const result = this.eventManager.adicionarEventoAoCalendario(evento, dateStr);
+        
+        // Garantir que a vista seja atualizada após adicionar
+        if (result && this.currentView === 'week') {
+            setTimeout(() => {
+                this.refreshWeekEvents();
+            }, 10);
+        }
+        
+        return result;
     }
 
     removerEventoDoCalendario(eventoId, dateStr) {
-        return this.eventManager.removerEventoDoCalendario(eventoId, dateStr);
+        const result = this.eventManager.removerEventoDoCalendario(eventoId, dateStr);
+        
+        // Garantir que a vista seja atualizada após remover
+        if (result && this.currentView === 'week') {
+            setTimeout(() => {
+                this.refreshWeekEvents();
+            }, 10);
+        }
+        
+        return result;
     }
 
     carregarEventosAgendados(eventos) {
-        this.eventManager.carregarEventosAgendados(eventos);
+        // Este método agora é populado via API, mas pode ser mantido para compatibilidade
+        // this.eventManager.carregarEventosAgendados(eventos);
     }
 }
 

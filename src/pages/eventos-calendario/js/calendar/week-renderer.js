@@ -17,13 +17,12 @@ class WeekRenderer {
             weekContainer.appendChild(dayColumn);
         }
         
-        // Forçar renderização de eventos após criação das colunas
-        setTimeout(() => {
-            this.refreshWeekEvents();
-        }, 10);
+        // Renderizar eventos imediatamente após criação das colunas
+        this.refreshWeekEvents();
     }
 
     refreshWeekEvents() {
+        console.log('refreshWeekEvents chamado - re-renderizando todos os eventos da semana');
         for (let i = 0; i < 7; i++) {
             const date = new Date(this.calendar.currentWeekStart);
             date.setDate(date.getDate() + i);
@@ -31,8 +30,18 @@ class WeekRenderer {
             
             const eventsContainer = document.querySelector(`.drop-zone[data-date="${dateStr}"]`);
             if (eventsContainer) {
-                this.calendar.renderEventosNoDia(eventsContainer, dateStr);
+                console.log(`Re-renderizando eventos para ${dateStr}`);
+                // Limpar container antes de re-renderizar
+                eventsContainer.innerHTML = '';
+                this.calendar.eventManager.renderEventosNoDia(eventsContainer, dateStr);
+            } else {
+                console.log(`Drop zone não encontrada para ${dateStr}`);
             }
+        }
+        
+        // Atualizar drag-drop após re-renderização
+        if (window.app && window.app.dragDrop) {
+            window.app.dragDrop.updateDropZones();
         }
     }
 
@@ -42,7 +51,7 @@ class WeekRenderer {
         const isToday = this.calendar.isToday(date);
 
         column.className = `
-            bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 
+            flex-1 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 
             min-h-[500px] flex flex-col shadow-sm
             ${isToday ? 'ring-2 ring-primary-500' : ''}
         `.trim();
@@ -68,7 +77,7 @@ class WeekRenderer {
         eventsContainer.className = 'flex-1 p-2 space-y-2 drop-zone overflow-y-auto';
         eventsContainer.dataset.date = dateStr;
 
-        this.calendar.renderEventosNoDia(eventsContainer, dateStr);
+        this.calendar.eventManager.renderEventosNoDia(eventsContainer, dateStr);
 
         column.appendChild(header);
         column.appendChild(eventsContainer);
