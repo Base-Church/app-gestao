@@ -49,6 +49,7 @@ return [
 
     // Eventos
     '/eventos'                              => '/src/pages/eventos/index.php',
+    '/eventos/calendario'                   => '/src/pages/eventos-calendario/index.php',
 
     // Recados
     '/recados'                              => '/src/pages/recados/index.php',
