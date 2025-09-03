@@ -79,64 +79,6 @@ if (SessionService::isLoggedIn() && !SessionService::hasMinisterios() && strpos(
     document.documentElement.classList.remove('dark');
   }
   </script>
-
-  <!-- ======== Realtime (SSE) — substitui RealtimeService/Socket.IO ======== -->
-  <script>
-  // Endpoints SSE/atividade
-  window.REALTIME_CONFIG = {
-    sseUrl: '<?php echo rtrim($_ENV['URL_BASE'] ?? '', '/'); ?>/src/realtime/realtime.stream.php',
-    activityUrl: '<?php echo rtrim($_ENV['URL_BASE'] ?? '', '/'); ?>/src/realtime/user-activity.php'
-  };
-
-  // sessionId por aba
-  window.SESSION_ID = localStorage.getItem('SESSION_ID') ||
-    (crypto.randomUUID ? crypto.randomUUID() : (Date.now()+'-'+Math.random()));
-  localStorage.setItem('SESSION_ID', window.SESSION_ID);
-
-  // Inicia SSE e despacha evento global 'realtime-users'
-  (function initSSE(){
-    try{
-      const es = new EventSource(window.REALTIME_CONFIG.sseUrl);
-      es.addEventListener('users', (ev) => {
-        try{
-          const payload = JSON.parse(ev.data);    // { ts, users: { sessionId: {...} } }
-          const all = payload.users || {};
-          const orgId = window.USER?.organizacao_id ?? null;
-          const list = orgId == null ? Object.values(all)
-                                     : Object.values(all).filter(u => String(u.organizacaoId) === String(orgId));
-          window.dispatchEvent(new CustomEvent('realtime-users', { detail: { all, list } }));
-        } catch(e){ console.error('SSE parse error', e); }
-      });
-      window.__realtime_es = es;
-    } catch(e){ console.error('SSE init error', e); }
-  })();
-
-  // POST de atividade (cliente -> servidor)
-  window.realtimeSendActivity = async function(payload){
-    const base = {
-      sessionId: window.SESSION_ID,
-      userId: window.USER?.id ?? null,
-      userName: window.USER?.name ?? null,
-      organizacaoId: window.USER?.organizacao_id ?? null,
-      currentPage: (document.body && document.body.dataset && document.body.dataset.page) ? document.body.dataset.page : 'inicio'
-    };
-    const body = Object.assign(base, payload || {});
-    try{
-      await fetch(window.REALTIME_CONFIG.activityUrl, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(body)
-      });
-    } catch(e){ console.error('Falha ao enviar atividade', e); }
-  };
-
-  // Presença básica global
-  window.addEventListener('focus', () => window.realtimeSendActivity({activity:'active', tabActive:true, status:'online'}));
-  window.addEventListener('blur',  () => window.realtimeSendActivity({activity:'away',  tabActive:false}));
-  document.addEventListener('visibilitychange', () => 
-    window.realtimeSendActivity({activity: document.hidden ? 'away' : 'active', tabActive: !document.hidden})
-  );
-  </script>
 </head>
 <body class="h-full bg-white dark:bg-gray-900">
   <!-- Modals Container -->

@@ -146,6 +146,9 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/json.debug.util.service.js?v=<?= date('Ymd') ?>"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/eventos.combinacao.util.service.js?v=<?= date('Ymd') ?>"></script>
 
+<!-- Realtime -->
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/realtime/ably.service.js?v=<?= date('Ymd') ?>"></script>
+
 <!-- Escala Editar: Popula campos ao carregar se for edição -->
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/escala/escala.editar.service.js?v=<?= date('Ymd') ?>"></script>
 
