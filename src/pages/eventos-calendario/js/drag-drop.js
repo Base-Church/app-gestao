@@ -131,7 +131,11 @@ class DragDropManager {
         setTimeout(() => {
             if (this.calendar.currentView === 'week') {
                 console.log('Forçando refresh da vista semanal');
-                this.calendar.refreshWeekEvents();
+                // Simular clique no botão view-week para forçar atualização
+                const viewWeekBtn = document.getElementById('view-week');
+                if (viewWeekBtn) {
+                    viewWeekBtn.click();
+                }
             } else {
                 console.log('Forçando refresh da vista mensal');
                 this.calendar.renderCalendarGrid();
