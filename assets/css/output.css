@@ -1140,10 +1140,6 @@ select {
   top: 1.5rem;
 }
 
-.left-full {
-  left: 100%;
-}
-
 .isolate {
   isolation: isolate;
 }
@@ -1301,6 +1297,10 @@ select {
   margin-left: 1.5rem;
 }
 
+.ml-64 {
+  margin-left: 16rem;
+}
+
 .ml-auto {
   margin-left: auto;
 }
@@ -1363,10 +1363,6 @@ select {
 
 .mt-8 {
   margin-top: 2rem;
-}
-
-.ml-64 {
-  margin-left: 16rem;
 }
 
 .line-clamp-2 {
@@ -1526,6 +1522,10 @@ select {
 
 .h-screen {
   height: 100vh;
+}
+
+.max-h-48 {
+  max-height: 12rem;
 }
 
 .max-h-60 {
@@ -1899,14 +1899,15 @@ select {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
   }
 }
 
-.animate-spin {
-  animation: spin 1s linear infinite;
+.animate-ping {
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
 @keyframes pulse {
@@ -1917,6 +1918,16 @@ select {
 
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 
 .cursor-default {
@@ -2237,11 +2248,6 @@ select {
   border-top-right-radius: 0.75rem;
 }
 
-.rounded-r-lg {
-  border-top-right-radius: 0.5rem;
-  border-bottom-right-radius: 0.5rem;
-}
-
 .border {
   border-width: 1px;
 }
@@ -2338,6 +2344,16 @@ select {
 .border-green-500 {
   --tw-border-opacity: 1;
   border-color: rgb(34 197 94 / var(--tw-border-opacity, 1));
+}
+
+.border-orange-200 {
+  --tw-border-opacity: 1;
+  border-color: rgb(254 215 170 / var(--tw-border-opacity, 1));
+}
+
+.border-orange-300 {
+  --tw-border-opacity: 1;
+  border-color: rgb(253 186 116 / var(--tw-border-opacity, 1));
 }
 
 .border-primary-200 {
@@ -2593,6 +2609,11 @@ select {
   background-color: rgb(251 146 60 / 0.3);
 }
 
+.bg-orange-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 247 237 / var(--tw-bg-opacity, 1));
+}
+
 .bg-orange-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(249 115 22 / var(--tw-bg-opacity, 1));
@@ -2782,12 +2803,6 @@ select {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
-.from-blue-600 {
-  --tw-gradient-from: #2563eb var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(37 99 235 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
-
 .to-blue-50 {
   --tw-gradient-to: #eff6ff var(--tw-gradient-to-position);
 }
@@ -2814,10 +2829,6 @@ select {
 
 .to-transparent {
   --tw-gradient-to: transparent var(--tw-gradient-to-position);
-}
-
-.to-blue-700 {
-  --tw-gradient-to: #1d4ed8 var(--tw-gradient-to-position);
 }
 
 .object-cover {
@@ -3012,6 +3023,10 @@ select {
 
 .pt-6 {
   padding-top: 1.5rem;
+}
+
+.pr-1 {
+  padding-right: 0.25rem;
 }
 
 .text-left {
@@ -3242,6 +3257,11 @@ select {
 .text-orange-600 {
   --tw-text-opacity: 1;
   color: rgb(234 88 12 / var(--tw-text-opacity, 1));
+}
+
+.text-orange-700 {
+  --tw-text-opacity: 1;
+  color: rgb(194 65 12 / var(--tw-text-opacity, 1));
 }
 
 .text-orange-800 {
@@ -4105,6 +4125,10 @@ select {
   --tw-ring-offset-width: 2px;
 }
 
+.focus\:ring-offset-1:focus {
+  --tw-ring-offset-width: 1px;
+}
+
 .disabled\:cursor-not-allowed:disabled {
   cursor: not-allowed;
 }
@@ -4115,12 +4139,6 @@ select {
 
 .disabled\:opacity-60:disabled {
   opacity: 0.6;
-}
-
-.group:hover .group-hover\:scale-110 {
-  --tw-scale-x: 1.1;
-  --tw-scale-y: 1.1;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
 .group:hover .group-hover\:border-primary-300 {
@@ -4244,9 +4262,19 @@ select {
   border-color: rgb(31 41 55 / var(--tw-border-opacity, 1));
 }
 
+.dark\:border-gray-900:is(.dark *) {
+  --tw-border-opacity: 1;
+  border-color: rgb(17 24 39 / var(--tw-border-opacity, 1));
+}
+
 .dark\:border-green-800:is(.dark *) {
   --tw-border-opacity: 1;
   border-color: rgb(22 101 52 / var(--tw-border-opacity, 1));
+}
+
+.dark\:border-orange-800:is(.dark *) {
+  --tw-border-opacity: 1;
+  border-color: rgb(154 52 18 / var(--tw-border-opacity, 1));
 }
 
 .dark\:border-primary-500:is(.dark *) {
@@ -4279,9 +4307,9 @@ select {
   border-color: rgb(133 77 14 / var(--tw-border-opacity, 1));
 }
 
-.dark\:border-gray-900:is(.dark *) {
+.dark\:border-primary-800:is(.dark *) {
   --tw-border-opacity: 1;
-  border-color: rgb(17 24 39 / var(--tw-border-opacity, 1));
+  border-color: rgb(91 33 182 / var(--tw-border-opacity, 1));
 }
 
 .dark\:bg-amber-900\/40:is(.dark *) {
@@ -4402,6 +4430,14 @@ select {
 .dark\:bg-orange-900:is(.dark *) {
   --tw-bg-opacity: 1;
   background-color: rgb(124 45 18 / var(--tw-bg-opacity, 1));
+}
+
+.dark\:bg-orange-900\/10:is(.dark *) {
+  background-color: rgb(124 45 18 / 0.1);
+}
+
+.dark\:bg-orange-900\/20:is(.dark *) {
+  background-color: rgb(124 45 18 / 0.2);
 }
 
 .dark\:bg-primary-400:is(.dark *) {
@@ -4644,6 +4680,11 @@ select {
   color: rgb(254 215 170 / var(--tw-text-opacity, 1));
 }
 
+.dark\:text-orange-300:is(.dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(253 186 116 / var(--tw-text-opacity, 1));
+}
+
 .dark\:text-orange-400:is(.dark *) {
   --tw-text-opacity: 1;
   color: rgb(251 146 60 / var(--tw-text-opacity, 1));
@@ -4851,6 +4892,10 @@ select {
   background-color: rgb(153 27 27 / 0.5);
 }
 
+.dark\:hover\:bg-primary-800\/30:hover:is(.dark *) {
+  background-color: rgb(91 33 182 / 0.3);
+}
+
 .dark\:hover\:text-blue-300:hover:is(.dark *) {
   --tw-text-opacity: 1;
   color: rgb(147 197 253 / var(--tw-text-opacity, 1));
@@ -4919,6 +4964,11 @@ select {
 .dark\:hover\:text-white:hover:is(.dark *) {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+.dark\:hover\:text-primary-200:hover:is(.dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(221 214 254 / var(--tw-text-opacity, 1));
 }
 
 .dark\:focus\:border-primary-500:focus:is(.dark *) {

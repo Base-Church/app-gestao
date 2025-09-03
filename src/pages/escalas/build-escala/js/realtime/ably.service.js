@@ -9,7 +9,7 @@ class AblyService {
         this.usersOnline = new Map(); // Usar Map para melhor controle
         this.userInfo = {
             id: window.USER?.id || null,
-            name: window.USER?.name || null
+            name: window.USER?.nome || window.USER?.name || null
         };
         
         // Validação - não inicializa se não tiver dados do usuário
@@ -82,21 +82,40 @@ class AblyService {
     }
 
     /**
-     * Envia presença (apenas online/offline)
+     * Envia presença (online/offline ou dados customizados)
+     * @param {string|Object} data - Status ou dados customizados
      */
-    async sendPresence(status) {
-        if (!this.isConnected || !this.channel) return;
+    async sendPresence(data) {
+        console.log('=== ABLY SEND PRESENCE ===');
+        console.log('Conectado:', this.isConnected);
+        console.log('Channel:', !!this.channel);
+        
+        if (!this.isConnected || !this.channel) {
+            console.log('Não conectado - não enviando');
+            return;
+        }
         
         try {
-            await this.channel.publish('presence', {
-                userId: this.userInfo.id,
-                userName: this.userInfo.name,
-                status: status,
-                timestamp: Date.now()
-            });
-            console.log(`Presença: ${status}`);
+            let messageData;
+            
+            if (typeof data === 'string') {
+                // Presença simples (online/offline)
+                messageData = {
+                    userId: this.userInfo.id,
+                    userName: this.userInfo.name,
+                    status: data,
+                    timestamp: Date.now()
+                };
+            } else {
+                // Dados customizados (voluntários, etc.)
+                messageData = data;
+            }
+            
+            console.log('Enviando mensagem:', JSON.stringify(messageData, null, 2));
+            await this.channel.publish('presence', messageData);
+            console.log('✅ Mensagem enviada com sucesso');
         } catch (error) {
-            console.error('Erro ao enviar presença:', error);
+            console.error('❌ Erro ao enviar presença:', error);
         }
     }
 
@@ -104,10 +123,33 @@ class AblyService {
      * Manipula eventos de presença
      */
     handlePresence(data) {
-        const { userId, userName, status } = data;
+        console.log('=== ABLY HANDLE PRESENCE ===');
+        console.log('Dados recebidos:', JSON.stringify(data, null, 2));
         
-        // Ignora próprio usuário
-        if (userId === this.userInfo.id) return;
+        // Verifica se é dados de voluntário primeiro
+        if (data.action && (data.action === 'voluntario_selecting' || data.action === 'voluntario_removed')) {
+            console.log('✅ Ação de voluntário detectada:', data.action);
+            
+            // Para voluntários, não ignora próprio usuário - deixa o serviço decidir
+            if (window.voluntariosRealtimeService) {
+                console.log('📞 Chamando voluntariosRealtimeService.handlePresenceData');
+                window.voluntariosRealtimeService.handlePresenceData(data);
+            } else {
+                console.error('❌ voluntariosRealtimeService não disponível');
+            }
+            return;
+        }
+        
+        console.log('Processando presença de usuário padrão');
+        
+        // Para presença de usuário padrão, ignora próprio usuário
+        if (data.userId === this.userInfo.id) {
+            console.log('Ignorando próprio usuário');
+            return;
+        }
+        
+        // Processa presença de usuário padrão
+        const { userId, userName, status } = data;
         
         if (status === 'online') {
             this.usersOnline.set(userId, { name: userName, timestamp: Date.now() });
@@ -166,7 +208,7 @@ class AblyService {
 
 // Inicializa quando a página carrega
 document.addEventListener('DOMContentLoaded', function() {
-    if (window.USER?.id && window.USER?.name) {
+    if (window.USER?.id && (window.USER?.nome || window.USER?.name)) {
         window.ablyService = new AblyService();
         console.log('AblyService inicializado');
     } else {

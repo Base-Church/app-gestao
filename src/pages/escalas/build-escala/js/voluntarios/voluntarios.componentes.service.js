@@ -120,24 +120,39 @@ class VoluntariosComponentesService {
             'Disponível': 'bg-green-100 text-green-800 border-green-300',
             'Indisponível': 'bg-red-100 text-red-700 border-red-300',
             'Não preencheu': 'bg-yellow-100 text-yellow-800 border-yellow-300',
-            'Já escalado': 'bg-blue-100 text-blue-800 border-blue-300'
+            'Já escalado': 'bg-blue-100 text-blue-800 border-blue-300',
+            'Selecionado no momento': 'bg-orange-100 text-orange-800 border-orange-300 animate-pulse'
         };
-        const status = voluntario.statusLabel || '';
-        const statusClass = statusMap[status] || 'bg-gray-100 text-gray-700 border-gray-300';
+        
+        // Usa o status original se disponível, senão usa o statusLabel atual
+        const status = voluntario.isBeingSelected && voluntario.originalStatusLabel 
+            ? voluntario.originalStatusLabel 
+            : voluntario.statusLabel || '';
+        
+        // Para o display visual, usa o statusLabel (que pode ser "Selecionado no momento")
+        const displayStatus = voluntario.statusLabel || '';
+        const statusClass = statusMap[displayStatus] || 'bg-gray-100 text-gray-700 border-gray-300';
 
         // Foto: usa a URL se existir, senão placeholder, e fallback para placeholder se erro
         const imagemPath = voluntario.foto
             ? voluntario.foto
             : `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`;
 
+        // Adiciona indicador se está sendo selecionado
+        const selectingIndicator = voluntario.isBeingSelected ? `
+            <div class="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full animate-ping"></div>
+            <div class="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"></div>
+        ` : '';
+
         return `
-        <div class="voluntario-card flex items-center p-3 border-b border-gray-200 dark:border-gray-700 rounded transition-all duration-200" data-voluntario-id="${voluntario.id}">
-            <div class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex-shrink-0">
+        <div class="voluntario-card flex items-center p-3 border-b border-gray-200 dark:border-gray-700 rounded transition-all duration-200 ${voluntario.isBeingSelected ? 'bg-orange-50 dark:bg-orange-900/10' : ''}" data-voluntario-id="${voluntario.id}" data-original-status="${status}">
+            <div class="relative w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex-shrink-0">
                 <img src="${imagemPath}" alt="${voluntario.nome}" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
+                ${selectingIndicator}
             </div>
             <div class="ml-3 flex-1 selecionar-voluntario cursor-pointer hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded p-1 -m-1">
                 <h4 class="text-sm font-medium text-gray-800 dark:text-white truncate">${voluntario.nome}</h4>
-                <span class="inline-block px-2 py-0.5 rounded border text-xs font-semibold ${statusClass}">${status}</span>
+                <span class="inline-block px-2 py-0.5 rounded border text-xs font-semibold ${statusClass}">${displayStatus}</span>
             </div>
             <div class="ml-2 flex-shrink-0">
                 <button type="button" class="btn-historico-indisponibilidade p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors" 

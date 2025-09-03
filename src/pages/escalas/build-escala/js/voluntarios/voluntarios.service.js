@@ -19,7 +19,20 @@ class VoluntariosService {
             if (!cleanParams.organizacao_id) cleanParams.organizacao_id = window.USER.organizacao_id;
             if (!cleanParams.ministerio_id) cleanParams.ministerio_id = window.USER.ministerio_atual;
             const { sugestoes, todos } = await window.apiService.buscarVoluntariosSugestoes(cleanParams);
-            window.voluntariosComponentesService.criarSidebar({ sugestoes, todos }, onSelecionar);
+            
+            // Aplica filtro de voluntários em tempo real
+            let filteredSugestoes = sugestoes;
+            let filteredTodos = todos;
+            
+            if (window.voluntariosRealtimeService) {
+                filteredSugestoes = window.voluntariosRealtimeService.filterAvailableVoluntarios(sugestoes);
+                filteredTodos = window.voluntariosRealtimeService.filterAvailableVoluntarios(todos);
+            }
+            
+            window.voluntariosComponentesService.criarSidebar({ 
+                sugestoes: filteredSugestoes, 
+                todos: filteredTodos 
+            }, onSelecionar);
         } catch (err) {
             alert('Erro ao buscar voluntários');
         }

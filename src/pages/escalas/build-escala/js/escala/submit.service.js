@@ -244,6 +244,12 @@ class SubmitEscalaService {
                 this.exibirNotificacaoSucesso(resultado);
             }
 
+            // Limpar seleções de voluntários desta pessoa após salvar com sucesso
+            if (window.voluntariosRealtimeService) {
+                console.log('Limpando seleções de voluntários desta pessoa após salvar escala');
+                window.voluntariosRealtimeService.clearMySelections();
+            }
+
             return resultado;
         } catch (error) {
             console.error('Erro ao salvar escala:', error);

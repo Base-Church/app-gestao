@@ -37,26 +37,42 @@
             </div>
             
             <!-- Lista de Usuários Online -->
-            <div id="global-users-list" class="space-y-2 max-h-60 overflow-y-auto">
-                <!-- Usuários serão inseridos aqui via JavaScript -->
-                <div class="text-center text-gray-500 dark:text-gray-400 text-sm py-4">
-                    Carregando usuários...
+            <div class="max-h-60 overflow-y-auto">
+                <div id="global-users-list" class="space-y-2">
+                    <!-- Usuários serão inseridos aqui via JavaScript -->
+                    <div class="text-center text-gray-500 dark:text-gray-400 text-sm py-4">
+                        Carregando usuários...
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Seção: Atividades Recentes (Placeholder para futuras funcionalidades) -->
+        <!-- Seção: Voluntários Sendo Selecionados -->
         <div class="flex-shrink-0 p-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-sm font-semibold text-gray-900 dark:text-white flex items-center mb-3">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                Atividade Recente
-            </h3>
-            <div class="text-center text-gray-400 dark:text-gray-500 text-xs py-4">
-                Em breve...
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-white flex items-center">
+                    <svg class="w-3 h-3 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    Selecionando Agora
+                </h3>
+                <span id="global-selecting-count" class="px-2 py-1 bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-300 rounded-full text-xs font-medium">
+                    0
+                </span>
+            </div>
+            
+            <!-- Lista de Voluntários Sendo Selecionados -->
+            <div class="max-h-48 overflow-y-auto">
+                <div id="global-selecting-list" class="space-y-2">
+                    <!-- Voluntários sendo selecionados serão inseridos aqui via JavaScript -->
+                    <div class="text-center text-gray-400 dark:text-gray-500 text-xs py-4">
+                        Nenhum voluntário sendo selecionado
+                    </div>
+                </div>
             </div>
         </div>
+
+        
 
         <!-- Seção: Status do Sistema (Placeholder) -->
         <div class="flex-1 p-4">

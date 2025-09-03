@@ -11,15 +11,10 @@ require_once __DIR__ . '/../../../components/layout/header.php';
             <!-- Cabeçalho da Escala -->
             <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
                 <!-- Header com título e status -->
-                <div class="bg-gradient-to-r from-primary-600 to-primary-700 p-6">
-                    <div class="flex flex-wrap justify-between items-center">
-                        <h2 class="text-2xl font-bold text-white">Nova Escala</h2>
-                        <span class="px-4 py-1 bg-white bg-opacity-20 rounded-full text-white text-sm">Beta</span>
-                    </div>
-                </div>
+                
 
                 <!-- Conteúdo do cabeçalho -->
-                <div class="p-6 space-y-6">
+                <div class="space-y-6">
                     <!-- Primeira linha -->
                     <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                         <div class="w-full sm:flex-1">
@@ -152,6 +147,7 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 
 <!-- Realtime -->
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/realtime/ably.service.js?v=<?= date('Ymd') ?>"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/realtime/voluntarios-realtime.service.js?v=<?= date('Ymd') ?>"></script>
 
 <!-- Escala Editar: Popula campos ao carregar se for edição -->
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/escala/escala.editar.service.js?v=<?= date('Ymd') ?>"></script>
