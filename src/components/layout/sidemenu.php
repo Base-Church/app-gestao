@@ -149,14 +149,30 @@ $ferramentasActive = strpos($currentPath, '/formularios') !== false || strpos($c
                         </a>
                     </div>
                 </div>
-                <!-- Eventos -->
-                <a href="<?php echo $_ENV['URL_BASE']; ?>/eventos" 
-                   class="flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group">
-                    <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                    <span class="font-medium">Eventos</span>
-                </a>
+                <!-- Eventos (submenu) -->
+                <div class="space-y-1">
+                    <button type="button" onclick="toggleSubMenu('eventosSubMenu', this)" 
+                            aria-expanded="<?= (strpos($currentPath, '/eventos') !== false || strpos($currentPath, '/calendarios') !== false) ? 'true' : 'false' ?>"
+                            class="w-full flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200 group focus:outline-none">
+                        <svg class="w-5 h-5 mr-3 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <span class="font-medium flex-1 text-left">Eventos</span>
+                        <svg id="eventosArrow" class="w-4 h-4 ml-auto transition-transform duration-200 <?= (strpos($currentPath, '/eventos') !== false || strpos($currentPath, '/calendarios') !== false) ? 'rotate-180' : '' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="eventosSubMenu" class="<?= (strpos($currentPath, '/eventos') !== false || strpos($currentPath, '/calendarios') !== false) ? '' : 'hidden' ?> pl-11 space-y-1">
+                        <a href="<?php echo $_ENV['URL_BASE']; ?>/eventos" 
+                           class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+                            <span>Ver eventos</span>
+                        </a>
+                        <a href="<?php echo $_ENV['URL_BASE']; ?>/eventos/agenda" 
+                           class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+                            <span>Calendários</span>
+                        </a>
+                    </div>
+                </div>
                 <!-- Voluntários (submenu) -->
                 <div class="space-y-1">
                     <button type="button" onclick="toggleSubMenu('voluntariosSubMenu', this)" 

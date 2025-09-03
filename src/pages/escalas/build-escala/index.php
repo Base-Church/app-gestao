@@ -9,7 +9,7 @@ require_once __DIR__ . '/../../../components/layout/header.php';
     <div class="p-2 sm:p-4 border-gray-200 rounded-lg dark:border-gray-700 mt-14">
         <div class="space-y-6">
             <!-- Cabeçalho da Escala -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
+            <div class="bg-white dark:bg-gray-800 p-2 rounded-lg overflow-hidden">
                 <!-- Header com título e status -->
                 
 

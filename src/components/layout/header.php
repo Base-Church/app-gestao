@@ -34,10 +34,7 @@ if (SessionService::isLoggedIn() && !SessionService::hasMinisterios() && strpos(
   <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
   <style>
     body{font-family:'Inter',sans-serif}
-    *{scrollbar-width:thin;scrollbar-color:#4a4a4a #fff}
-    *::-webkit-scrollbar{width:11px}
-    *::-webkit-scrollbar-track{background:#fff}
-    *::-webkit-scrollbar-thumb{background:#4a4a4a;border-radius:5px;border:1px solid #fff}
+
   </style>
 
   <script>
@@ -92,9 +89,61 @@ if (SessionService::isLoggedIn() && !SessionService::hasMinisterios() && strpos(
     ?>
   </div>
 
-  <style>
-    *{scrollbar-width:thin;scrollbar-color:#894bfb #2b2b2b}
-    *::-webkit-scrollbar{width:3px}
-    *::-webkit-scrollbar-track{background:#2b2b2b}
-    *::-webkit-scrollbar-thumb{background:#894bfb;border-radius:3px;border:1px solid #fff}
-  </style>
+<style>
+  /* --------- Variáveis de tema (ligadas ao Tailwind .dark) --------- */
+  html {
+    /* LIGHT */
+    --sb-track: #f3f4f6;           /* ~ gray-100 */
+    --sb-thumb: #8b5cf6;           /* primary-500 */
+    --sb-thumb-border: #000000;    /* borda p/ contraste no claro */
+    --sb-width: 8px;               /* ajuste a gosto */
+    --sb-radius: 6px;
+  }
+  html.dark {
+    /* DARK */
+    --sb-track: #2b2b2b;           /* fundo escuro do track */
+    --sb-thumb: #8b5cf6;           /* mantém sua cor "primary" */
+    --sb-thumb-border: #ffffff;    /* borda p/ contraste no escuro */
+  }
+
+  /* --------- Firefox --------- */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--sb-thumb) var(--sb-track);
+  }
+
+  /* --------- WebKit (Chrome/Edge/Safari/Opera) --------- */
+  *::-webkit-scrollbar {
+    width: var(--sb-width);
+    height: var(--sb-width);
+  }
+  *::-webkit-scrollbar-track {
+    background: var(--sb-track);
+  }
+  *::-webkit-scrollbar-thumb {
+    background: var(--sb-thumb);
+    border-radius: var(--sb-radius);
+    border: 1px solid var(--sb-thumb-border);
+  }
+</style>
+
+<script>
+  // Mantém o tema em localStorage e respeita o prefers-color-scheme no primeiro acesso
+  (function () {
+    const KEY = 'theme';
+    const root = document.documentElement;
+    const stored = localStorage.getItem(KEY);
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (stored === 'dark' || (!stored && prefersDark)) {
+      root.classList.add('dark');
+    } else if (stored === 'light') {
+      root.classList.remove('dark');
+    }
+    // Se não houver nada salvo e não preferir dark, fica no claro por padrão
+    window.toggleTheme = function () {
+      const isDark = root.classList.toggle('dark');
+      localStorage.setItem(KEY, isDark ? 'dark' : 'light');
+    };
+  })();
+</script>
