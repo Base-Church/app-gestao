@@ -27,10 +27,13 @@ class EventManager {
     createEventoCard(evento, dateStr) {
         const card = document.createElement('div');
         
+        // Obter cor baseada na primeira letra do nome
+        const borderColor = this.getColorByFirstLetter(evento.nome);
+        
         card.className = `
             bg-white dark:bg-gray-700 rounded-lg border p-2 text-xs group
             hover:shadow-md transition-all cursor-grab evento-card
-            ${evento.tipo === 'culto' ? 'border-l-4 border-l-purple-500' : 'border-l-4 border-l-blue-500'}
+            border-l-4 ${borderColor}
         `.trim();
 
         card.dataset.eventoId = evento.id;
@@ -76,82 +79,84 @@ class EventManager {
         return card;
     }
 
-    adicionarEventoAoCalendario(evento, dateStr) {
-        console.log('adicionarEventoAoCalendario chamado:', { eventoId: evento.id, dateStr });
+    getColorByFirstLetter(nome) {
+        if (!nome) return 'border-l-gray-500';
         
+        const firstLetter = nome.charAt(0).toUpperCase();
+        
+        const colorMap = {
+            'A': 'border-l-red-500',
+            'B': 'border-l-blue-500', 
+            'C': 'border-l-green-500',
+            'D': 'border-l-yellow-500',
+            'E': 'border-l-purple-500',
+            'F': 'border-l-pink-500',
+            'G': 'border-l-indigo-500',
+            'H': 'border-l-orange-500',
+            'I': 'border-l-teal-500',
+            'J': 'border-l-cyan-500',
+            'K': 'border-l-lime-500',
+            'L': 'border-l-emerald-500',
+            'M': 'border-l-rose-500',
+            'N': 'border-l-violet-500',
+            'O': 'border-l-amber-500',
+            'P': 'border-l-sky-500',
+            'Q': 'border-l-slate-500',
+            'R': 'border-l-red-600',
+            'S': 'border-l-blue-600',
+            'T': 'border-l-green-600',
+            'U': 'border-l-yellow-600',
+            'V': 'border-l-purple-600',
+            'W': 'border-l-pink-600',
+            'X': 'border-l-indigo-600',
+            'Y': 'border-l-orange-600',
+            'Z': 'border-l-teal-600'
+        };
+        
+        return colorMap[firstLetter] || 'border-l-gray-500';
+    }
+
+    adicionarEventoAoCalendario(evento, dateStr) {
         if (!this.calendar.eventosAgendados.has(dateStr)) {
             this.calendar.eventosAgendados.set(dateStr, []);
         }
         
         const eventosNaData = this.calendar.eventosAgendados.get(dateStr);
-        
-        // REMOVER verificação de duplicata para permitir movimentação
-        // A verificação será feita no DragDropManager antes de chamar este método
-        
         eventosNaData.push({ ...evento });
-        console.log('Evento adicionado aos dados:', { dateStr, totalEventos: eventosNaData.length });
-        
-        // Re-renderizar IMEDIATAMENTE com base na vista atual
-        if (this.calendar.currentView === 'week') {
-            // No modo semana, forçar refresh completo
-            this.calendar.refreshWeekEvents();
-        } else {
-            // No modo mês, renderizar apenas a data específica
-            this.renderEventosNaData(dateStr);
-        }
         
         this.salvarEventosDoDia(dateStr);
+        
+        // Simplesmente re-renderizar a vista atual
+        if (this.calendar.currentView === 'week') {
+            this.calendar.renderWeekView();
+        } else {
+            this.calendar.renderCalendarGrid();
+        }
+        
         return true;
     }
 
     removerEventoDoCalendario(eventoId, dateStr) {
-        console.log('removerEventoDoCalendario chamado:', { eventoId, dateStr });
-        
         if (this.calendar.eventosAgendados.has(dateStr)) {
             const eventosNaData = this.calendar.eventosAgendados.get(dateStr);
             const index = eventosNaData.findIndex(e => e.id == eventoId);
             
             if (index > -1) {
                 eventosNaData.splice(index, 1);
-                console.log('Evento removido dos dados:', { dateStr, totalEventos: eventosNaData.length });
+                this.salvarEventosDoDia(dateStr);
                 
-                // Re-renderizar com base na vista atual
+                // Simplesmente re-renderizar a vista atual
                 if (this.calendar.currentView === 'week') {
-                    // No modo semana, forçar refresh completo
-                    this.calendar.refreshWeekEvents();
+                    this.calendar.renderWeekView();
                 } else {
-                    // No modo mês, renderizar apenas a data específica
-                    this.renderEventosNaData(dateStr);
+                    this.calendar.renderCalendarGrid();
                 }
                 
-                this.salvarEventosDoDia(dateStr);
                 return true;
             }
         }
-        console.log('Evento não encontrado para remoção:', { eventoId, dateStr });
-        return false;
-    }
-
-    renderEventosNaData(dateStr) {
-        const dropZone = document.querySelector(`.drop-zone[data-date="${dateStr}"]`);
-        console.log('renderEventosNaData:', { dateStr, dropZoneFound: !!dropZone, currentView: this.calendar.currentView });
         
-        if (dropZone) {
-            // Limpar container antes de re-renderizar
-            dropZone.innerHTML = '';
-            this.renderEventosNoDia(dropZone, dateStr);
-            console.log('✓ Eventos renderizados para', dateStr);
-        } else {
-            console.error('✗ Drop zone não encontrada para', dateStr);
-            
-            // Se não encontrou drop zone na vista semanal, forçar re-renderização completa
-            if (this.calendar.currentView === 'week') {
-                console.log('Drop zone não encontrada - re-renderizando vista semanal...');
-                setTimeout(() => {
-                    this.calendar.refreshWeekEvents();
-                }, 10);
-            }
-        }
+        return false;
     }
 
     async salvarEventosDoDia(dateStr) {
@@ -167,7 +172,6 @@ class EventManager {
             await api.salvarEventosDoDia(mes, organizacaoId, dateStr, eventoIds);
             
         } catch (error) {
-            console.error('Erro ao salvar eventos do dia:', error);
         }
     }
 }

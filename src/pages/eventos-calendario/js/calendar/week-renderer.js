@@ -16,33 +16,6 @@ class WeekRenderer {
             const dayColumn = this.createWeekDayColumn(date);
             weekContainer.appendChild(dayColumn);
         }
-        
-        // Renderizar eventos imediatamente após criação das colunas
-        this.refreshWeekEvents();
-    }
-
-    refreshWeekEvents() {
-        console.log('refreshWeekEvents chamado - re-renderizando todos os eventos da semana');
-        for (let i = 0; i < 7; i++) {
-            const date = new Date(this.calendar.currentWeekStart);
-            date.setDate(date.getDate() + i);
-            const dateStr = this.calendar.formatDateKey(date);
-            
-            const eventsContainer = document.querySelector(`.drop-zone[data-date="${dateStr}"]`);
-            if (eventsContainer) {
-                console.log(`Re-renderizando eventos para ${dateStr}`);
-                // Limpar container antes de re-renderizar
-                eventsContainer.innerHTML = '';
-                this.calendar.eventManager.renderEventosNoDia(eventsContainer, dateStr);
-            } else {
-                console.log(`Drop zone não encontrada para ${dateStr}`);
-            }
-        }
-        
-        // Atualizar drag-drop após re-renderização
-        if (window.app && window.app.dragDrop) {
-            window.app.dragDrop.updateDropZones();
-        }
     }
 
     createWeekDayColumn(date) {

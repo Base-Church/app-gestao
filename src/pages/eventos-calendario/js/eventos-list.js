@@ -49,9 +49,14 @@ class EventosList {
 
     createEventoCard(evento) {
         const card = document.createElement('div');
+        
+        // Obter cor baseada na primeira letra do nome
+        const borderColor = this.getColorByFirstLetter(evento.nome);
+        
         card.className = `
             bg-white dark:bg-gray-700 rounded-lg border p-2 cursor-grab 
             hover:shadow-md transition-all text-xs
+            border-l-4 ${borderColor}
         `.trim();
         
         card.dataset.eventoId = evento.id;
@@ -99,6 +104,43 @@ class EventosList {
         card.appendChild(tempo);
 
         return card;
+    }
+
+    getColorByFirstLetter(nome) {
+        if (!nome) return 'border-l-gray-500';
+        
+        const firstLetter = nome.charAt(0).toUpperCase();
+        
+        const colorMap = {
+            'A': 'border-l-red-500',
+            'B': 'border-l-blue-500', 
+            'C': 'border-l-green-500',
+            'D': 'border-l-yellow-500',
+            'E': 'border-l-purple-500',
+            'F': 'border-l-pink-500',
+            'G': 'border-l-indigo-500',
+            'H': 'border-l-orange-500',
+            'I': 'border-l-teal-500',
+            'J': 'border-l-cyan-500',
+            'K': 'border-l-lime-500',
+            'L': 'border-l-emerald-500',
+            'M': 'border-l-rose-500',
+            'N': 'border-l-violet-500',
+            'O': 'border-l-amber-500',
+            'P': 'border-l-sky-500',
+            'Q': 'border-l-slate-500',
+            'R': 'border-l-red-600',
+            'S': 'border-l-blue-600',
+            'T': 'border-l-green-600',
+            'U': 'border-l-yellow-600',
+            'V': 'border-l-purple-600',
+            'W': 'border-l-pink-600',
+            'X': 'border-l-indigo-600',
+            'Y': 'border-l-orange-600',
+            'Z': 'border-l-teal-600'
+        };
+        
+        return colorMap[firstLetter] || 'border-l-gray-500';
     }
 
     formatDiaSemana(dia) {

@@ -130,16 +130,13 @@ class DragDropManager {
     forceViewRefresh() {
         setTimeout(() => {
             if (this.calendar.currentView === 'week') {
-                console.log('Forçando refresh da vista semanal');
-                // Simular clique no botão view-week para forçar atualização
-                const viewWeekBtn = document.getElementById('view-week');
-                if (viewWeekBtn) {
-                    viewWeekBtn.click();
-                }
+                this.calendar.renderWeekView();
             } else {
-                console.log('Forçando refresh da vista mensal');
                 this.calendar.renderCalendarGrid();
             }
+            
+            // Garantir que as drop zones sejam atualizadas após a renderização
+            this.updateDropZones();
         }, 50); // Pequeno delay para garantir que os dados foram atualizados
     }
 }

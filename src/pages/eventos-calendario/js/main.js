@@ -1,7 +1,6 @@
 class EventosCalendarioApp {
     constructor() {
         if (!window.USER) {
-            console.error('Erro: USER não encontrado');
             return;
         }
 
@@ -72,7 +71,6 @@ class EventosCalendarioApp {
                 }
                 this.calendar.eventosAgendados = eventosMap;
             } catch (error) {
-                console.log('Nenhum evento agendado encontrado ou erro ao carregar:', error.message);
                 // Não exibir erro para o usuário, apenas criar o Map vazio
                 this.calendar.eventosAgendados = new Map();
             }
@@ -80,7 +78,6 @@ class EventosCalendarioApp {
             this.calendar.render();
 
         } catch (error) {
-            console.error('Erro ao carregar dados iniciais:', error);
             this.ui.showError(error.message);
         } finally {
             this.ui.showLoading(false);
