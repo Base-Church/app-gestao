@@ -5,11 +5,11 @@ $pageTitle = "Escalas";
 // Incluir o header
 require_once __DIR__ . '/../../../components/layout/header.php';
 ?>
-<div class="sm:ml-64">
+<div class="ml-64">
     <div class="p-2 sm:p-4 border-gray-200 rounded-lg dark:border-gray-700 mt-14">
         <div class="space-y-6">
             <!-- Cabeçalho da Escala -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
                 <!-- Header com título e status -->
                 <div class="bg-gradient-to-r from-primary-600 to-primary-700 p-6">
                     <div class="flex flex-wrap justify-between items-center">
@@ -101,6 +101,9 @@ require_once __DIR__ . '/../../../components/layout/header.php';
     </div>
 </div>
 
+<!-- Off Canvas Global -->
+<?php require_once __DIR__ . '/components/global-offcanvas.php'; ?>
+
 <style>
     @import url('<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/css/animacoes.escala.css');
      @import url('<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/css/datepicker.custom.css');
@@ -114,6 +117,7 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 
 <!-- Geral -->
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/api.service.js?v=<?= date('Ymd') ?>"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/offcanvas/offcanvas.service.js?v=<?= date('Ymd') ?>"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/cabecalho/cabecalho.service.js?v=<?= date('Ymd') ?>"></script>
 
 <!-- Eventos -->
