@@ -3,8 +3,8 @@ $pageTitle = "Processos e Etapas";
 require_once __DIR__ . '/../../components/layout/header.php';
 ?>
 
-<main class="mt-24 lg:ml-64 px-6 pb-8">
-    <div class="max-w-7xl mx-auto">
+<main class="with-sidebar mt-24 px-6 pb-8 dark:bg-gray-900">
+  <div class="max-w-8xl mx-auto">
         <!-- Cabeçalho -->
         <div class="mb-8 flex items-center justify-between">
             <div>

@@ -3,8 +3,8 @@ $pageTitle = "Configurações";
 require_once __DIR__ . '/../../components/layout/header.php';
 ?>
 
-<main class="mt-24 lg:ml-64 pb-8">
-    <div class="max-w-7xl mx-auto">
+<main class="with-sidebar mt-24 px-6 pb-8 dark:bg-gray-900">
+  <div class="max-w-8xl mx-auto">
         <!-- Cabeçalho -->
         <div class="px-6 mb-6">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Configurações</h1>

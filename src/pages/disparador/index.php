@@ -1,24 +1,13 @@
 <?php
-require_once __DIR__ . '/../../../vendor/autoload.php';
-require_once __DIR__ . '/../../../config/auth/session.service.php';
+// Configurações da página
+$pageTitle = "Disparador";
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
-$dotenv->load();
-
-SessionService::start();
-
-// Verificar se o usuário está logado
-if (!SessionService::isLoggedIn()) {
-    header('Location: ' . $_ENV['URL_BASE'] . '/login');
-    exit;
-}
-
-$pageTitle = "Disparador de Mensagens";
+// Incluir o header
 require_once __DIR__ . '/../../components/layout/header.php';
 ?>
 
-<div class="sm:ml-64">
-    <div class="p-4 sm:p-6 border-gray-200 rounded-lg dark:border-gray-700 mt-14">
+<main class="with-sidebar mt-24 px-6 pb-8 dark:bg-gray-900">
+  <div class="max-w-8xl mx-auto">
         <!-- Header -->
         <div class="mb-8">
             <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Disparador de Mensagens</h1>
@@ -199,7 +188,7 @@ require_once __DIR__ . '/../../components/layout/header.php';
             </div>
         </div>
     </div>
-</div>
+</main>
 
 <!-- Script para carregar dados dinâmicos -->
 <script src="<?php echo $_ENV['URL_BASE']; ?>/src/pages/disparador/js/home.js"></script>

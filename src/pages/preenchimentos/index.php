@@ -6,8 +6,8 @@ $pageTitle = "Preenchimentos";
 require_once __DIR__ . '/../../components/layout/header.php';
 ?>
 
-<main class="mt-24 lg:ml-64 px-6 pb-8">
-    <div class="max-w-7xl mx-auto">
+<main class="with-sidebar mt-24 px-6 pb-8 dark:bg-gray-900">
+  <div class="max-w-8xl mx-auto">
         <!-- Cabeçalho da Página -->
         <div class="sm:flex sm:items-center sm:justify-between mb-8">
             <div>

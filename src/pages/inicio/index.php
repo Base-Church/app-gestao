@@ -7,8 +7,10 @@ require_once __DIR__ . '/../../components/layout/header.php';
 ?>
 
 
-<main class="mt-24 lg:ml-64 px-6 pb-8 dark:bg-gray-900">
-    <div class="max-w-7xl mx-auto">
+
+<main class="with-sidebar mt-24 px-6 pb-8 dark:bg-gray-900">
+  <div class="max-w-7xl mx-auto">
+
         <!-- Hero Section do Ministério -->
         <div id="ministerio-hero" class="relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 mb-8">
             <div class="relative px-4 py-4 sm:px-8 sm:py-12">
