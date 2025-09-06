@@ -19,11 +19,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES)) {
 function handleFileUpload() {
     header('Content-Type: application/json');
     
+    // Carrega variáveis de ambiente
+    $urlBase = $_ENV['URL_BASE'] ?? ($_SERVER['URL_BASE'] ?? '');
+    
     try {
         // Obter configurações do upload via POST
         $uploadType = $_POST['upload_type'] ?? 'default';
         $uploadPath = $_POST['upload_path'] ?? 'assets/uploads';
         $filePrefix = $_POST['file_prefix'] ?? 'file';
+        $customFilename = $_POST['custom_filename'] ?? null;
+        $overwrite = isset($_POST['overwrite']) && $_POST['overwrite'] === 'true';
         $allowedTypes = isset($_POST['allowed_types']) ? explode(',', $_POST['allowed_types']) : ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         $maxSize = isset($_POST['max_size']) ? (int)$_POST['max_size'] : 10 * 1024 * 1024; // 10MB padrão
         
@@ -55,7 +60,18 @@ function handleFileUpload() {
         
         // Gerar nome único para o arquivo
         $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $filename = $filePrefix . '_' . uniqid() . '.' . $extension;
+        
+        if ($customFilename) {
+            // Usar nome personalizado se fornecido
+            $filename = $customFilename;
+            // Garantir que tem extensão
+            if (!pathinfo($filename, PATHINFO_EXTENSION)) {
+                $filename .= '.jpg'; // Default para .jpg se não especificado
+            }
+        } else {
+            // Gerar nome único padrão
+            $filename = $filePrefix . '_' . uniqid() . '.' . $extension;
+        }
         
         // Construir caminho completo
         $fullUploadPath = __DIR__ . '/../' . $uploadPath . '/' . $filename;
@@ -64,6 +80,16 @@ function handleFileUpload() {
         $uploadDir = dirname($fullUploadPath);
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);
+        }
+        
+        // Verificar se o arquivo já existe e se deve sobrescrever
+        if (file_exists($fullUploadPath) && !$overwrite) {
+            throw new Exception('Arquivo já existe e sobrescrita não foi permitida');
+        }
+        
+        // Remover arquivo existente se sobrescrita for permitida
+        if (file_exists($fullUploadPath) && $overwrite) {
+            unlink($fullUploadPath);
         }
         
         // Mover arquivo temporário

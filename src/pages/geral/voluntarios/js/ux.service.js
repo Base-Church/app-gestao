@@ -31,17 +31,13 @@ export class UXService {
         const whatsapp = this.formatWhatsApp(voluntario.whatsapp);
         const statusBadge = this.getStatusBadge(voluntario.status, voluntario.onboarding);
 
-        // Função para fallback da imagem
+        // Imagem: usa o caminho local se houver id, senão usa foto existente ou placeholder
         const imgId = `vol-img-${voluntario.id}`;
-        let fotoHtml = `<div class="h-14 w-14 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center border-2 border-gray-200 dark:border-gray-600">
-            <span class="text-lg font-semibold text-gray-700 dark:text-gray-200">${inicial}</span>
-        </div>`;
-        if (voluntario.foto) {
-            fotoHtml = `<img src="${voluntario.foto}" alt="${voluntario.nome}" id="${imgId}" class="h-14 w-14 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-                <div style="display:none" class="h-14 w-14 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center border-2 border-gray-200 dark:border-gray-600">
-                    <span class="text-lg font-semibold text-gray-700 dark:text-gray-200">${inicial}</span>
-                </div>`;
-        }
+        let imgPath = voluntario.id ? `${window.APP_CONFIG.baseUrl}/assets/img/voluntarios/${voluntario.id}.jpg` : (voluntario.foto || `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`);
+        let fotoHtml = `<img src="${imgPath}" alt="${voluntario.nome}" id="${imgId}" class="h-14 w-14 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+            <div style="display:none" class="h-14 w-14 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center border-2 border-gray-200 dark:border-gray-600">
+                <span class="text-lg font-semibold text-gray-700 dark:text-gray-200">${inicial}</span>
+            </div>`;
 
         // Mostra ministérios com foto
         let ministeriosHtml = '';

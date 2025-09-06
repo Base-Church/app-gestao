@@ -346,9 +346,10 @@
         if (voluntariosList) {
             voluntariosList.innerHTML = voluntariosEscalados.length
                 ? voluntariosEscalados.map(v => {
+                    const imgPath = v.id ? `${window.APP_CONFIG.baseUrl}/assets/img/voluntarios/${v.id}.jpg` : (v.foto || v.img || `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`);
                     return `
                     <div class="voluntario-card flex items-center gap-3 p-3 rounded bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 transition-all">
-                        <img src="${v.foto || v.img || `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`}" 
+                        <img src="${imgPath}" 
                              class="w-12 h-12 rounded-full object-cover flex-shrink-0" 
                              alt="${v.nome || 'Voluntário'}"
                              onerror="this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
@@ -358,7 +359,7 @@
                                 <button class="ver-eventos-voluntario text-xs px-2 py-1 bg-primary-100 hover:bg-primary-200 dark:bg-primary-800 dark:hover:bg-primary-700 text-primary-700 dark:text-primary-200 rounded transition flex-shrink-0" 
                                         data-voluntario-id="${v.id}"
                                         data-voluntario-nome="${v.nome}"
-                                        data-voluntario-foto="${v.foto || v.img || `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`}"
+                                        data-voluntario-foto="${imgPath}"
                                         data-voluntario-eventos='${JSON.stringify(v.eventos)}'>
                                     Ver eventos
                                 </button>
@@ -446,9 +447,11 @@
         const foraVoluntariosList = modalDiv.querySelector('#fora-voluntarios-list');
         if (foraVoluntariosList) {
             foraVoluntariosList.innerHTML = voluntariosFora.length
-                ? voluntariosFora.map(v => `
+                ? voluntariosFora.map(v => {
+                    const imgPath = v.id ? `${window.APP_CONFIG.baseUrl}/assets/img/voluntarios/${v.id}.jpg` : (v.foto || v.img || `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`);
+                    return `
                     <div class="voluntario-card flex items-center gap-3 p-2 rounded bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
-                        <img src="${v.foto || v.img || `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`}" 
+                        <img src="${imgPath}" 
                              class="w-10 h-10 rounded-full object-cover" 
                              alt="${v.nome || 'Voluntário'}"
                              onerror="this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
@@ -456,7 +459,8 @@
                             <div class="font-semibold text-gray-900 dark:text-gray-100">${v.nome}</div>
                         </div>
                     </div>
-                `).join('')
+                    `;
+                }).join('')
                 : '<div class="text-gray-400 dark:text-gray-500">Nenhum voluntário fora da escala</div>';
         }
 

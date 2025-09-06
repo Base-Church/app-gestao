@@ -49,6 +49,15 @@ class AniversariantesPage {
         `;
     }
 
+    getVoluntarioImageUrl(voluntario) {
+        // Se tem ID, usa o padrão assets/img/voluntarios/{id}.jpg
+        if (voluntario.id) {
+            return `${window.APP_CONFIG.baseUrl}/assets/img/voluntarios/${voluntario.id}.jpg`;
+        }
+        // Fallback para foto existente ou placeholder
+        return voluntario.foto || `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`;
+    }
+
     renderCard(v, destaque = false) {
         const cardClass = destaque 
             ? 'border-2 border-primary-500 bg-primary-50/50 dark:bg-primary-900/20' 
@@ -59,8 +68,9 @@ class AniversariantesPage {
             <div class="p-4">
                 <div class="flex items-center gap-4">
                 <img class="h-16 w-16 rounded-lg object-cover" 
-                     src="${v.foto || window.APP_CONFIG.baseUrl + '/assets/img/placeholder.jpg'}" 
-                     alt="${v.nome}">
+                     src="${this.getVoluntarioImageUrl(v)}" 
+                     alt="${v.nome}"
+                     onerror="this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
                 <div class="flex-1 min-w-0">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                     ${v.nome}

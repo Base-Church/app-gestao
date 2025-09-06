@@ -1,3 +1,12 @@
+function getVoluntarioImageUrl(voluntario) {
+    // Se tem ID, usa o padrão assets/img/voluntarios/{id}.jpg
+    if (voluntario.id) {
+        return `${window.APP_CONFIG.baseUrl}/assets/img/voluntarios/${voluntario.id}.jpg`;
+    }
+    // Fallback para foto existente ou placeholder
+    return voluntario.foto || `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`;
+}
+
 const loading = document.getElementById('relatorio-loading');
 const erro = document.getElementById('relatorio-erro');
 const relatorioDiv = document.getElementById('relatorio-geral');
@@ -155,7 +164,11 @@ function renderListagem(voluntarios) {
         <div class="flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700">
             <div class="flex items-center space-x-3">
                 <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
-                    ${v.foto ? `<img src="${v.foto}" alt="${v.nome}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-gray-400">👤</div>`}
+                    <img src="${getVoluntarioImageUrl(v)}" 
+                         alt="${v.nome}" 
+                         class="w-full h-full object-cover"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                    <div class="w-full h-full flex items-center justify-center text-gray-400" style="display:none">👤</div>
                 </div>
                 <div>
                     <div class="text-sm font-medium text-gray-900 dark:text-white">${v.nome}</div>

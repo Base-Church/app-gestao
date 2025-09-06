@@ -40,14 +40,22 @@ export class SyncService {
                     // Busca foto do perfil
                     const profileData = await this.getProfilePicture(numero);
                     if (profileData?.profilePictureUrl) {
-                        // Atualiza a foto do voluntário
-                        await this.updateVoluntarioFoto(
-                            voluntario.id,
-                            profileData.profilePictureUrl
+                        // Baixa e faz upload da imagem
+                        const uploadResult = await this.downloadAndUploadImage(
+                            profileData.profilePictureUrl,
+                            voluntario.id
                         );
                         
-                        // Atualiza o objeto local
-                        voluntario.foto = profileData.profilePictureUrl;
+                        if (uploadResult?.path) {
+                            // Atualiza a foto do voluntário com o caminho local
+                            await this.updateVoluntarioFoto(
+                                voluntario.id,
+                                uploadResult.path
+                            );
+                            
+                            // Atualiza o objeto local
+                            voluntario.foto = uploadResult.path;
+                        }
                     }
                 } catch (error) {
                     console.error(`Erro ao processar voluntário ${voluntario.nome}:`, error);
@@ -88,7 +96,7 @@ export class SyncService {
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
-                        'token': '0dd7e611-a560-4b44-bf24-f1fcd65f4613'
+                        'token': 'f82befc6-1412-4250-8c05-dba33ed29e0d'
                     },
                     body: JSON.stringify({ 
                         number: number.replace('@s.whats', ''), // Remove @s.whats pois a nova API não precisa
@@ -116,6 +124,135 @@ export class SyncService {
         } catch (error) {
             console.error('Erro ao buscar foto:', error);
             throw error;
+        }
+    }
+
+    async downloadAndUploadImage(imageUrl, voluntarioId) {
+        try {
+            console.log('Baixando imagem:', imageUrl);
+            
+            // Verifica se já existe uma imagem local e se deve atualizar
+            const existingImagePath = `assets/img/voluntarios/${voluntarioId}.jpg`;
+            const shouldUpdate = await this.shouldUpdateImage(existingImagePath);
+            
+            if (!shouldUpdate) {
+                console.log(`Imagem já existe para voluntário ${voluntarioId}, pulando download`);
+                return { path: existingImagePath };
+            }
+            
+            // Faz o download da imagem
+            const response = await fetch(imageUrl, {
+                mode: 'cors',
+                credentials: 'omit',
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Erro ao baixar a imagem: ${response.status} ${response.statusText}`);
+            }
+            
+            const blob = await response.blob();
+            
+            // Verifica se o blob não está vazio
+            if (blob.size === 0) {
+                throw new Error('Imagem vazia recebida');
+            }
+            
+            // Verifica se é realmente uma imagem
+            if (!blob.type.startsWith('image/')) {
+                throw new Error(`Tipo de arquivo inválido: ${blob.type}`);
+            }
+            
+            // Cria FormData para enviar para o upload.service.php
+            const formData = new FormData();
+            formData.append('voluntario_image', blob, `${voluntarioId}.jpg`);
+            formData.append('upload_type', 'voluntario_image');
+            formData.append('upload_path', 'assets/img/voluntarios');
+            formData.append('file_prefix', voluntarioId.toString());
+            formData.append('custom_filename', `${voluntarioId}.jpg`);
+            formData.append('allowed_types', 'image/jpeg,image/png,image/gif,image/webp');
+            formData.append('max_size', '10485760'); // 10MB
+            formData.append('overwrite', 'true'); // Permite sobrescrever arquivo existente
+            
+            console.log('Enviando para upload.service.php...');
+            
+            // Envia para o serviço de upload
+            const uploadResponse = await fetch(`${window.APP_CONFIG.baseUrl}/config/upload.service.php`, {
+                method: 'POST',
+                body: formData
+            });
+            
+            // Tenta obter o texto da resposta primeiro
+            const responseText = await uploadResponse.text();
+            console.log('Resposta do upload (texto):', responseText);
+            
+            if (!uploadResponse.ok) {
+                console.error('Erro no upload:', responseText);
+                throw new Error(`Erro ao fazer upload da imagem: ${uploadResponse.status}`);
+            }
+            
+            // Tenta parsear como JSON, removendo warnings PHP se existirem
+            let uploadResult;
+            try {
+                // Remove warnings PHP que podem aparecer antes do JSON
+                const jsonStart = responseText.indexOf('{');
+                const cleanJson = jsonStart >= 0 ? responseText.substring(jsonStart) : responseText;
+                uploadResult = JSON.parse(cleanJson);
+            } catch (parseError) {
+                console.error('Erro ao parsear JSON:', parseError);
+                console.error('Resposta recebida:', responseText);
+                
+                // Tenta extrair JSON mesmo com warnings
+                const jsonMatch = responseText.match(/\{.*\}/s);
+                if (jsonMatch) {
+                    try {
+                        uploadResult = JSON.parse(jsonMatch[0]);
+                    } catch (secondError) {
+                        throw new Error('Resposta inválida do servidor de upload');
+                    }
+                } else {
+                    throw new Error('Resposta inválida do servidor de upload');
+                }
+            }
+            
+            console.log('Resultado do upload:', uploadResult);
+            
+            if (!uploadResult.success) {
+                throw new Error(uploadResult.error || 'Erro desconhecido no upload');
+            }
+            
+            // Retorna o resultado com o caminho correto
+            return {
+                ...uploadResult,
+                path: `assets/img/voluntarios/${voluntarioId}.jpg`
+            };
+            
+        } catch (error) {
+            console.error('Erro ao baixar e fazer upload da imagem:', error);
+            throw error;
+        }
+    }
+
+    async shouldUpdateImage(imagePath) {
+        try {
+            // Verifica se a imagem já existe fazendo uma requisição HEAD
+            const response = await fetch(`${window.APP_CONFIG.baseUrl}/${imagePath}`, {
+                method: 'HEAD'
+            });
+            
+            if (response.ok) {
+                // Se existe, verifica a data de modificação (opcional - por ora sempre atualiza)
+                // Por enquanto, sempre retorna true para atualizar
+                return true;
+            }
+            
+            // Se não existe, precisa baixar
+            return true;
+        } catch (error) {
+            // Em caso de erro, assume que precisa baixar
+            return true;
         }
     }
 

@@ -133,10 +133,10 @@ class VoluntariosComponentesService {
         const displayStatus = voluntario.statusLabel || '';
         const statusClass = statusMap[displayStatus] || 'bg-gray-100 text-gray-700 border-gray-300';
 
-        // Foto: usa a URL se existir, senão placeholder, e fallback para placeholder se erro
-        const imagemPath = voluntario.foto
-            ? voluntario.foto
-            : `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`;
+        // Foto: usa o caminho local se houver id, senão usa foto existente ou placeholder
+        const imagemPath = voluntario.id
+            ? `${window.APP_CONFIG.baseUrl}/assets/img/voluntarios/${voluntario.id}.jpg`
+            : (voluntario.foto ? voluntario.foto : `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`);
 
         // Adiciona indicador se está sendo selecionado
         const selectingIndicator = voluntario.isBeingSelected ? `
