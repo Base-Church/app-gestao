@@ -87,7 +87,8 @@ class FormElements {
                 defaultProps: {
                     label: 'Escolha uma opção',
                     required: false,
-                    options: Array.from({length: 3}).map((_, i) => ({
+                    allowOther: false,
+                    options: () => Array.from({length: 3}).map((_, i) => ({
                         id: 'opt_' + Math.random().toString(36).substr(2, 9),
                         label: `Opção ${i + 1}`
                     })),
@@ -103,13 +104,27 @@ class FormElements {
                             ${(props.options && Array.isArray(props.options) ? props.options : []).map((option, index) => `
                                 <div class="flex items-center">
                                     <input type="radio" 
-                                           id="${id}_option_${index}" 
+                                           id="${id}_${option.id || 'option_' + index}" 
                                            name="${id}" 
                                            value="${option.id || option.value || ''}"
                                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600">
-                                    <label for="${id}_option_${index}" class="ml-2 text-sm text-gray-700 dark:text-gray-300">${option.label || option.text || 'Opção'}</label>
+                                    <label for="${id}_${option.id || 'option_' + index}" class="ml-2 text-sm text-gray-700 dark:text-gray-300">${option.label || option.text || 'Opção'}</label>
                                 </div>
                             `).join('')}
+                            ${props.allowOther ? `
+                                <div class="flex items-center">
+                                    <input type="radio" 
+                                           id="${id}_other" 
+                                           name="${id}" 
+                                           value="other"
+                                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600">
+                                    <label for="${id}_other" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Outro</label>
+                                    <input type="text" 
+                                           name="${id}_other_text" 
+                                           placeholder="Especifique..."
+                                           class="ml-2 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                </div>
+                            ` : ''}
                         </div>
                         ${props.helpText ? `<p class="mt-2 text-sm text-gray-500 dark:text-gray-400">${props.helpText}</p>` : ''}
                     </div>
@@ -123,7 +138,8 @@ class FormElements {
                 defaultProps: {
                     label: 'Selecione uma opção',
                     required: false,
-                    options: Array.from({length: 3}).map((_, i) => ({
+                    allowOther: false,
+                    options: () => Array.from({length: 3}).map((_, i) => ({
                         id: 'opt_' + Math.random().toString(36).substr(2, 9),
                         label: `Opção ${i + 1}`
                     })),
@@ -141,7 +157,15 @@ class FormElements {
                                 ${props.required ? 'required' : ''}>
                             <option value="">${props.placeholder}</option>
                             ${(props.options && Array.isArray(props.options) ? props.options : []).map(option => `<option value="${option.id || option.value || ''}">${option.label || option.text || 'Opção'}</option>`).join('')}
+                            ${props.allowOther ? `<option value="other">Outro</option>` : ''}
                         </select>
+                        ${props.allowOther ? `
+                            <input type="text" 
+                                   name="${id}_other_text" 
+                                   placeholder="Especifique..."
+                                   class="mt-2 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm"
+                                   style="display: none;">
+                        ` : ''}
                         ${props.helpText ? `<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">${props.helpText}</p>` : ''}
                     </div>
                 `
@@ -154,7 +178,8 @@ class FormElements {
                 defaultProps: {
                     label: 'Marque as opções',
                     required: false,
-                    options: Array.from({length: 3}).map((_, i) => ({
+                    allowOther: false,
+                    options: () => Array.from({length: 3}).map((_, i) => ({
                         id: 'opt_' + Math.random().toString(36).substr(2, 9),
                         label: `Opção ${i + 1}`
                     })),
@@ -170,13 +195,27 @@ class FormElements {
                             ${(props.options && Array.isArray(props.options) ? props.options : []).map((option, index) => `
                                 <div class="flex items-center">
                                     <input type="checkbox" 
-                                           id="${id}_option_${index}" 
+                                           id="${id}_${option.id || 'option_' + index}" 
                                            name="${id}[]" 
                                            value="${option.id || option.value || ''}"
                                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
-                                    <label for="${id}_option_${index}" class="ml-2 text-sm text-gray-700 dark:text-gray-300">${option.label || option.text || 'Opção'}</label>
+                                    <label for="${id}_${option.id || 'option_' + index}" class="ml-2 text-sm text-gray-700 dark:text-gray-300">${option.label || option.text || 'Opção'}</label>
                                 </div>
                             `).join('')}
+                            ${props.allowOther ? `
+                                <div class="flex items-center">
+                                    <input type="checkbox" 
+                                           id="${id}_other" 
+                                           name="${id}[]" 
+                                           value="other"
+                                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                                    <label for="${id}_other" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Outro</label>
+                                    <input type="text" 
+                                           name="${id}_other_text" 
+                                           placeholder="Especifique..."
+                                           class="ml-2 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                </div>
+                            ` : ''}
                         </div>
                         ${props.helpText ? `<p class="mt-2 text-sm text-gray-500 dark:text-gray-400">${props.helpText}</p>` : ''}
                     </div>

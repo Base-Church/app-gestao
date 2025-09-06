@@ -501,6 +501,11 @@ class PropertiesManager {
                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">${element.props.helpText || ''}</textarea>
                 </div>
                 <div class="flex items-center">
+                    <input type="checkbox" id="prop-allowOther" ${element.props.allowOther ? 'checked' : ''} 
+                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                    <label for="prop-allowOther" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Permitir opção "Outro"</label>
+                </div>
+                <div class="flex items-center">
                     <input type="checkbox" id="prop-required" ${element.props.required ? 'checked' : ''} 
                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
                     <label for="prop-required" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Campo obrigatório</label>

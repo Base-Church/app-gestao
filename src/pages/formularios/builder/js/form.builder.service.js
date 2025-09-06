@@ -118,10 +118,18 @@ class FormBuilder {
         // Gerar ID único e aleatório
         const randomId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
         
+        // Clonar as propriedades padrão e executar funções se necessário
+        const defaultProps = { ...elementConfig.defaultProps };
+        
+        // Se options for uma função, executá-la para gerar opções únicas
+        if (typeof defaultProps.options === 'function') {
+            defaultProps.options = defaultProps.options();
+        }
+        
         const element = {
             id: `element_${randomId}`,
             type: elementType,
-            props: { ...elementConfig.defaultProps }
+            props: defaultProps
         };
 
         if (position !== null && position >= 0 && position <= this.formElements.length) {
@@ -323,6 +331,12 @@ class FormBuilder {
                             : { id: 'op' + Math.random().toString(36).substr(2, 6), label: String(opt) }
                     );
                 }
+                
+                // Inclui allowOther se definido para elementos de seleção
+                if (["radio","select","checkbox"].includes(element.type) && element.props.allowOther !== undefined) {
+                    properties.allowOther = element.props.allowOther;
+                }
+                
                 return {
                     id: element.id,
                     type: element.type,
@@ -392,6 +406,12 @@ class FormBuilder {
                                     : { id: 'op' + Math.random().toString(36).substr(2, 6), label: String(opt) }
                             );
                         }
+                        
+                        // Inclui allowOther se definido para elementos de seleção
+                        if (["radio","select","checkbox"].includes(element.type) && element.props.allowOther !== undefined) {
+                            properties.allowOther = element.props.allowOther;
+                        }
+                        
                         return {
                             id: element.id,
                             type: element.type,
@@ -477,6 +497,12 @@ class FormBuilder {
                             : { id: 'op' + Math.random().toString(36).substr(2, 6), label: String(opt) }
                     );
                 }
+                
+                // Inclui allowOther se definido para elementos de seleção
+                if (["radio","select","checkbox"].includes(element.type) && element.props.allowOther !== undefined) {
+                    properties.allowOther = element.props.allowOther;
+                }
+                
                 return {
                     id: element.id,
                     type: element.type,
@@ -510,7 +536,9 @@ class FormBuilder {
                 // Para elementos com opções (select, radio, checkbox), garantir que options existe e está no formato correto
                 if (['select', 'radio', 'checkbox'].includes(element.type)) {
                     if (!props.options || !Array.isArray(props.options)) {
-                        props.options = elementConfig ? elementConfig.defaultProps.options : [];
+                        // Se elementConfig.defaultProps.options for função, executá-la
+                        const defaultOptions = elementConfig && elementConfig.defaultProps.options;
+                        props.options = typeof defaultOptions === 'function' ? defaultOptions() : (defaultOptions || []);
                     } else {
                         // Normalizar opções para garantir estrutura {id, label}
                         props.options = props.options.map(opt => {
@@ -525,6 +553,13 @@ class FormBuilder {
                             }
                             return { id: 'opt_' + Math.random().toString(36).substr(2, 9), label: 'Opção' };
                         });
+                    }
+                    
+                    // Garantir que allowOther seja carregado corretamente
+                    if (element.properties && element.properties.allowOther !== undefined) {
+                        props.allowOther = element.properties.allowOther;
+                    } else if (elementConfig && elementConfig.defaultProps.allowOther !== undefined) {
+                        props.allowOther = elementConfig.defaultProps.allowOther;
                     }
                 }
                 
