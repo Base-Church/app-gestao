@@ -413,101 +413,42 @@ document.addEventListener('click', function (e) {
   }
 });
 
-/* ===== Função toggleSidebar agora está no navbar.php ===== */
-
-/* ===== Funções de estado do sidebar ===== */
-let collapseTimeout = null;
-const LG = window.matchMedia('(min-width: 1024px)');
-
-function setCollapsed(collapsed, userAction = false) {
+/* ===== Função toggleSidebar para funcionar tanto no desktop quanto mobile ===== */
+function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
-  sidebar.setAttribute('data-collapsed', collapsed ? 'true' : 'false');
-
-  // classes utilitárias para suavizar sem depender de @apply
-  if (LG.matches) {
+  const isLargeScreen = window.matchMedia('(min-width: 1024px)').matches;
+  
+  if (isLargeScreen) {
+    // Desktop: toggle collapsed state
+    const collapsed = sidebar.getAttribute('data-collapsed') === 'true';
+    sidebar.setAttribute('data-collapsed', collapsed ? 'false' : 'true');
+    
+    // Atualizar classes do sidebar
     if (collapsed) {
-      sidebar.classList.remove('w-64'); sidebar.classList.add('w-20');
-      sidebar.classList.remove('lg:w-64'); sidebar.classList.add('lg:w-20');
-    } else {
-      sidebar.classList.remove('w-20'); sidebar.classList.add('w-64');
-      sidebar.classList.remove('lg:w-20'); sidebar.classList.add('lg:w-64');
-    }
-  }
-
-  // Se o usuário clicou para expandir, ainda assim aplicamos "recuar sozinho" ao sair
-  if (!collapsed && userAction) {
-    bindAutoCollapse();
-  }
-}
-
-/* ===== Mecânica de RECUAR SOZINHO (desktop) =====
-   - Se expandido, ao sair com o mouse do sidebar por 600ms, recolhe.
-   - Se recolhido, ao passar o mouse por cima, expande temporariamente; ao sair, recolhe.
-*/
-function bindAutoCollapse() {
-  const sidebar = document.getElementById('sidebar');
-  if (!LG.matches) return;
-
-  sidebar.addEventListener('mouseleave', onSidebarLeave);
-  sidebar.addEventListener('mouseenter', onSidebarEnter);
-
-  // Também recolhe ao clicar fora
-  document.addEventListener('click', onDocumentClick);
-}
-
-function onSidebarLeave() {
-  if (!LG.matches) return;
-  const sidebar = document.getElementById('sidebar');
-  clearTimeout(collapseTimeout);
-  collapseTimeout = setTimeout(() => {
-    setCollapsed(true, false);
-  }, 600);
-}
-
-function onSidebarEnter() {
-  if (!LG.matches) return;
-  clearTimeout(collapseTimeout);
-}
-
-function onDocumentClick(e) {
-  const sidebar = document.getElementById('sidebar');
-  if (!LG.matches) return;
-  if (!sidebar.contains(e.target)) {
-    setCollapsed(true, false);
-  }
-}
-
-// Hover para abrir temporariamente quando já estiver recolhido
-(function setupHoverOpen() {
-  const sidebar = document.getElementById('sidebar');
-  if (!sidebar) return;
-
-  sidebar.addEventListener('mouseenter', function () {
-    if (!LG.matches) return;
-    if (sidebar.getAttribute('data-collapsed') === 'true') {
-      // abre temporariamente enquanto hover
-      sidebar.setAttribute('data-hover-open', 'true');
+      // Expandir
       sidebar.classList.remove('w-20', 'lg:w-20');
       sidebar.classList.add('w-64', 'lg:w-64');
-      sidebar.setAttribute('data-collapsed', 'false');
+    } else {
+      // Recolher
+      sidebar.classList.remove('w-64', 'lg:w-64');
+      sidebar.classList.add('w-20', 'lg:w-20');
     }
-  });
-
-  sidebar.addEventListener('mouseleave', function () {
-    if (!LG.matches) return;
-    if (sidebar.getAttribute('data-hover-open') === 'true') {
-      sidebar.setAttribute('data-hover-open', 'false');
-      setCollapsed(true, false);
-    }
-  });
-})();
+  } else {
+    // Mobile: toggle slide
+    sidebar.classList.toggle('-translate-x-full');
+  }
+}
 
 /* ===== Submenus ===== */
 function toggleSubMenu(menuId, btn) {
   const sidebar = document.getElementById('sidebar');
-  // se recolhido, primeiro expande para o usuário ver o submenu
-  if (LG.matches && sidebar.getAttribute('data-collapsed') === 'true') {
-    setCollapsed(false, false);
+  const isLargeScreen = window.matchMedia('(min-width: 1024px)').matches;
+  
+  // Se recolhido no desktop, primeiro expande para o usuário ver o submenu
+  if (isLargeScreen && sidebar.getAttribute('data-collapsed') === 'true') {
+    sidebar.setAttribute('data-collapsed', 'false');
+    sidebar.classList.remove('w-20', 'lg:w-20');
+    sidebar.classList.add('w-64', 'lg:w-64');
   }
 
   // Fecha os outros
@@ -530,7 +471,7 @@ function toggleSubMenu(menuId, btn) {
   btn && btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
 }
 
-/* Fecha submenus ao clicar fora (desktop) */
+/* Fecha submenus ao clicar fora */
 document.addEventListener('click', function (event) {
   const sidebar = document.getElementById('sidebar');
   if (!sidebar.contains(event.target)) {
@@ -546,9 +487,9 @@ document.addEventListener('click', function (event) {
 
 /* Estado inicial conforme rota */
 document.addEventListener('DOMContentLoaded', function () {
-  // Começa expandido no desktop, recolhido no hover quando sair
-  setCollapsed(false, false);
-  bindAutoCollapse();
+  // Começa expandido no desktop e mobile
+  const sidebar = document.getElementById('sidebar');
+  sidebar.setAttribute('data-collapsed', 'false');
 
   <?php if (!$escalasActive): ?>document.getElementById('escalasSubMenu')?.classList.add('hidden');<?php endif; ?>
   <?php if ($escalasActive): ?>
