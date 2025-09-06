@@ -9,8 +9,18 @@ $pageTitle = isset($pageTitle) ? $pageTitle : 'Início';
 
 <nav class="with-sidebar fixed top-0 right-0 w-full bg-white dark:bg-gray-800 shadow-sm z-30 transition-all duration-300">
   <div class="h-16 px-4 flex items-center justify-between relative">
-    <!-- Versão -->
+    <!-- Menu Toggle e Versão -->
     <div class="flex items-center space-x-4">
+      <!-- Botão Toggle Menu -->
+      <button id="menuToggle"
+        class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        onclick="toggleSidebar()">
+        <svg class="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+      
+      <!-- Versão -->
       <span class="px-2 py-1 text-xs font-medium bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-300 rounded-full">
         By: TecnoTriks
       </span>
@@ -54,6 +64,21 @@ function toggleTheme() {
   } else {
     html.classList.add('dark');
     localStorage.setItem('theme', 'dark');
+  }
+}
+
+// Função para controlar o sidebar (mobile e desktop)
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const isLargeScreen = window.matchMedia('(min-width: 1024px)').matches;
+  
+  if (isLargeScreen) {
+    // Desktop: toggle collapsed state
+    const collapsed = sidebar.getAttribute('data-collapsed') === 'true';
+    sidebar.setAttribute('data-collapsed', collapsed ? 'false' : 'true');
+  } else {
+    // Mobile: toggle slide
+    sidebar.classList.toggle('-translate-x-full');
   }
 }
 </script>

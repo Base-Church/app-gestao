@@ -51,12 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 </script>
-<!-- Botão Toggle Menu Mobile -->
-<button id="menuToggle" class="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white dark:bg-gray-800 shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-  <svg class="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-  </svg>
-</button>
+
 
 <aside id="sidebar"
   class="fixed inset-y-0 left-0 bg-white dark:bg-gray-800 shadow-xl w-64 transition-all duration-300 transform lg:translate-x-0 -translate-x-full z-40 lg:w-64"
@@ -73,12 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
            class="h-12 w-auto relative z-10 sidebar-logo hidden dark:block">
     </div>
 
-    <!-- Botão Toggle Menu Desktop -->
-    <button id="desktopSidebarToggle" class="hidden lg:flex absolute top-4 right-4 z-10 p-2 rounded-lg bg-white dark:bg-gray-800 shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-      <svg class="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m7-7l-7 7 7 7"/>
-      </svg>
-    </button>
+
 
     <!-- Seletor de Ministérios -->
     <div class="px-4 py-3 border-b dark:border-gray-700 sidebar-content">
@@ -423,18 +413,7 @@ document.addEventListener('click', function (e) {
   }
 });
 
-/* ===== Mobile slide ===== */
-document.getElementById('menuToggle').addEventListener('click', function () {
-  const sidebar = document.getElementById('sidebar');
-  sidebar.classList.toggle('-translate-x-full');
-});
-
-/* ===== Desktop: botão fixa estado (pinar/despinar) ===== */
-document.getElementById('desktopSidebarToggle').addEventListener('click', function () {
-  const sidebar = document.getElementById('sidebar');
-  const collapsed = sidebar.getAttribute('data-collapsed') === 'true';
-  setCollapsed(!collapsed, true); // true = ação do usuário (pinar)
-});
+/* ===== Função toggleSidebar agora está no navbar.php ===== */
 
 /* ===== Funções de estado do sidebar ===== */
 let collapseTimeout = null;

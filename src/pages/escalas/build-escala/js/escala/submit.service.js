@@ -64,6 +64,9 @@ class SubmitEscalaService {
             
             try {
                 await this.salvarEscala();
+            } catch (error) {
+                // Mostrar erro ao usuário
+                window.ErrorHandlerService.showErrorModal(error, 'Erro ao Salvar');
             } finally {
                 // Restaurar botão
                 botao.disabled = false;
@@ -167,7 +170,7 @@ class SubmitEscalaService {
                         }
                     } catch (error) {
                         console.error('Erro ao criar escala:', error);
-                        alert('Erro ao criar escala: ' + error.message);
+                        window.ErrorHandlerService.showErrorModal(error, 'Erro ao Criar Escala');
                         btnConfirmar.disabled = false;
                         btnConfirmar.innerHTML = '<span>Confirmar</span>';
                     }
@@ -175,7 +178,7 @@ class SubmitEscalaService {
             }
         } catch (error) {
             console.error('Erro ao abrir modal:', error);
-            alert('Erro ao abrir modal: ' + error.message);
+            window.ErrorHandlerService.showErrorModal(error, 'Erro');
         }
     }
 
@@ -234,7 +237,7 @@ class SubmitEscalaService {
 
             const resultado = await response.json();
             
-            // Verificar se há erro real (não confundir mensagem de sucesso com erro)
+            // Verificar se há erro na resposta da API
             if (resultado.code && resultado.code !== 200 && resultado.code !== 201) {
                 throw new Error(resultado.message || 'Erro ao salvar escala');
             }
@@ -253,13 +256,14 @@ class SubmitEscalaService {
             return resultado;
         } catch (error) {
             console.error('Erro ao salvar escala:', error);
-            throw error;
+            const errorMessage = window.ErrorHandlerService.extractErrorMessage(error);
+            throw new Error(errorMessage);
         }
     }
 
     exibirNotificacaoSucesso(resultado) {
         const notification = document.createElement('div');
-        notification.className = 'fixed bottom-8 left-1/2 transform -translate-x-1/2 z-[6000] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl p-4 max-w-sm w-full mx-4';
+        notification.className = 'fixed bottom-8 right-8 z-[6000] max-w-sm w-full transform translate-y-full opacity-0 transition-all duration-300 ease-out';
         
         // Extrair dados da resposta
         const escalaId = resultado.data?.escala_id || resultado.data?.id;
@@ -267,44 +271,73 @@ class SubmitEscalaService {
         const prefixo = resultado.data?.prefixo;
         
         notification.innerHTML = `
-            <div class="text-center">
-                <div class="flex items-center justify-center gap-3 mb-3">
-                    <div class="flex items-center justify-center h-8 w-8 rounded-full bg-green-100 dark:bg-green-900">
-                        <svg class="h-4 w-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-sm font-medium text-gray-900 dark:text-white">Escala salva com sucesso!</h3>
-                </div>
-                
-                <div class="grid gap-2">
-                    ${slug && prefixo ? `
-                        <div class="grid grid-cols-2 gap-2">
-                            <button id="btn-ver-escala-notif" class="bg-primary-600 hover:bg-primary-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors">
-                                Ver Escala
-                            </button>
-                            <button id="btn-voltar-listagem-notif" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-3 py-2 rounded text-sm font-medium transition-colors">
-                                Listagem
-                            </button>
+            <div class="bg-white dark:bg-gray-800 border-l-4 border-green-500 rounded-lg shadow-xl overflow-hidden">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 px-4 py-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center justify-center h-8 w-8 rounded-full bg-green-500">
+                                <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-semibold text-green-800 dark:text-green-200">Sucesso!</h3>
+                                <p class="text-xs text-green-600 dark:text-green-300">Escala salva com sucesso</p>
+                            </div>
                         </div>
-                    ` : `
-                        <button id="btn-voltar-listagem-notif" class="w-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-3 py-2 rounded text-sm font-medium transition-colors">
-                            Voltar à Listagem
+                        <button class="close-btn text-green-400 hover:text-green-600 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
                         </button>
-                    `}
+                    </div>
                 </div>
                 
-                <button class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" onclick="this.parentElement.parentElement.remove()">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
+                <!-- Conteúdo -->
+                <div class="p-4">
+                    <div class="space-y-3">
+                        ${slug && prefixo ? `
+                            <div class="grid grid-cols-2 gap-2">
+                                <button id="btn-ver-escala-notif" class="bg-primary-600 hover:bg-primary-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Ver Escala
+                                </button>
+                                <button id="btn-voltar-listagem-notif" class="bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Listagem
+                                </button>
+                            </div>
+                        ` : `
+                            <button id="btn-voltar-listagem-notif" class="w-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                                Voltar à Listagem
+                            </button>
+                        `}
+                    </div>
+                </div>
+                
+                <!-- Barra de progresso -->
+                <div class="h-1 bg-gray-200 dark:bg-gray-700">
+                    <div class="progress-bar h-full bg-green-500 w-full"></div>
+                </div>
             </div>
         `;
 
         document.body.appendChild(notification);
         
-        // Configurar botões
+        // Animação de entrada
+        setTimeout(() => {
+            notification.classList.remove('translate-y-full', 'opacity-0');
+            notification.classList.add('translate-y-0', 'opacity-100');
+        }, 10);
+        
+        // Configurar botão de fechar
+        const closeBtn = notification.querySelector('.close-btn');
+        const closeNotification = () => {
+            notification.classList.add('translate-y-full', 'opacity-0');
+            setTimeout(() => notification.remove(), 300);
+        };
+        closeBtn.addEventListener('click', closeNotification);
+        
+        // Configurar botões de ação
         const btnVerEscala = notification.querySelector('#btn-ver-escala-notif');
         if (btnVerEscala && slug && prefixo) {
             btnVerEscala.addEventListener('click', () => {
@@ -319,12 +352,17 @@ class SubmitEscalaService {
             });
         }
 
-        // Remove automaticamente após 8 segundos
-        setTimeout(() => {
-            if (notification.parentElement) {
-                notification.remove();
-            }
-        }, 8000);
+        // Animar barra de progresso
+        const progressBar = notification.querySelector('.progress-bar');
+        if (progressBar) {
+            setTimeout(() => {
+                progressBar.style.transition = 'width 8s linear';
+                progressBar.style.width = '0%';
+            }, 100);
+        }
+
+        // Auto-close após 8 segundos
+        setTimeout(closeNotification, 8000);
     }
 }
 

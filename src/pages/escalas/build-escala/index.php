@@ -139,6 +139,7 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/voluntarios/historico-indisponibilidade.service.js?v=<?= date('Ymd') ?>"></script>
 
 <!-- Utilitários -->
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/error.handler.service.js?v=<?= date('Ymd') ?>"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/item.duplicar.service.js?v=<?= date('Ymd') ?>"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/item.modelos.service.js?v=<?= date('Ymd') ?>"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/resumo.escala.util.service.js?v=<?= date('Ymd') ?>"></script>

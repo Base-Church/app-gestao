@@ -67,7 +67,7 @@ class EscalaEditarService {
             }
         } catch (error) {
             console.error('Erro ao carregar escala:', error);
-            alert(`Erro ao carregar escala para edição: ${error.message}`);
+            window.ErrorHandlerService.showErrorModal(error, 'Erro ao Carregar Escala');
         }
     }
 
