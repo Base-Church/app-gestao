@@ -27,3 +27,204 @@
     backdrop-filter: blur(2px);
     z-index: -1;
 }
+
+/* Estilos para drag and drop */
+.sortable-ghost {
+    opacity: 0.3 !important;
+    background: linear-gradient(45deg, #f3f4f6, #e5e7eb) !important;
+    border: 2px dashed #6366f1 !important;
+    border-radius: 8px !important;
+    transform: rotate(0deg) !important;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3) !important;
+}
+
+.sortable-chosen {
+    cursor: grabbing !important;
+    transform: scale(1.02) !important;
+    z-index: 1000 !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.sortable-drag {
+    transform: rotate(3deg) scale(1.05) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
+    z-index: 9999 !important;
+    opacity: 0.9 !important;
+}
+
+.dragging-item .item-drag-handle,
+.dragging-conjunto .conjunto-drag-handle {
+    color: #3b82f6 !important;
+    transform: scale(1.2) !important;
+}
+
+.item-drag-handle,
+.conjunto-drag-handle {
+    transition: all 0.2s ease;
+    opacity: 0.6;
+}
+
+.item-drag-handle:hover,
+.conjunto-drag-handle:hover {
+    transform: scale(1.1);
+    opacity: 1;
+    color: #6366f1;
+}
+
+/* Animações para quando elementos são reordenados */
+@keyframes item-reorder {
+    0% { transform: translateY(-8px) scale(0.95); }
+    50% { transform: translateY(4px) scale(1.02); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+.item-reordered {
+    animation: item-reorder 0.4s ease-out;
+}
+
+/* Melhorias visuais durante o drag */
+body.dragging-item #itens-container > div:not(.sortable-chosen):not(.sortable-ghost) {
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    opacity: 0.7;
+}
+
+body.dragging-conjunto .conjuntos-container > div:not(.sortable-chosen):not(.sortable-ghost) {
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    opacity: 0.7;
+}
+
+/* Destaca área de drop */
+.sortable-ghost + * {
+    transform: translateY(6px);
+    transition: transform 0.2s ease;
+}
+
+/* Melhor indicador visual de onde o item será solto */
+#itens-container .sortable-ghost::before {
+    content: 'Solte aqui';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #6366f1;
+    font-weight: bold;
+    font-size: 14px;
+    z-index: 1;
+}
+
+/* Dark mode adaptations */
+.dark .sortable-ghost {
+    background: linear-gradient(45deg, #374151, #4b5563) !important;
+    border-color: #818cf8 !important;
+}
+
+.dark #itens-container .sortable-ghost::before {
+    color: #a5b4fc;
+}
+
+/* Estilos específicos para drag and drop no modal de resumo */
+.sortable-eventos .sortable-ghost {
+    opacity: 0.3 !important;
+    background: linear-gradient(45deg, #ddd6fe, #c4b5fd) !important;
+    border: 2px dashed #8b5cf6 !important;
+    border-radius: 8px !important;
+}
+
+.sortable-eventos .sortable-chosen {
+    transform: scale(1.02) !important;
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.25) !important;
+}
+
+.sortable-eventos .sortable-drag {
+    transform: rotate(2deg) scale(1.05) !important;
+    box-shadow: 0 15px 35px rgba(139, 92, 246, 0.3) !important;
+    z-index: 10000 !important;
+}
+
+.dragging-eventos .evento-card-draggable:not(.sortable-chosen) {
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+.evento-card-draggable .drag-handle {
+    transition: all 0.2s ease;
+}
+
+.evento-card-draggable:hover .drag-handle {
+    color: #8b5cf6 !important;
+    transform: scale(1.1);
+}
+
+.dark .sortable-eventos .sortable-ghost {
+    background: linear-gradient(45deg, #4c1d95, #5b21b6) !important;
+    border-color: #a78bfa !important;
+}
+
+/* Estilos para o painel lateral de eventos do voluntário */
+#voluntario-eventos-panel {
+    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.dark #voluntario-eventos-panel {
+    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Animações para o painel lateral */
+#resumo-voluntarios-list.slide-animation {
+    transition: transform 0.3s ease-in-out;
+}
+
+#voluntario-eventos-panel.slide-animation {
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Melhorias visuais para os cards de eventos no painel */
+#panel-eventos-lista .bg-gray-50:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.dark #panel-eventos-lista .bg-gray-50:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Animação de entrada para os items do painel */
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+#panel-eventos-lista > div {
+    animation: slideInFromRight 0.3s ease-out;
+    animation-fill-mode: both;
+}
+
+#panel-eventos-lista > div:nth-child(1) { animation-delay: 0.1s; }
+#panel-eventos-lista > div:nth-child(2) { animation-delay: 0.15s; }
+#panel-eventos-lista > div:nth-child(3) { animation-delay: 0.2s; }
+#panel-eventos-lista > div:nth-child(4) { animation-delay: 0.25s; }
+#panel-eventos-lista > div:nth-child(n+5) { animation-delay: 0.3s; }
+
+/* Botão de fechar com animação */
+#fechar-eventos-panel {
+    transition: all 0.2s ease;
+}
+
+#fechar-eventos-panel:hover {
+    transform: scale(1.1);
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+    #voluntario-eventos-panel {
+        width: 100% !important;
+    }
+}

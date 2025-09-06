@@ -19,6 +19,14 @@ class ItemService {
     getItens() {
         return this.itens;
     }
+
+    /**
+     * Atualiza a ordem dos itens no array local
+     */
+    reorderItems(oldIndex, newIndex) {
+        const item = this.itens.splice(oldIndex, 1)[0];
+        this.itens.splice(newIndex, 0, item);
+    }
 }
 
 window.itemService = new ItemService();

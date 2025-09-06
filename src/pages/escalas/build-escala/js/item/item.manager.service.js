@@ -147,52 +147,11 @@ class ItemManagerService {
             </div>
         `);
         this.configurarEventosConjuntos(itemId, seletorId, eventoData);
-    }
-
-    criarConjuntoHTML(itemId, conjunto, idx) {
-        // Reduz altura, remove cabeçalhos/textos, botão remover como ícone na mesma linha à direita
-        return `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 items-center">
-            <div class="flex flex-row h-[80px] items-center">
-                <div class="espaco-atividades flex-1 min-h-[85px] bg-gray-50 dark:bg-gray-700/30 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600/50 flex items-center justify-center mr-2" data-conjunto-idx="${idx}">
-                    ${
-                        conjunto.atividade
-                        ? `<div class="w-full flex items-center gap-3 p-2">
-                            <div class="w-15 h-15 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center">
-                                <img src="${conjunto.atividade.img || (window.APP_CONFIG.baseUrl + '/assets/img/placeholder.jpg')}" alt="${conjunto.atividade.nome}" class="w-12 h-12 object-cover rounded-full">
-                            </div>
-                            <div class="flex-1 min-w-0 pl-1">
-                                <h4 class="font-medium text-gray-900 dark:text-white text-sm truncate">${conjunto.atividade.nome}</h4>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${conjunto.atividade.descricao || ''}</p>
-                            </div>
-                        </div>`
-                        : `<p class="text-sm text-gray-500 p-4 text-center w-full">Clique para selecionar</p>`
-                    }
-                </div>
-            </div>
-            <div class="flex flex-row h-[80px] items-center">
-                <div class="espaco-voluntario flex-1 min-h-[85px] bg-gray-50 dark:bg-gray-700/30 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600/50 flex items-center justify-center mr-2" data-conjunto-idx="${idx}">
-                    ${
-                        conjunto.voluntario
-                        ? `<div class="w-full flex items-center gap-3 p-2">
-                            <div class="w-15 h-15 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center">
-                                <img src="${conjunto.voluntario.img || (window.APP_CONFIG.baseUrl + '/assets/img/placeholder.jpg')}" alt="${conjunto.voluntario.nome}" class="w-9 h-9 object-cover rounded-full">
-                            </div>
-                            <div class="flex-1 min-w-0 pl-1">
-                                <h4 class="font-medium text-gray-900 dark:text-white text-sm truncate">${conjunto.voluntario.nome}</h4>
-                            </div>
-                        </div>`
-                        : `<p class="text-sm text-gray-500 p-4 text-center w-full">Clique para selecionar</p>`
-                    }
-                </div>
-                <button type="button" class="btn-remover-conjunto text-red-500 hover:text-red-700 text-base ml-2" data-conjunto-idx="${idx}" title="Remover Conjunto">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        `;
+        
+        // Configurar drag and drop para os conjuntos
+        if (window.dragDropService) {
+            window.dragDropService.setupConjuntosSortable(conjuntosContainer, itemId, seletorId);
+        }
     }
 
     adicionarNovoConjunto(itemId, seletorId) {

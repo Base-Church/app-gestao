@@ -108,6 +108,9 @@ require_once __DIR__ . '/../../../components/layout/header.php';
  <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
   <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
   <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+  
+  <!-- Sortable.js para drag and drop -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 
 <!-- Geral -->
@@ -139,6 +142,7 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/voluntarios/historico-indisponibilidade.service.js?v=<?= date('Ymd') ?>"></script>
 
 <!-- Utilitários -->
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/drag-drop.service.js?v=<?= date('Ymd') ?>"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/error.handler.service.js?v=<?= date('Ymd') ?>"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/item.duplicar.service.js?v=<?= date('Ymd') ?>"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/escalas/build-escala/js/utils/item.modelos.service.js?v=<?= date('Ymd') ?>"></script>

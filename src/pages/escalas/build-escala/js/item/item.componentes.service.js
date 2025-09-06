@@ -6,7 +6,15 @@ class ItemComponentesService {
         return `
         <div id="${itemId}" class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden mb-4">
             <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
-                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Item</h3>
+                <div class="flex items-center gap-3">
+                    <!-- Handle de drag para item -->
+                    <div class="item-drag-handle cursor-move text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" title="Arrastar item">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9h8M8 15h8"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Item</h3>
+                </div>
                 <div class="flex items-center gap-2">
                     <div class="flex items-center gap-2">
                         <div class="relative flex items-center">
@@ -44,7 +52,14 @@ class ItemComponentesService {
         // eventoData: string ou null (data do evento)
         const voluntarioBloqueado = !eventoData;
         return `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 items-center">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 items-center" style="position: relative;">
+            <!-- Handle de drag para conjunto -->
+            <div class="conjunto-drag-handle cursor-move text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 absolute top-2 left-2 z-10" title="Arrastar conjunto">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9h8M8 15h8"></path>
+                </svg>
+            </div>
+            
             <div class="flex flex-row h-[80px] items-center">
                 <div class="espaco-atividades flex-1 min-h-[85px] bg-gray-50 dark:bg-gray-700/30 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600/50 flex items-center justify-center mr-2" data-conjunto-idx="${idx}">
                     ${

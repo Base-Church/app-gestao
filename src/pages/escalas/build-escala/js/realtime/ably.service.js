@@ -14,11 +14,9 @@ class AblyService {
         
         // Validação - não inicializa se não tiver dados do usuário
         if (!this.userInfo.id || !this.userInfo.name) {
-            console.error('Dados do usuário inválidos - AblyService não inicializado');
             return;
         }
         
-        console.log('Usuário:', this.userInfo.name);
         this.init();
     }
 
@@ -33,19 +31,16 @@ class AblyService {
             
             this.ably.connection.on('connected', () => {
                 this.isConnected = true;
-                console.log('Ably conectado');
                 this.updateOffCanvasStatus('connected');
                 this.sendPresence('online');
             });
 
             this.ably.connection.on('disconnected', () => {
                 this.isConnected = false;
-                console.log('Ably desconectado');
                 this.updateOffCanvasStatus('disconnected');
             });
 
             this.ably.connection.on('connecting', () => {
-                console.log('Conectando ao Ably...');
                 this.updateOffCanvasStatus('connecting');
             });
             
@@ -59,7 +54,6 @@ class AblyService {
             this.setupPageEvents();
             
         } catch (error) {
-            console.error('Erro Ably:', error);
             this.updateOffCanvasStatus('disconnected');
         }
     }
@@ -86,12 +80,9 @@ class AblyService {
      * @param {string|Object} data - Status ou dados customizados
      */
     async sendPresence(data) {
-        console.log('=== ABLY SEND PRESENCE ===');
-        console.log('Conectado:', this.isConnected);
-        console.log('Channel:', !!this.channel);
+
         
         if (!this.isConnected || !this.channel) {
-            console.log('Não conectado - não enviando');
             return;
         }
         
@@ -111,11 +102,8 @@ class AblyService {
                 messageData = data;
             }
             
-            console.log('Enviando mensagem:', JSON.stringify(messageData, null, 2));
             await this.channel.publish('presence', messageData);
-            console.log('✅ Mensagem enviada com sucesso');
         } catch (error) {
-            console.error('❌ Erro ao enviar presença:', error);
         }
     }
 
@@ -123,28 +111,21 @@ class AblyService {
      * Manipula eventos de presença
      */
     handlePresence(data) {
-        console.log('=== ABLY HANDLE PRESENCE ===');
-        console.log('Dados recebidos:', JSON.stringify(data, null, 2));
         
         // Verifica se é dados de voluntário primeiro
         if (data.action && (data.action === 'voluntario_selecting' || data.action === 'voluntario_removed')) {
-            console.log('✅ Ação de voluntário detectada:', data.action);
             
             // Para voluntários, não ignora próprio usuário - deixa o serviço decidir
             if (window.voluntariosRealtimeService) {
-                console.log('📞 Chamando voluntariosRealtimeService.handlePresenceData');
                 window.voluntariosRealtimeService.handlePresenceData(data);
             } else {
-                console.error('❌ voluntariosRealtimeService não disponível');
             }
             return;
         }
         
-        console.log('Processando presença de usuário padrão');
         
         // Para presença de usuário padrão, ignora próprio usuário
         if (data.userId === this.userInfo.id) {
-            console.log('Ignorando próprio usuário');
             return;
         }
         
@@ -153,10 +134,8 @@ class AblyService {
         
         if (status === 'online') {
             this.usersOnline.set(userId, { name: userName, timestamp: Date.now() });
-            console.log(`${userName} entrou`);
         } else {
             this.usersOnline.delete(userId);
-            console.log(`${userName} saiu`);
         }
         
         this.updateOffCanvas();
@@ -210,8 +189,6 @@ class AblyService {
 document.addEventListener('DOMContentLoaded', function() {
     if (window.USER?.id && (window.USER?.nome || window.USER?.name)) {
         window.ablyService = new AblyService();
-        console.log('AblyService inicializado');
     } else {
-        console.error('Dados do usuário não encontrados');
     }
 });

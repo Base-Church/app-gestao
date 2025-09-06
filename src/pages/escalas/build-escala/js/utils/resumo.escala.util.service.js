@@ -187,6 +187,83 @@
         }
     }
 
+    // Configura drag and drop para os eventos no resumo
+    function setupEventosSortable(container) {
+        if (!window.Sortable || !container) return;
+
+        const sortable = Sortable.create(container, {
+            animation: 200,
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            dragClass: 'sortable-drag',
+            handle: '.drag-handle',
+            fallbackOnBody: true,
+            swapThreshold: 0.65,
+            onStart: (evt) => {
+                console.log('Iniciando drag do evento no resumo');
+                container.classList.add('dragging-eventos');
+            },
+            onEnd: (evt) => {
+                container.classList.remove('dragging-eventos');
+                console.log('Finalizando drag do evento no resumo:', {
+                    oldIndex: evt.oldIndex,
+                    newIndex: evt.newIndex
+                });
+                
+                // Atualiza a ordem dos eventos na escala principal
+                updateEventOrderInScale(evt.oldIndex, evt.newIndex);
+            }
+        });
+
+        console.log('Sortable configurado para eventos do resumo');
+        return sortable;
+    }
+
+    // Atualiza a ordem dos eventos na escala principal
+    function updateEventOrderInScale(oldIndex, newIndex) {
+        if (oldIndex === newIndex) return;
+
+        try {
+            // Obtém estado atual da escala
+            const estado = window.escalaManagerService.getEstadoAtual();
+            
+            if (!estado.itens || estado.itens.length === 0) {
+                console.warn('Nenhum item encontrado na escala');
+                return;
+            }
+
+            // Move o item na posição correta
+            const itemMovido = estado.itens.splice(oldIndex, 1)[0];
+            estado.itens.splice(newIndex, 0, itemMovido);
+
+            // Atualiza ordem no container de itens da página principal
+            const itensContainer = document.getElementById('itens-container');
+            if (itensContainer && itensContainer.children[oldIndex]) {
+                const itemElement = itensContainer.children[oldIndex];
+                itensContainer.removeChild(itemElement);
+                
+                if (newIndex < itensContainer.children.length) {
+                    itensContainer.insertBefore(itemElement, itensContainer.children[newIndex]);
+                } else {
+                    itensContainer.appendChild(itemElement);
+                }
+            }
+
+            // Sincroniza com os serviços
+            if (window.itemService && window.itemService.reorderItems) {
+                window.itemService.reorderItems(oldIndex, newIndex);
+            }
+
+            if (window.escalaService && window.escalaService.onItemOrderChanged) {
+                window.escalaService.onItemOrderChanged(oldIndex, newIndex);
+            }
+
+            console.log('Ordem dos eventos atualizada na escala principal');
+        } catch (error) {
+            console.error('Erro ao atualizar ordem dos eventos:', error);
+        }
+    }
+
     // Função principal para popular o resumo
     async function popularResumoEscala(modalDiv) {
         // Busca dados atuais da escala
@@ -265,61 +342,80 @@
 
         // --- Preenche coluna de voluntários escalados (Resumo) ---
         const voluntariosList = modalDiv.querySelector('#resumo-voluntarios-list');
+        const voluntariosCount = modalDiv.querySelector('#voluntarios-count');
         if (voluntariosList) {
             voluntariosList.innerHTML = voluntariosEscalados.length
                 ? voluntariosEscalados.map(v => {
-                    const tooltipContent = v.eventos.map(ev => `<div>${ev.nome || '-'} <span class="text-gray-400">(${ev.data_evento || '-'})</span></div>`).join('');
                     return `
-                    <li class="voluntario-card flex items-center gap-3 p-2 rounded bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 relative">
+                    <div class="voluntario-card flex items-center gap-3 p-3 rounded bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 transition-all">
                         <img src="${v.foto || v.img || `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`}" 
-                             class="w-10 h-10 rounded-full object-cover" 
+                             class="w-12 h-12 rounded-full object-cover flex-shrink-0" 
                              alt="${v.nome || 'Voluntário'}"
                              onerror="this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
-                        <div class="flex-1 min-w-0 flex items-center">
-                            <div>
-                                <div class="font-semibold flex items-center gap-2">
-                                    <span class="truncate max-w-[120px]" title="${v.nome}">${v.nome}</span>
-                                    <button class="text-xs px-2 py-1 bg-primary-100 hover:bg-primary-200 text-primary-700 rounded transition tooltip-trigger flex-shrink-0" 
-                                            data-tooltip='${encodeURIComponent(`<div class="font-semibold mb-1 text-primary-300">Eventos deste voluntário:</div>${tooltipContent}`)}'>
-                                        Ver eventos
-                                    </button>
-                                </div>
-                                <div class="text-xs text-gray-500">Escalado ${v.eventos.length}x</div>
+                        <div class="flex-1 min-w-0">
+                            <div class="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                                <span class="truncate" title="${v.nome}">${v.nome}</span>
+                                <button class="ver-eventos-voluntario text-xs px-2 py-1 bg-primary-100 hover:bg-primary-200 dark:bg-primary-800 dark:hover:bg-primary-700 text-primary-700 dark:text-primary-200 rounded transition flex-shrink-0" 
+                                        data-voluntario-id="${v.id}"
+                                        data-voluntario-nome="${v.nome}"
+                                        data-voluntario-foto="${v.foto || v.img || `${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg`}"
+                                        data-voluntario-eventos='${JSON.stringify(v.eventos)}'>
+                                    Ver eventos
+                                </button>
+                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                <span class="bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-200 px-2 py-0.5 rounded">Escalado ${v.eventos.length}x</span>
                             </div>
                         </div>
-                    </li>
+                    </div>
                     `;
                 }).join('')
-                : '<li class="text-gray-400">Nenhum voluntário escalado</li>';
+                : '<div class="text-gray-400 dark:text-gray-500 text-center p-8">Nenhum voluntário escalado</div>';
+            
+            // Atualiza contador
+            if (voluntariosCount) {
+                voluntariosCount.textContent = voluntariosEscalados.length;
+            }
         }
 
         // --- Preenche coluna de eventos escalados (Resumo) ---
         const eventosList = modalDiv.querySelector('#resumo-eventos-list');
+        const eventosCount = modalDiv.querySelector('#eventos-count');
         if (eventosList) {
             eventosList.innerHTML = eventosEscalados.length
-                ? eventosEscalados.map(ev => `
-                    <li class="evento-card flex items-center gap-3 p-2 rounded bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
-                        <img src="${getImageUrl(ev, 'evento')}" 
-                             class="w-10 h-10 rounded-full object-cover" 
-                             alt="${ev.nome || 'Evento'}"
-                             onerror="this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
-                        <div class="flex-1 min-w-0">
-                            <div class="font-semibold">${ev.nome || '-'}</div>
-                            <div class="flex flex-wrap items-center text-xs text-gray-500 gap-2">
-                                <span>${ev.data_evento || '-'}</span>
-                                <span>•</span>
-                                <span class="capitalize">${ev.dia_semana || ''}</span>
-                                <span>•</span>
-                                <span>${ev.hora ? ev.hora.substring(0,5) : ''}</span>
-                                <span>•</span>
-                                <span>${ev.tipo || ''}</span>
-                                <span>•</span>
-                                <span class="text-primary-700 dark:text-primary-200 font-semibold">Voluntários: ${ev.voluntarios.length}</span>
+                ? eventosEscalados.map((ev, index) => `
+                    <div class="evento-card-draggable" data-evento-id="${ev.id}" data-evento-index="${index}">
+                        <div class="evento-card flex items-center gap-3 p-3 rounded bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 transition-all cursor-move group">
+                            <div class="drag-handle opacity-50 group-hover:opacity-100 transition-opacity">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9h8M8 15h8"></path>
+                                </svg>
+                            </div>
+                            <img src="${getImageUrl(ev, 'evento')}" 
+                                 class="w-12 h-12 rounded-full object-cover flex-shrink-0" 
+                                 alt="${ev.nome || 'Evento'}"
+                                 onerror="this.src='${window.APP_CONFIG.baseUrl}/assets/img/placeholder.jpg'">
+                            <div class="flex-1 min-w-0">
+                                <div class="font-semibold text-gray-900 dark:text-white truncate">${ev.nome || '-'}</div>
+                                <div class="flex flex-wrap items-center text-xs text-gray-500 dark:text-gray-400 gap-2 mt-1">
+                                    <span class="bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-200 px-2 py-0.5 rounded">${ev.data_evento || '-'}</span>
+                                    <span class="capitalize">${ev.dia_semana || ''}</span>
+                                    <span>${ev.hora ? ev.hora.substring(0,5) : ''}</span>
+                                    <span class="bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-200 px-2 py-0.5 rounded font-semibold">${ev.voluntarios.length} vol.</span>
+                                </div>
                             </div>
                         </div>
-                    </li>
+                    </div>
                 `).join('')
-                : '<li class="text-gray-400">Nenhum evento selecionado</li>';
+                : '<div class="text-gray-400 dark:text-gray-500 text-center p-8">Nenhum evento selecionado</div>';
+            
+            // Atualiza contador
+            if (eventosCount) {
+                eventosCount.textContent = eventosEscalados.length;
+            }
+            
+            // Configura drag and drop para eventos
+            setupEventosSortable(eventosList);
         }
 
         // --- Fora da escala: Eventos e Voluntários não escalados ---
@@ -364,21 +460,104 @@
                 : '<div class="text-gray-400 dark:text-gray-500">Nenhum voluntário fora da escala</div>';
         }
 
-        // Tooltip funcional (clique)
-        modalDiv.querySelectorAll('.tooltip-trigger').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                // Se o tooltip já está visível, remove
-                const existingTooltip = document.getElementById('vol-tooltip-global');
-                if (existingTooltip) {
-                    removeTooltip();
-                } else {
-                    // Caso contrário, mostra o tooltip
-                    showTooltip(button, decodeURIComponent(button.dataset.tooltip));
-                }
-            });
+        // Tooltip funcional (clique) - removido pois agora usamos painel lateral
+        // modalDiv.querySelectorAll('.tooltip-trigger').forEach(button => { ... });
+
+        // Configura eventos para os botões "ver eventos do voluntário"
+        configurarPainelEventosVoluntario(modalDiv);
+    }
+
+    // Configura o painel lateral de eventos do voluntário
+    function configurarPainelEventosVoluntario(modalDiv) {
+        const panel = modalDiv.querySelector('#voluntario-eventos-panel');
+        const voluntariosList = modalDiv.querySelector('#resumo-voluntarios-list');
+        const btnFechar = modalDiv.querySelector('#fechar-eventos-panel');
+
+        if (!panel || !voluntariosList || !btnFechar) return;
+
+        // Função para abrir o painel
+        function abrirPainel(voluntarioData) {
+            const { nome, foto, eventos } = voluntarioData;
+            
+            // Preenche dados do header
+            const fotoEl = modalDiv.querySelector('#panel-voluntario-foto');
+            const nomeEl = modalDiv.querySelector('#panel-voluntario-nome');
+            const infoEl = modalDiv.querySelector('#panel-voluntario-info');
+            
+            if (fotoEl) fotoEl.src = foto;
+            if (nomeEl) nomeEl.textContent = nome;
+            if (infoEl) infoEl.textContent = `Escalado em ${eventos.length} evento${eventos.length !== 1 ? 's' : ''}`;
+
+            // Preenche lista de eventos
+            const eventosLista = modalDiv.querySelector('#panel-eventos-lista');
+            if (eventosLista) {
+                eventosLista.innerHTML = eventos.length > 0 
+                    ? eventos.map(evento => `
+                        <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-500 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-primary-100 dark:bg-primary-800 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-4 h-4 text-primary-600 dark:text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h5 class="font-medium text-gray-900 dark:text-white text-sm truncate">${evento.nome || 'Evento sem nome'}</h5>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                        <span class="inline-flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                            ${evento.data_evento || 'Data não informada'}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')
+                    : '<div class="text-center text-gray-500 dark:text-gray-400 py-8">Nenhum evento encontrado</div>';
+            }
+
+            // Mostra e anima o painel
+            panel.classList.remove('hidden');
+            setTimeout(() => {
+                panel.classList.remove('translate-x-full');
+                voluntariosList.classList.add('-translate-x-full');
+            }, 10);
+        }
+
+        // Função para fechar o painel
+        function fecharPainel() {
+            panel.classList.add('translate-x-full');
+            voluntariosList.classList.remove('-translate-x-full');
+            
+            setTimeout(() => {
+                panel.classList.add('hidden');
+            }, 300);
+        }
+
+        // Event listener para botões "ver eventos"
+        voluntariosList.addEventListener('click', (e) => {
+            const btn = e.target.closest('.ver-eventos-voluntario');
+            if (!btn) return;
+
+            const voluntarioData = {
+                id: btn.dataset.voluntarioId,
+                nome: btn.dataset.voluntarioNome,
+                foto: btn.dataset.voluntarioFoto,
+                eventos: JSON.parse(btn.dataset.voluntarioEventos || '[]')
+            };
+
+            abrirPainel(voluntarioData);
+        });
+
+        // Event listener para botão fechar
+        btnFechar.addEventListener('click', fecharPainel);
+
+        // Fechar ao clicar fora do painel (opcional)
+        panel.addEventListener('click', (e) => {
+            if (e.target === panel) {
+                fecharPainel();
+            }
         });
     }
 

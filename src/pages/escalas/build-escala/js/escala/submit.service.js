@@ -187,6 +187,18 @@ class SubmitEscalaService {
             const estado = window.escalaManagerService.getEstadoAtual();
             const isEditMode = this.isEditMode();
             
+            // Adicionar informações de ordem dos itens e conjuntos
+            if (estado.itens) {
+                estado.itens.forEach((item, index) => {
+                    item.ordem = index;
+                    if (item.conjuntos) {
+                        item.conjuntos.forEach((conjunto, conjuntoIndex) => {
+                            conjunto.ordem = conjuntoIndex;
+                        });
+                    }
+                });
+            }
+            
             let response;
             
             if (isEditMode) {

@@ -4,6 +4,7 @@
 class EscalaService {
     constructor() {
         this.estrutura = new Map(); // {itemId => {item, conjuntos: [{atividade, voluntario}]}};
+        this.itemOrder = []; // Array para manter a ordem dos itens
     }
 
     adicionarItem(item) {
@@ -12,6 +13,10 @@ class EscalaService {
                 item: item,
                 conjuntos: []
             });
+            // Adiciona à ordem se não estiver presente
+            if (!this.itemOrder.includes(item.id)) {
+                this.itemOrder.push(item.id);
+            }
         }
         return this.estrutura.get(item.id);
     }
@@ -46,10 +51,61 @@ class EscalaService {
 
     removerItem(itemId) {
         this.estrutura.delete(itemId);
+        // Remove da ordem também
+        const index = this.itemOrder.indexOf(itemId);
+        if (index > -1) {
+            this.itemOrder.splice(index, 1);
+        }
     }
 
+    /**
+     * Callback para quando a ordem dos itens muda via drag & drop
+     */
+    onItemOrderChanged(oldIndex, newIndex) {
+        // Atualiza a ordem dos itemIds
+        const itemId = this.itemOrder.splice(oldIndex, 1)[0];
+        this.itemOrder.splice(newIndex, 0, itemId);
+        
+        console.log('Ordem de itens atualizada:', this.itemOrder);
+    }
+
+    /**
+     * Retorna a estrutura ordenada conforme a ordem definida
+     */
     getEstrutura() {
-        return Array.from(this.estrutura.values());
+        const estruturaOrdenada = [];
+        
+        // Primeiro adiciona os itens na ordem definida
+        this.itemOrder.forEach(itemId => {
+            const itemData = this.estrutura.get(itemId);
+            if (itemData) {
+                estruturaOrdenada.push(itemData);
+            }
+        });
+        
+        // Adiciona qualquer item que não esteja na ordem (fallback)
+        this.estrutura.forEach((itemData, itemId) => {
+            if (!this.itemOrder.includes(itemId)) {
+                estruturaOrdenada.push(itemData);
+                this.itemOrder.push(itemId); // Adiciona à ordem para próximas chamadas
+            }
+        });
+        
+        return estruturaOrdenada;
+    }
+
+    /**
+     * Retorna a ordem atual dos itens
+     */
+    getItemOrder() {
+        return [...this.itemOrder];
+    }
+
+    /**
+     * Define uma nova ordem para os itens
+     */
+    setItemOrder(newOrder) {
+        this.itemOrder = [...newOrder];
     }
 }
 
