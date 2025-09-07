@@ -27,6 +27,9 @@
                         <button class="config-tab-btn py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300" data-tab="aparencia">
                             Aparência
                         </button>
+                        <button class="config-tab-btn py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300" data-tab="modo">
+                            Modo
+                        </button>
                     </nav>
                 </div>
                 
@@ -63,6 +66,16 @@
                                     <input type="color" id="form-cor-active" value="#3B82F6" class="h-10 w-16 border border-gray-300 dark:border-gray-600 rounded cursor-pointer">
                                     <input type="text" id="form-cor-active-text" value="#3B82F6" class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
                                 </div>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Cor dos elementos ativos do formulário</p>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cor de Fundo</label>
+                                <div class="flex items-center space-x-3">
+                                    <input type="color" id="form-cor-bc" value="#ffffff" class="h-10 w-16 border border-gray-300 dark:border-gray-600 rounded cursor-pointer">
+                                    <input type="text" id="form-cor-bc-text" value="#ffffff" class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                </div>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Cor de fundo do formulário</p>
                             </div>
                             
                             <div class="md:col-span-2">
@@ -119,6 +132,22 @@
                         </div>
                     </div>
                     
+                    <!-- Tab Modo -->
+                    <div id="tab-modo" class="config-tab-content hidden">
+                        <div class="grid grid-cols-1 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tipo de Formulário</label>
+                                <select id="form-modo" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                                    <option value="list">Listagem - Todos os campos em uma página</option>
+                                    <option value="step">Etapas - Formulário dividido em etapas</option>
+                                </select>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    <strong>Listagem:</strong> Todos os campos são exibidos em uma única página.<br>
+                                    <strong>Etapas:</strong> O formulário é dividido em múltiplas etapas para melhor experiência do usuário.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                    
                 </div>
             </div>

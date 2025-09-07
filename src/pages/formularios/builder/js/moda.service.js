@@ -37,6 +37,17 @@ function initConfigModal() {
         }
     });
     
+    // Sincronizar cor do fundo
+    document.getElementById('form-cor-bc').addEventListener('change', function() {
+        document.getElementById('form-cor-bc-text').value = this.value;
+    });
+    
+    document.getElementById('form-cor-bc-text').addEventListener('input', function() {
+        if (/^#[0-9A-F]{6}$/i.test(this.value)) {
+            document.getElementById('form-cor-bc').value = this.value;
+        }
+    });
+    
     // Eventos da área de crop
     document.getElementById('cancel-crop-btn').addEventListener('click', closeCropArea);
     document.getElementById('apply-crop-btn').addEventListener('click', applyCrop);
@@ -92,6 +103,16 @@ function populateFormFields(data) {
         const corTextField = document.getElementById('form-cor-active-text');
         if (corField) corField.value = data.cor_active;
         if (corTextField) corTextField.value = data.cor_active;
+    }
+    if (data.cor_bc) {
+        const corBcField = document.getElementById('form-cor-bc');
+        const corBcTextField = document.getElementById('form-cor-bc-text');
+        if (corBcField) corBcField.value = data.cor_bc;
+        if (corBcTextField) corBcTextField.value = data.cor_bc;
+    }
+    if (data.modo) {
+        const modoField = document.getElementById('form-modo');
+        if (modoField) modoField.value = data.modo;
     }
     if (data.img_url) {
         const imgField = document.getElementById('form-img-url');
@@ -215,7 +236,7 @@ function applyCrop() {
         formData.append('upload_path', 'assets/img/forms/');
         formData.append('file_prefix', 'form_');
         formData.append('allowed_types', 'jpg,jpeg,png,gif');
-        formData.append('max_size', '10485760'); // 10MB
+        formData.append('max_size', '10485760'); 
         
         uploadImage(formData);
     }, 'image/jpeg', 0.9);
@@ -228,7 +249,7 @@ function uploadImage(formData) {
     formData.append('upload_path', 'assets/img/forms');
     formData.append('file_prefix', 'form');
     formData.append('allowed_types', 'image/jpeg,image/png,image/gif,image/webp');
-    formData.append('max_size', '10485760'); // 10MB
+    formData.append('max_size', '10485760');
     
     // Usar o serviço global de upload
     const uploadUrl = `${window.URL_BASE || ''}/config/upload.service.php`;
@@ -298,11 +319,21 @@ function removeImage() {
 
 // Função para abrir modal com dados do formulário atual
 async function openConfigModalWithData() {
+    // Adicionar loading no botão de configurações
+    const configBtn = document.getElementById('config-form-btn');
+    let originalText = '';
+    
+    if (configBtn) {
+        originalText = configBtn.innerHTML;
+        configBtn.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-gray-700 dark:text-gray-300 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Carregando...';
+        configBtn.disabled = true;
+    }
+
     let formData = null;
     
-    // Se estiver em modo de edição, buscar dados da API
-    if (window.currentFormularioId) {
-        try {
+    try {
+        // Se estiver em modo de edição, buscar dados da API
+        if (window.currentFormularioId) {
             const response = await window.formulariosAPI.getFormularioById(window.currentFormularioId);
             if (response.code === 200 && response.data) {
                 formData = {
@@ -310,11 +341,19 @@ async function openConfigModalWithData() {
                     descricao: response.data.descricao || '',
                     redirect_url: response.data.redirect_url || '',
                     cor_active: response.data.cor_active || '#3B82F6',
+                    cor_bc: response.data.cor_bc || '#ffffff',
+                    modo: response.data.modo || 'list',
                     img_url: response.data.img_url || ''
                 };
             }
-        } catch (error) {
-            console.error('Erro ao buscar dados do formulário:', error);
+        }
+    } catch (error) {
+        console.error('Erro ao buscar dados do formulário:', error);
+    } finally {
+        // Restaurar botão
+        if (configBtn) {
+            configBtn.innerHTML = originalText;
+            configBtn.disabled = false;
         }
     }
     
@@ -322,17 +361,123 @@ async function openConfigModalWithData() {
 }
 
 // Função para salvar configurações do formulário
-function saveFormConfig() {
+async function saveFormConfig() {
+    // Adicionar loading no botão
+    const saveBtn = document.getElementById('save-config-btn');
+    if (!saveBtn) {
+        console.error('Botão de salvar não encontrado');
+        return;
+    }
+    
+    const originalText = saveBtn.innerHTML;
+    saveBtn.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Salvando...';
+    saveBtn.disabled = true;
+
     const formData = {
-        slug: document.getElementById('form-slug').value,
-        descricao: document.getElementById('form-descricao').value,
-        redirect_url: document.getElementById('form-redirect-url').value,
-        cor_active: document.getElementById('form-cor-active').value,
-        img_url: document.getElementById('form-img-url').value
+        nome: document.getElementById('form-title-input')?.value || '',
+        slug: document.getElementById('form-slug')?.value || '',
+        descricao: document.getElementById('form-descricao')?.value || '',
+        redirect_url: document.getElementById('form-redirect-url')?.value || '',
+        cor_active: document.getElementById('form-cor-active')?.value || '#7c00c4ff',
+        cor_bc: document.getElementById('form-cor-bc')?.value || '#ffffff',
+        img_url: document.getElementById('preview-img')?.src || '',
+        processo_etapa_id: document.getElementById('processo-etapa-select')?.value || '',
+        modo: document.getElementById('form-modo')?.value || 'list',
+        dados: window.formBuilder.getFormJson()
     };
     
-    // Configurações salvas
-    closeConfigModal();
+    // Verificar se é edição ou criação e fazer a requisição real
+    setTimeout(async () => {
+        try {
+            // Verificar se é edição ou criação
+            const urlParams = new URLSearchParams(window.location.search);
+            const formularioId = urlParams.get('id');
+
+            if (!formularioId) {
+                // Se não tem ID, apenas fechar o modal sem salvar
+                if (window.formBuilder && window.formBuilder.showNotification) {
+                    window.formBuilder.showNotification('Configurações aplicadas! Use o botão "Salvar" para salvar o formulário.', 'info');
+                }
+                closeConfigModal();
+                return;
+            }
+
+            // Preparar dados para atualização
+            const ministerioId = window.formulariosAPI.getMinisterioId();
+            const processoEtapaInput = document.getElementById('processo-etapa-select');
+            const processoEtapaValue = processoEtapaInput ? processoEtapaInput.value.trim() : '';
+            const processoEtapaIds = processoEtapaValue ? processoEtapaValue.split(',').filter(id => id.trim()).map(id => parseInt(id.trim())) : [];
+
+            const updateData = {
+                id: formularioId,
+                nome: document.getElementById('form-title-input')?.value || 'Formulário Personalizado',
+                slug: document.getElementById('form-slug')?.value || null,
+                descricao: document.getElementById('form-descricao')?.value || null,
+                redirect_url: document.getElementById('form-redirect-url')?.value || null,
+                cor_active: document.getElementById('form-cor-active')?.value || null,
+                cor_bc: document.getElementById('form-cor-bc')?.value || null,
+                img_url: document.getElementById('form-img-url')?.value ? document.getElementById('form-img-url')?.value.split('/').pop() : null,
+                processo_etapa_id: processoEtapaIds.length > 0 ? processoEtapaIds[0] : null,
+                modo: document.getElementById('form-modo')?.value || 'list',
+                ministerio_id: ministerioId,
+                dados: JSON.stringify({
+                    elements: window.formBuilder ? window.formBuilder.formElements.map(element => {
+                        const properties = { ...element.props };
+                        // Substituir helpText por placeholder no JSON final
+                        if (properties.helpText !== undefined) {
+                            properties.placeholder = properties.helpText;
+                            delete properties.helpText;
+                        }
+                        // Garante que options de radio/select/checkbox são [{id,label}]
+                        if (["radio","select","checkbox"].includes(element.type) && Array.isArray(properties.options)) {
+                            properties.options = properties.options.map(opt =>
+                                typeof opt === 'object' && opt !== null && 'id' in opt && 'label' in opt
+                                    ? opt
+                                    : { id: 'op' + Math.random().toString(36).substr(2, 6), label: String(opt) }
+                            );
+                        }
+                        
+                        // Inclui allowOther se definido para elementos de seleção
+                        if (["radio","select","checkbox"].includes(element.type) && element.props.allowOther !== undefined) {
+                            properties.allowOther = element.props.allowOther;
+                        }
+                        
+                        return {
+                            id: element.id,
+                            type: element.type,
+                            properties: properties
+                        };
+                    }) : []
+                })
+            };
+
+            // Fazer a requisição de atualização
+            const result = await window.formulariosAPI.updateFormulario(formularioId, updateData);
+            
+            if (result && result.code === 200) {
+                // Configurações salvas com sucesso
+                closeConfigModal();
+                
+                if (window.formBuilder && window.formBuilder.showNotification) {
+                    window.formBuilder.showNotification('Configurações salvas com sucesso!', 'success');
+                }
+            } else {
+                throw new Error(result?.message || 'Erro ao salvar configurações');
+            }
+
+        } catch (error) {
+            console.error('Erro ao salvar configurações:', error);
+            if (window.formBuilder && window.formBuilder.showNotification) {
+                window.formBuilder.showNotification('Erro ao salvar configurações: ' + error.message, 'error');
+            }
+        } finally {
+            // Restaurar botão
+            if (saveBtn) {
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            }
+        }
+    }, 100);
 }
 
 // Expor função para uso externo

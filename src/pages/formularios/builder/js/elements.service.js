@@ -260,12 +260,11 @@ class FormElements {
                 icon: 'separator',
                 defaultProps: {
                     style: 'solid',
-                    thickness: '1',
-                    color: 'gray'
+                    thickness: '1'
                 },
                 template: (props, id) => `
                     <div class="mb-4">
-                        <hr class="border-${props.color}-300 dark:border-${props.color}-600" style="border-style: ${props.style}; border-width: ${props.thickness}px;">
+                        <hr class="border-gray-300 dark:border-gray-600" style="border-style: ${props.style}; border-width: ${props.thickness}px;">
                     </div>
                 `
             },
@@ -404,6 +403,64 @@ class FormElements {
                         ${props.helpText ? `<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">${props.helpText}</p>` : ''}
                     </div>
                 `
+            },
+            
+            range: {
+                type: 'range',
+                label: 'Slider (Range)',
+                icon: 'range',
+                defaultProps: {
+                    label: 'Selecione um valor',
+                    min: 0,
+                    max: 100,
+                    step: 1,
+                    defaultValue: 50,
+                    showValue: true,
+                    required: false,
+                    helpText: ''
+                },
+                template: (props, id) => `
+                    <div class="mb-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            ${props.label}
+                            ${props.required ? '<span class="text-red-500">*</span>' : ''}
+                            ${props.showValue ? `<span class="float-right text-sm font-normal" id="${id}_value">${props.defaultValue}</span>` : ''}
+                        </label>
+                        <input type="range" 
+                               name="${id}"
+                               id="${id}_input"
+                               min="${props.min}" 
+                               max="${props.max}" 
+                               step="${props.step}" 
+                               value="${props.defaultValue}"
+                               class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 slider"
+                               ${props.required ? 'required' : ''}
+                               oninput="${props.showValue ? `document.getElementById('${id}_value').textContent = this.value` : ''}">
+                        <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            <span>${props.min}</span>
+                            <span>${props.max}</span>
+                        </div>
+                        ${props.helpText ? `<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">${props.helpText}</p>` : ''}
+                    </div>
+                    <style>
+                        .slider::-webkit-slider-thumb {
+                            appearance: none;
+                            height: 20px;
+                            width: 20px;
+                            border-radius: 50%;
+                            background: #3B82F6;
+                            cursor: pointer;
+                        }
+                        .slider::-moz-range-thumb {
+                            height: 20px;
+                            width: 20px;
+                            border-radius: 50%;
+                            background: #3B82F6;
+                            cursor: pointer;
+                            border: none;
+                        }
+                    </style>
+                `
             }
         };
     }
@@ -444,7 +501,8 @@ class FormElements {
             birthdate: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>',
             datetime: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
             nome: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>',
-            whatsapp: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>'
+            whatsapp: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>',
+            range: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4"/></svg>'
         };
         return icons[type] || icons.text;
     }
@@ -465,7 +523,8 @@ class FormElements {
             birthdate: 'Campo de data de nascimento',
             datetime: 'Campo de data e/ou hora',
             nome: 'Campo para nome completo',
-            whatsapp: 'Campo para número do WhatsApp'
+            whatsapp: 'Campo para número do WhatsApp',
+            range: 'Slider para seleção de valores'
         };
         return descriptions[type] || 'Elemento de formulário';
     }

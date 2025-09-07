@@ -62,11 +62,12 @@ class FormBuilder {
         
         // Definir categorias
         const categories = {
+            'Conteúdo': ['title', 'description', 'separator'],
+            'Campos Especiais': ['cpf', 'nome', 'birthdate', 'whatsapp'],
+            'Seleção': ['radio', 'select', 'checkbox', 'range'],
             'Campos de Entrada': ['text', 'number', 'email'],
-            'Campos Especiais': ['cpf', 'birthdate', 'nome', 'whatsapp'],
-            'Seleção': ['radio', 'select', 'checkbox'],
             'Data e Hora': ['datetime'],
-            'Conteúdo': ['title', 'description', 'separator']
+
         };
         
         let html = '';
@@ -352,11 +353,20 @@ class FormBuilder {
 
     // Salva o formulário
     async saveForm() {
+        const saveButton = document.getElementById('save-form-btn');
+        
         try {
             if (this.formElements.length === 0) {
-            this.showNotification('Adicione pelo menos um elemento ao formulário antes de salvar.', 'error');
-            return;
-        }
+                this.showNotification('Adicione pelo menos um elemento ao formulário antes de salvar.', 'error');
+                return;
+            }
+
+            // Ativar loading
+            if (saveButton) {
+                saveButton.disabled = true;
+                const originalText = saveButton.textContent;
+                saveButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Salvando...';
+            }
 
             const formTitle = document.getElementById('form-title-input')?.value || 'Formulário Personalizado';
             const processoEtapaInput = document.getElementById('processo-etapa-select');
@@ -442,6 +452,12 @@ class FormBuilder {
         } catch (error) {
             console.error('Erro ao salvar formulário:', error);
             this.showNotification('Erro ao salvar formulário: ' + error.message, 'error');
+        } finally {
+            // Desativar loading
+            if (saveButton) {
+                saveButton.disabled = false;
+                saveButton.innerHTML = '<i class="fa fa-save me-2"></i>Salvar';
+            }
         }
     }
 
@@ -470,7 +486,7 @@ class FormBuilder {
     // Obter todos os elementos que podem ser usados como campos em condições
     getFieldElements() {
         return this.formElements.filter(element => {
-            const fieldTypes = ['text', 'number', 'email', 'radio', 'select', 'checkbox', 'cpf', 'nome', 'whatsapp'];
+            const fieldTypes = ['text', 'number', 'email', 'radio', 'select', 'checkbox', 'cpf', 'nome', 'whatsapp', 'range'];
             return fieldTypes.includes(element.type);
         });
     }
@@ -765,6 +781,64 @@ class FormBuilder {
                 modal.remove();
             }
         });
+    }
+
+    // Função para gerar sequência dos elementos
+    generateElementSequence() {
+        const sequence = this.formElements.map((element, index) => ({
+            position: index + 1,
+            id: element.id,
+            type: element.type,
+            label: element.props.label || element.props.text || `Elemento ${index + 1}`,
+            required: element.props.required || false
+        }));
+        
+        return sequence;
+    }
+
+    // Função para reordenar elementos por sequência
+    reorderElementsBySequence(newSequence) {
+        // Valida se a sequência contém todos os elementos
+        if (newSequence.length !== this.formElements.length) {
+            console.error('Sequência inválida: número de elementos não confere');
+            return false;
+        }
+
+        // Reordena o array de elementos baseado na nova sequência
+        const reorderedElements = [];
+        newSequence.forEach(seqItem => {
+            const element = this.formElements.find(el => el.id === seqItem.id);
+            if (element) {
+                reorderedElements.push(element);
+            }
+        });
+
+        if (reorderedElements.length === this.formElements.length) {
+            this.formElements = reorderedElements;
+            this.renderForm();
+            this.updateJsonOutput();
+            return true;
+        }
+
+        return false;
+    }
+
+    // Função para mover elemento para uma posição específica
+    moveElementToPosition(elementId, newPosition) {
+        const elementIndex = this.formElements.findIndex(el => el.id === elementId);
+        if (elementIndex === -1 || newPosition < 0 || newPosition >= this.formElements.length) {
+            return false;
+        }
+
+        // Remove o elemento da posição atual
+        const element = this.formElements.splice(elementIndex, 1)[0];
+        
+        // Insere na nova posição
+        this.formElements.splice(newPosition, 0, element);
+        
+        this.renderForm();
+        this.updateJsonOutput();
+        return true;
     }
 }
 

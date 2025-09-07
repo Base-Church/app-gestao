@@ -226,7 +226,7 @@ class PropertiesManager {
      // Obter campos disponíveis para condições
      getAvailableFields() {
          return this.formBuilder.formElements
-             .filter(el => el.id !== this.currentElement.id && ['text', 'number', 'email', 'radio', 'select', 'checkbox'].includes(el.type))
+             .filter(el => el.id !== this.currentElement.id && ['text', 'number', 'email', 'radio', 'select', 'checkbox', 'range'].includes(el.type))
              .map(el => ({ id: el.id, label: el.props.label || el.props.placeholder || `Campo ${el.type}` }));
      }
 
@@ -354,6 +354,9 @@ class PropertiesManager {
                 break;
             case 'whatsapp':
                 html += this.renderWhatsappProperties(element);
+                break;
+            case 'range':
+                html += this.renderRangeProperties(element);
                 break;
         }
 
@@ -708,6 +711,7 @@ class PropertiesManager {
     }
 
     // Propriedades para WhatsApp
+    // Propriedades para WhatsApp
     renderWhatsappProperties(element) {
         return `
             <div class="space-y-4">
@@ -725,6 +729,57 @@ class PropertiesManager {
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Texto de Ajuda</label>
                     <textarea id="prop-helpText" rows="2" 
                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">${element.props.helpText || ''}</textarea>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="prop-required" ${element.props.required ? 'checked' : ''} 
+                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                    <label for="prop-required" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Campo obrigatório</label>
+                </div>
+            </div>
+        `;
+    }
+
+    // Propriedades para Range Slider
+    renderRangeProperties(element) {
+        return `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rótulo</label>
+                    <input type="text" id="prop-label" value="${element.props.label}" 
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valor Mínimo</label>
+                        <input type="number" id="prop-min" value="${element.props.min || 0}" 
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valor Máximo</label>
+                        <input type="number" id="prop-max" value="${element.props.max || 100}" 
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Incremento</label>
+                        <input type="number" id="prop-step" value="${element.props.step || 1}" 
+                               step="0.1" min="0.1"
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valor Padrão</label>
+                    <input type="number" id="prop-defaultValue" value="${element.props.defaultValue || 50}" 
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Texto de Ajuda</label>
+                    <textarea id="prop-helpText" rows="2" 
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white text-sm">${element.props.helpText || ''}</textarea>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="prop-showValue" ${element.props.showValue ? 'checked' : ''} 
+                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                    <label for="prop-showValue" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Exibir valor atual</label>
                 </div>
                 <div class="flex items-center">
                     <input type="checkbox" id="prop-required" ${element.props.required ? 'checked' : ''} 

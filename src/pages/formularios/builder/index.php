@@ -89,73 +89,44 @@ require_once __DIR__ . '/../../../components/layout/header.php';
                         <p class="text-sm text-gray-500 dark:text-gray-400">Arraste os elementos para o formulário</p>
                     </div>
                     <div class="p-3 space-y-2 overflow-y-auto" style="height: calc(100% - 80px);">
-                        <!-- Elementos de Input -->
-                        <div class="space-y-1">
-                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Campos de Entrada</h4>
-                            
-                            <!-- Text Input -->
-                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" 
-                                 data-type="text" draggable="true">
+                        <!-- Elementos de Conteúdo -->
+                        <div class="space-y-1 pt-3 border-t border-gray-200 dark:border-gray-600">
+                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Conteúdo</h4>
+                            <!-- Título -->
+                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-type="title" draggable="true">
+                                <div class="flex items-center">
+                                    <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Título</span>
+                                </div>
+                            </div>
+                            <!-- Descrição -->
+                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-type="description" draggable="true">
                                 <div class="flex items-center">
                                     <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
                                     </svg>
-                                   
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Descrição</span>
+                                </div>
+                            </div>
+                            <!-- Separador -->
+                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-type="separator" draggable="true">
+                                <div class="flex items-center">
+                                    <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Separador</span>
                                 </div>
                             </div>
 
-                            <!-- Number Input -->
-                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" 
-                                 data-type="number" draggable="true">
+                            <!-- Range Slider -->
+                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-type="range" draggable="true">
                                 <div class="flex items-center">
                                     <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
                                     </svg>
-                                  
-                                </div>
-                            </div>
-
-                            <!-- Email Input -->
-                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" 
-                                 data-type="email" draggable="true">
-                                <div class="flex items-center">
-                                    <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
-                                    </svg>
-                               
-                                </div>
-                            </div>
-
-                            <!-- Radio Button -->
-                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" 
-                                 data-type="radio" draggable="true">
-                                <div class="flex items-center">
-                                    <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                 
-                                </div>
-                            </div>
-
-                            <!-- Select -->
-                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" 
-                                 data-type="select" draggable="true">
-                                <div class="flex items-center">
-                                    <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"/>
-                                    </svg>
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Lista Suspensa</span>
-                                </div>
-                            </div>
-
-                            <!-- Checkbox -->
-                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" 
-                                 data-type="checkbox" draggable="true">
-                                <div class="flex items-center">
-                                    <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Caixa de Seleção</span>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Range Slider</span>
                                 </div>
                             </div>
                         </div>
@@ -163,10 +134,8 @@ require_once __DIR__ . '/../../../components/layout/header.php';
                         <!-- Elementos Especiais -->
                         <div class="space-y-1 pt-3 border-t border-gray-200 dark:border-gray-600">
                             <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Elementos Especiais</h4>
-                            
                             <!-- CPF -->
-                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" 
-                                 data-type="cpf" draggable="true">
+                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-type="cpf" draggable="true">
                                 <div class="flex items-center">
                                     <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -174,10 +143,8 @@ require_once __DIR__ . '/../../../components/layout/header.php';
                                     <span class="text-sm font-medium text-gray-700 dark:text-gray-300">CPF</span>
                                 </div>
                             </div>
-
                             <!-- Data de Nascimento -->
-                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" 
-                                 data-type="birthdate" draggable="true">
+                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-type="birthdate" draggable="true">
                                 <div class="flex items-center">
                                     <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -185,10 +152,8 @@ require_once __DIR__ . '/../../../components/layout/header.php';
                                     <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Data de Nascimento</span>
                                 </div>
                             </div>
-
                             <!-- Nome Completo -->
-                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" 
-                                 data-type="nome" draggable="true">
+                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-type="nome" draggable="true">
                                 <div class="flex items-center">
                                     <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
@@ -196,10 +161,8 @@ require_once __DIR__ . '/../../../components/layout/header.php';
                                     <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Nome Completo</span>
                                 </div>
                             </div>
-
                             <!-- WhatsApp -->
-                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" 
-                                 data-type="whatsapp" draggable="true">
+                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-type="whatsapp" draggable="true">
                                 <div class="flex items-center">
                                     <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
@@ -209,56 +172,75 @@ require_once __DIR__ . '/../../../components/layout/header.php';
                             </div>
                         </div>
 
-                        <!-- Elementos Básicos Adicionais -->
+                        <!-- Seleção -->
                         <div class="space-y-1 pt-3 border-t border-gray-200 dark:border-gray-600">
-                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Data e Hora</h4>
-                            
+                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Seleção</h4>
+                            <!-- Select -->
+                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-type="select" draggable="true">
+                                <div class="flex items-center">
+                                    <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"/>
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Lista Suspensa</span>
+                                </div>
+                            </div>
+                            <!-- Radio Button -->
+                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-type="radio" draggable="true">
+                                <div class="flex items-center">
+                                    <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Botão de Opção</span>
+                                </div>
+                            </div>
+                            <!-- Checkbox -->
+                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-type="checkbox" draggable="true">
+                                <div class="flex items-center">
+                                    <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Caixa de Seleção</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Campos de Entrada -->
+                        <div class="space-y-1 pt-3 border-t border-gray-200 dark:border-gray-600">
+                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Campos de Entrada</h4>
+                            <!-- Text Input -->
+                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-type="text" draggable="true">
+                                <div class="flex items-center">
+                                    <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Texto</span>
+                                </div>
+                            </div>
+                            <!-- Number Input -->
+                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-type="number" draggable="true">
+                                <div class="flex items-center">
+                                    <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Número</span>
+                                </div>
+                            </div>
+                            <!-- Email Input -->
+                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-type="email" draggable="true">
+                                <div class="flex items-center">
+                                    <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">E-mail</span>
+                                </div>
+                            </div>
                             <!-- Data e Hora -->
-                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" 
-                                 data-type="datetime" draggable="true">
+                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" data-type="datetime" draggable="true">
                                 <div class="flex items-center">
                                     <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                     <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Data e Hora</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Elementos de Conteúdo -->
-                        <div class="space-y-1 pt-3 border-t border-gray-200 dark:border-gray-600">
-                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Conteúdo</h4>
-                            
-                            <!-- Título -->
-                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" 
-                                 data-type="title" draggable="true">
-                                <div class="flex items-center">
-                                    <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                                    </svg>
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Título</span>
-                                </div>
-                            </div>
-
-                            <!-- Descrição -->
-                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" 
-                                 data-type="description" draggable="true">
-                                <div class="flex items-center">
-                                    <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
-                                    </svg>
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Descrição</span>
-                                </div>
-                            </div>
-
-                            <!-- Separador -->
-                            <div class="element-item bg-gray-50 dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600 cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" 
-                                 data-type="separator" draggable="true">
-                                <div class="flex items-center">
-                                    <svg class="h-5 w-5 text-gray-500 dark:text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
-                                    </svg>
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Separador</span>
                                 </div>
                             </div>
                         </div>

@@ -179,6 +179,32 @@ class FormPreview {
                     </div>
                 `;
                 break;
+
+            case 'range':
+                html = `
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            ${element.props.label || 'Selecione um valor'}
+                            ${element.props.required ? '<span class="text-red-500">*</span>' : ''}
+                            ${element.props.showValue ? `<span class="float-right text-sm font-normal" id="${element.id}_preview_value">${element.props.defaultValue || 50}</span>` : ''}
+                        </label>
+                        <input type="range" 
+                               name="${element.props.name || element.id}"
+                               min="${element.props.min || 0}" 
+                               max="${element.props.max || 100}" 
+                               step="${element.props.step || 1}" 
+                               value="${element.props.defaultValue || 50}"
+                               ${element.props.required ? 'required' : ''}
+                               class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+                               oninput="${element.props.showValue ? `document.getElementById('${element.id}_preview_value').textContent = this.value` : ''}">
+                        <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            <span>${element.props.min || 0}</span>
+                            <span>${element.props.max || 100}</span>
+                        </div>
+                        ${element.props.helpText ? `<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">${element.props.helpText}</p>` : ''}
+                    </div>
+                `;
+                break;
                 
             case 'title':
                 html = `
@@ -293,7 +319,7 @@ class FormPreview {
         wrapper.innerHTML = html;
         
         // Adicionar event listeners para campos que podem afetar condições
-        if (['text', 'email', 'number', 'radio', 'select', 'checkbox', 'cpf', 'birthdate', 'datetime', 'nome', 'whatsapp'].includes(element.type)) {
+        if (['text', 'email', 'number', 'radio', 'select', 'checkbox', 'cpf', 'birthdate', 'datetime', 'nome', 'whatsapp', 'range'].includes(element.type)) {
             const inputs = wrapper.querySelectorAll('input, select');
             inputs.forEach(input => {
                 input.addEventListener('change', () => {
