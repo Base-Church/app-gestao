@@ -162,10 +162,6 @@ document.addEventListener('DOMContentLoaded', function () {
                class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
               <span class="sidebar-text">Recados</span>
             </a>
-            <a title="Aniversariantes" href="<?php echo $_ENV['URL_BASE']; ?>/aniversariantes"
-               class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
-              <span class="sidebar-text">Aniversariantes</span>
-            </a>
           </div>
         </div>
 
@@ -212,6 +208,10 @@ document.addEventListener('DOMContentLoaded', function () {
                class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
               <span class="sidebar-text">Ver eventos</span>
             </a>
+             <a title="checkin" href="<?php echo $_ENV['URL_BASE']; ?>/checkin"
+               class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+              <span class="sidebar-text">Check-in</span>
+            </a>
             <a title="Calendários" href="<?php echo $_ENV['URL_BASE']; ?>/eventos/agenda"
                class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
               <span class="sidebar-text">Calendários</span>
@@ -236,6 +236,10 @@ document.addEventListener('DOMContentLoaded', function () {
             <a title="Ver voluntários" href="<?php echo $_ENV['URL_BASE']; ?>/voluntarios"
                class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
               <span class="sidebar-text">Ver voluntários</span>
+            </a>
+            <a title="Aniversariantes" href="<?php echo $_ENV['URL_BASE']; ?>/aniversariantes"
+               class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">
+              <span class="sidebar-text">Aniversariantes</span>
             </a>
             <a title="Calendário" href="<?php echo $_ENV['URL_BASE']; ?>/calendario"
                class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200">

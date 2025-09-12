@@ -1200,6 +1200,10 @@ select {
   z-index: 6000;
 }
 
+.z-\[9999\] {
+  z-index: 9999;
+}
+
 .col-span-3 {
   grid-column: span 3 / span 3;
 }
@@ -3544,6 +3548,11 @@ select {
 .text-yellow-900 {
   --tw-text-opacity: 1;
   color: rgb(113 63 18 / var(--tw-text-opacity, 1));
+}
+
+.text-black {
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
 }
 
 .opacity-0 {

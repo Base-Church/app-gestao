@@ -69,6 +69,9 @@ return [
 
     // Configurações
     '/configuracoes'                        => '/src/pages/configuracoes/index.php',
+    
+        // Configurações
+    '/checkin'                        => '/src/pages/checkin/index.php',
 
     // Páginas públicas
     '/login'                                => '/src/pages/login/index.php',
