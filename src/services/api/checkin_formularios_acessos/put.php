@@ -22,15 +22,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
     returnError('Método não permitido', 405);
 }
 
-$processo_etapa_id = $_GET['id'] ?? null;
-if (!$processo_etapa_id) {
-    returnError('ID da etapa não informado');
+$checkin_formulario_acesso_id = $_GET['id'] ?? null;
+if (!$checkin_formulario_acesso_id) {
+    returnError('ID do acesso do formulário de check-in não informado');
 }
 
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);
-
-
 
 $organizacao_id = SessionService::getOrganizacaoId();
 if (!$organizacao_id) {
@@ -41,7 +39,7 @@ if (!isset($data['organizacao_id'])) {
 }
 
 $apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
-$apiUrl = rtrim($apiBase, '/') . '/processo_etapas/' . $processo_etapa_id;
+$apiUrl = rtrim($apiBase, '/') . '/checkin_formularios_acessos/' . $checkin_formulario_acesso_id;
 $ch = curl_init();
 curl_setopt_array($ch, [
     CURLOPT_URL => $apiUrl,

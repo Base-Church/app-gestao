@@ -43,6 +43,13 @@ require_once __DIR__ . '/../../../components/layout/header.php';
                             </svg>
                             Configurações
                         </button>
+                        <button id="checkin-config-btn" data-action="open-checkin-modal" 
+                                class="inline-flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 dark:focus:ring-offset-gray-800 transition-all duration-200 hover:shadow-md">
+                            <svg class="-ml-1 mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 00-2-2z"/>
+                            </svg>
+                            Check-in
+                        </button>
                     </div>
                 </div>
             
@@ -398,6 +405,9 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 <!-- Incluir Modal de Configuração -->
 <?php include __DIR__ . '/modal/modal.config.service.php'; ?>
 
+<!-- Incluir Modal de Check-in -->
+<?php include __DIR__ . '/modal/modal.checkin.service.php'; ?>
+
 <!-- Scripts da página -->
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -411,6 +421,7 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/preview.service.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/moda.service.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/api.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/checkin.service.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/form.builder.service.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/main.service.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/edit.service.js"></script>
@@ -426,6 +437,16 @@ require_once __DIR__ . '/../../../components/layout/header.php';
     .sortable-drag {
         transform: rotate(3deg) scale(1.05);
         transition: transform 0.2s ease;
+    }
+    
+    /* Estilos específicos para check-in */
+    .checkin-item.sortable-chosen {
+        box-shadow: 0 0 0 2px rgb(34 197 94 / 0.5);
+        background-color: rgb(34 197 94 / 0.1);
+    }
+    
+    .checkin-item .cursor-move:hover {
+        color: rgb(34 197 94);
     }
     
     /* Animações para notificações e modal */

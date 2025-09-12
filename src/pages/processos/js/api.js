@@ -56,10 +56,16 @@ export class ProcessosAPI {
     }
 
     async atualizarEtapa(id, dados) {
+        // Garante que ministerio_id esteja sempre presente no payload
+        const payload = {
+            ...dados,
+            ministerio_id: dados.ministerio_id
+        };
+        
         const response = await fetch(`${this.baseUrl}/processos_etapas/put.php?id=${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(dados)
+            body: JSON.stringify(payload)
         });
         if (!response.ok) throw new Error('Erro ao atualizar etapa');
         return await response.json();
@@ -74,22 +80,29 @@ export class ProcessosAPI {
     }
 
     async reordenarEtapas(etapas) {
-        // Atualiza cada etapa individualmente, enviando apenas nome e orden
-        for (const etapa of etapas) {
-            const payload = {
-                nome: etapa.nome,
-                orden: etapa.orden
-            };
-            const response = await fetch(`${this.baseUrl}/processos_etapas/put.php?id=${etapa.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'Erro ao reordenar etapas');
+        try {
+            // Atualiza cada etapa individualmente, enviando nome, orden e ministerio_id
+            for (const etapa of etapas) {
+                const payload = {
+                    nome: etapa.nome,
+                    orden: etapa.orden,
+                    ministerio_id: etapa.ministerio_id
+                };
+                const response = await fetch(`${this.baseUrl}/processos_etapas/put.php?id=${etapa.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || errorData.error || `Erro HTTP ${response.status}`);
+                }
             }
+            return { success: true, message: 'Etapas reordenadas com sucesso' };
+        } catch (error) {
+            console.error('Erro ao reordenar etapas:', error);
+            throw new Error(error.message || 'Erro ao reordenar etapas');
         }
-        return { success: true };
     }
 }

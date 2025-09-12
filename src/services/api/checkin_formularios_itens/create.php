@@ -18,34 +18,29 @@ if (!SessionService::isLoggedIn()) {
 if (!SessionService::hasToken()) {
     returnError('Token de autenticação não encontrado', 401);
 }
-if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     returnError('Método não permitido', 405);
-}
-
-$processo_etapa_id = $_GET['id'] ?? null;
-if (!$processo_etapa_id) {
-    returnError('ID da etapa não informado');
 }
 
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);
 
-
+if (!$data || !isset($data['nome']) || !isset($data['data']) || !isset($data['hora']) || !isset($data['ordem']) || !isset($data['checkin_formularios_id'])) {
+    returnError('Dados inválidos ou incompletos');
+}
 
 $organizacao_id = SessionService::getOrganizacaoId();
 if (!$organizacao_id) {
     returnError('Organização não encontrada');
 }
-if (!isset($data['organizacao_id'])) {
-    $data['organizacao_id'] = $organizacao_id;
-}
+$data['organizacao_id'] = $organizacao_id;
 
 $apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
-$apiUrl = rtrim($apiBase, '/') . '/processo_etapas/' . $processo_etapa_id;
+$apiUrl = rtrim($apiBase, '/') . '/checkin_formularios_itens';
 $ch = curl_init();
 curl_setopt_array($ch, [
     CURLOPT_URL => $apiUrl,
-    CURLOPT_CUSTOMREQUEST => 'PUT',
+    CURLOPT_POST => true,
     CURLOPT_POSTFIELDS => json_encode($data),
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [

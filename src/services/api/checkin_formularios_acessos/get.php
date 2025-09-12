@@ -18,38 +18,38 @@ if (!SessionService::isLoggedIn()) {
 if (!SessionService::hasToken()) {
     returnError('Token de autenticação não encontrado', 401);
 }
-if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
-    returnError('Método não permitido', 405);
-}
-
-$processo_etapa_id = $_GET['id'] ?? null;
-if (!$processo_etapa_id) {
-    returnError('ID da etapa não informado');
-}
-
-$json = file_get_contents('php://input');
-$data = json_decode($json, true);
-
-
 
 $organizacao_id = SessionService::getOrganizacaoId();
+$checkin_formularios_id = $_GET['checkin_formularios_id'] ?? null;
+
 if (!$organizacao_id) {
     returnError('Organização não encontrada');
 }
-if (!isset($data['organizacao_id'])) {
-    $data['organizacao_id'] = $organizacao_id;
+if (!$checkin_formularios_id) {
+    returnError('ID do formulário de check-in não informado');
 }
 
 $apiBase = $_ENV['API_BASE_URL'] ?? ($_SERVER['API_BASE_URL'] ?? null);
-$apiUrl = rtrim($apiBase, '/') . '/processo_etapas/' . $processo_etapa_id;
+$apiUrl = rtrim($apiBase, '/') . '/checkin_formularios_acessos';
+
+$params = [
+    'organizacao_id' => $organizacao_id,
+    'checkin_formularios_id' => $checkin_formularios_id
+];
+
+foreach ($_GET as $key => $value) {
+    if (!isset($params[$key])) {
+        $params[$key] = $value;
+    }
+}
+
+$url = $apiUrl . '?' . http_build_query($params);
+
 $ch = curl_init();
 curl_setopt_array($ch, [
-    CURLOPT_URL => $apiUrl,
-    CURLOPT_CUSTOMREQUEST => 'PUT',
-    CURLOPT_POSTFIELDS => json_encode($data),
+    CURLOPT_URL => $url,
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [
-        'Content-Type: application/json',
         'Accept: application/json',
         'Authorization: Bearer ' . SessionService::getToken()
     ]
@@ -59,9 +59,16 @@ $response = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
 if (curl_errno($ch)) {
-    returnError('Erro ao conectar com API: ' . curl_error($ch), 500);
+    curl_close($ch);
+    returnError('Erro na conexão com a API: ' . curl_error($ch));
 }
+
 curl_close($ch);
+
+$data = json_decode($response, true);
+if (json_last_error() !== JSON_ERROR_NONE) {
+    returnError('Resposta inválida da API');
+}
 
 http_response_code($httpCode);
 echo $response;
