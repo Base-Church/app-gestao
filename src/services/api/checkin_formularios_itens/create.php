@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);
 
-if (!$data || !isset($data['nome']) || !isset($data['data']) || !isset($data['hora']) || !isset($data['ordem']) || !isset($data['checkin_formularios_id'])) {
+if (!$data || !isset($data['nome']) || !isset($data['ordem']) || !isset($data['checkin_formularios_id'])) {
     returnError('Dados inválidos ou incompletos');
 }
 

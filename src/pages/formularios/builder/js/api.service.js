@@ -408,7 +408,7 @@ class FormulariosAPI {
                 ministerioId = this.getMinisterioId();
             }
             
-            const response = await fetch(`${this.baseUrl}/src/services/api/processos/get.php?ministerio_id=${ministerioId}`);
+            const response = await fetch(`${this.baseUrl}/src/services/api/processos_etapas/get.php?ministerio_id=${ministerioId}`);
             
             if (!response.ok) {
                 const errorText = await response.text();

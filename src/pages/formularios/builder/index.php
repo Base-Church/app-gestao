@@ -421,6 +421,7 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/preview.service.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/moda.service.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/api.service.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/checkin.ui.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/checkin.service.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/form.builder.service.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/formularios/builder/js/main.service.js"></script>
