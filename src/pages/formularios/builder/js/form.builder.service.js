@@ -63,8 +63,9 @@ class FormBuilder {
         // Definir categorias
         const categories = {
             'Conteúdo': ['title', 'description', 'separator'],
-            'Campos Especiais': ['cpf', 'nome', 'birthdate', 'whatsapp'],
+            'Campos Especiais': ['cpf', 'nome', 'birthdate', 'whatsapp', 'sexo', 'batismo', 'estado_civil'],
             'Seleção': ['radio', 'select', 'checkbox', 'range'],
+            'Gestão Interna': ['gestao_interna'],
             'Campos de Entrada': ['text', 'number', 'email'],
             'Data e Hora': ['datetime'],
 
@@ -139,6 +140,9 @@ class FormBuilder {
             this.formElements.push(element);
         }
 
+        // Configura condições automáticas se necessário
+        this.setupAutomaticConditions();
+
         this.renderForm();
         this.updateJsonOutput();
         this.selectElement(element.id);
@@ -187,6 +191,40 @@ class FormBuilder {
         
         this.renderForm();
         this.updateJsonOutput();
+    }
+
+    // Configura condições automáticas para campos relacionados
+    setupAutomaticConditions() {
+        const estadoCivilElements = this.formElements.filter(el => el.type === 'estado_civil');
+        const conjugueElements = this.formElements.filter(el => el.type === 'conjugue');
+        
+        // Para cada campo de cônjuge, configura condições baseadas no estado civil
+        conjugueElements.forEach(conjugueEl => {
+            if (estadoCivilElements.length > 0) {
+                const estadoCivilEl = estadoCivilElements[0]; // Usa o primeiro campo de estado civil encontrado
+                
+                // Limpa condições existentes
+                conjugueEl.props.conditions = [];
+                
+                // Adiciona condição para 'Casado(a)'
+                conjugueEl.props.conditions.push({
+                    id: 'condition_casado_' + Date.now(),
+                    field: estadoCivilEl.id,
+                    operator: 'equals',
+                    value: 'casado',
+                    action: 'show'
+                });
+                
+                // Adiciona condição para 'União Estável'
+                conjugueEl.props.conditions.push({
+                    id: 'condition_uniao_' + Date.now(),
+                    field: estadoCivilEl.id,
+                    operator: 'equals',
+                    value: 'uniao_estavel',
+                    action: 'show'
+                });
+            }
+        });
     }
 
     // Seleciona um elemento
@@ -325,7 +363,7 @@ class FormBuilder {
                     delete properties.helpText;
                 }
                 // Garante que options de radio/select/checkbox são [{id,label}]
-                if (["radio","select","checkbox"].includes(element.type) && Array.isArray(properties.options)) {
+                if (["radio","select","checkbox","sexo","gestao_interna","estado_civil","conjugue","batismo"].includes(element.type) && Array.isArray(properties.options)) {
                     properties.options = properties.options.map(opt =>
                         typeof opt === 'object' && opt !== null && 'id' in opt && 'label' in opt
                             ? opt
@@ -334,7 +372,7 @@ class FormBuilder {
                 }
                 
                 // Inclui allowOther se definido para elementos de seleção
-                if (["radio","select","checkbox"].includes(element.type) && element.props.allowOther !== undefined) {
+                if (["radio","select","checkbox","sexo","gestao_interna","estado_civil","conjugue","batismo"].includes(element.type) && element.props.allowOther !== undefined) {
                     properties.allowOther = element.props.allowOther;
                 }
                 
@@ -409,7 +447,7 @@ class FormBuilder {
                             delete properties.helpText;
                         }
                         // Garante que options de radio/select/checkbox são [{id,label}]
-                        if (["radio","select","checkbox"].includes(element.type) && Array.isArray(properties.options)) {
+                        if (["radio","select","checkbox","sexo","gestao_interna","estado_civil","batismo"].includes(element.type) && Array.isArray(properties.options)) {
                             properties.options = properties.options.map(opt =>
                                 typeof opt === 'object' && opt !== null && 'id' in opt && 'label' in opt
                                     ? opt
@@ -418,7 +456,7 @@ class FormBuilder {
                         }
                         
                         // Inclui allowOther se definido para elementos de seleção
-                        if (["radio","select","checkbox"].includes(element.type) && element.props.allowOther !== undefined) {
+                        if (["radio","select","checkbox","sexo","gestao_interna","estado_civil","batismo"].includes(element.type) && element.props.allowOther !== undefined) {
                             properties.allowOther = element.props.allowOther;
                         }
                         
@@ -486,7 +524,7 @@ class FormBuilder {
     // Obter todos os elementos que podem ser usados como campos em condições
     getFieldElements() {
         return this.formElements.filter(element => {
-            const fieldTypes = ['text', 'number', 'email', 'radio', 'select', 'checkbox', 'cpf', 'nome', 'whatsapp', 'range'];
+            const fieldTypes = ['text', 'number', 'email', 'radio', 'select', 'checkbox', 'cpf', 'nome', 'whatsapp', 'range', 'sexo', 'gestao_interna', 'estado_civil', 'conjugue', 'batismo'];
             return fieldTypes.includes(element.type);
         });
     }
@@ -506,7 +544,7 @@ class FormBuilder {
                     delete properties.helpText;
                 }
                 // Garante que options de radio/select/checkbox são [{id,label}]
-                if (["radio","select","checkbox"].includes(element.type) && Array.isArray(properties.options)) {
+                if (["radio","select","checkbox","sexo","gestao_interna","estado_civil","batismo"].includes(element.type) && Array.isArray(properties.options)) {
                     properties.options = properties.options.map(opt =>
                         typeof opt === 'object' && opt !== null && 'id' in opt && 'label' in opt
                             ? opt
@@ -515,7 +553,7 @@ class FormBuilder {
                 }
                 
                 // Inclui allowOther se definido para elementos de seleção
-                if (["radio","select","checkbox"].includes(element.type) && element.props.allowOther !== undefined) {
+                if (["radio","select","checkbox","sexo","gestao_interna","estado_civil","batismo"].includes(element.type) && element.props.allowOther !== undefined) {
                     properties.allowOther = element.props.allowOther;
                 }
                 
@@ -550,7 +588,7 @@ class FormBuilder {
                 }
                 
                 // Para elementos com opções (select, radio, checkbox), garantir que options existe e está no formato correto
-                if (['select', 'radio', 'checkbox'].includes(element.type)) {
+                if (['select', 'radio', 'checkbox', 'sexo', 'gestao_interna', 'estado_civil'].includes(element.type)) {
                     if (!props.options || !Array.isArray(props.options)) {
                         // Se elementConfig.defaultProps.options for função, executá-la
                         const defaultOptions = elementConfig && elementConfig.defaultProps.options;

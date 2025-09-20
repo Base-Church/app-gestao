@@ -13,7 +13,7 @@ class FormElements {
                     helpText: ''
                 },
                 template: (props, id) => `
-                    <div class="mb-2">
+                    <div class="mb-2" style="display: none;" data-conditions='${JSON.stringify(props.conditions || [])}'>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             ${props.label}
                             ${props.required ? '<span class="text-red-500">*</span>' : ''}
@@ -461,6 +461,114 @@ class FormElements {
                         }
                     </style>
                 `
+            },
+            
+            sexo: {
+                type: 'sexo',
+                label: 'Sexo',
+                icon: 'sexo',
+                defaultProps: {
+                    label: 'Sexo',
+                    required: false,
+                    options: [
+                        { id: 'masculino', label: 'Masculino' },
+                        { id: 'feminino', label: 'Feminino' }
+                    ],
+                    helpText: ''
+                },
+                template: (props, id) => `
+                    <div class="mb-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                            ${props.label}
+                            ${props.required ? '<span class="text-red-500">*</span>' : ''}
+                        </label>
+                        <div class="space-y-2">
+                            ${props.options.map((option, index) => `
+                                <div class="flex items-center">
+                                    <input type="radio" 
+                                           id="${id}_${option.id}" 
+                                           name="${id}" 
+                                           value="${option.id}"
+                                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600">
+                                    <label for="${id}_${option.id}" class="ml-2 text-sm text-gray-700 dark:text-gray-300">${option.label}</label>
+                                </div>
+                            `).join('')}
+                        </div>
+                        ${props.helpText ? `<p class="mt-2 text-sm text-gray-500 dark:text-gray-400">${props.helpText}</p>` : ''}
+                    </div>
+                `
+            },
+           
+            
+            estado_civil: {
+                type: 'estado_civil',
+                label: 'Estado Civil',
+                icon: 'estado_civil',
+                defaultProps: {
+                    label: 'Estado Civil',
+                    required: false,
+                    options: [
+                        { id: 'solteiro', label: 'Solteiro(a)' },
+                        { id: 'casado', label: 'Casado(a)' },
+                        { id: 'divorciado', label: 'Divorciado(a)' },
+                        { id: 'viuvo', label: 'Viúvo(a)' },
+                        { id: 'separado', label: 'Separado(a)' },
+                        { id: 'uniao_estavel', label: 'União Estável' }
+                    ],
+                    placeholder: 'Selecione seu estado civil',
+                    helpText: ''
+                },
+                template: (props, id) => `
+                    <div class="mb-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            ${props.label}
+                            ${props.required ? '<span class="text-red-500">*</span>' : ''}
+                        </label>
+                        <select name="${id}"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" 
+                                ${props.required ? 'required' : ''}>
+                            <option value="">${props.placeholder}</option>
+                            ${props.options.map(option => `<option value="${option.id}">${option.label}</option>`).join('')}
+                        </select>
+                        ${props.helpText ? `<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">${props.helpText}</p>` : ''}
+                    </div>
+                `
+            },
+            
+            batismo: {
+                type: 'batismo',
+                label: 'É batizado nas águas?',
+                icon: 'batismo',
+                defaultProps: {
+                    label: 'É batizado nas águas?',
+                    required: false,
+                    helpText: '',
+                    options: [
+                        { id: 'sim', label: 'Sim' },
+                        { id: 'nao', label: 'Não' }
+                    ]
+                },
+                template: (props, id) => `
+                    <div class="mb-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                            ${props.label}
+                            ${props.required ? '<span class="text-red-500">*</span>' : ''}
+                        </label>
+                        <div class="space-y-2">
+                            ${props.options.map((option, index) => `
+                                <div class="flex items-center">
+                                    <input type="radio" 
+                                           id="${id}_${option.id}" 
+                                           name="${id}" 
+                                           value="${option.id}"
+                                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600">
+                                    <label for="${id}_${option.id}" class="ml-2 text-sm text-gray-700 dark:text-gray-300">${option.label}</label>
+                                </div>
+                            `).join('')}
+                        </div>
+                        ${props.helpText ? `<p class="mt-2 text-sm text-gray-500 dark:text-gray-400">${props.helpText}</p>` : ''}
+                    </div>
+                `
             }
         };
     }
@@ -502,7 +610,10 @@ class FormElements {
             datetime: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
             nome: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>',
             whatsapp: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>',
-            range: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4"/></svg>'
+            range: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4"/></svg>',
+            sexo: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>',
+            estado_civil: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>',
+            batismo: '<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 7.172V5L8 4z"/></svg>'
         };
         return icons[type] || icons.text;
     }
@@ -524,7 +635,10 @@ class FormElements {
             datetime: 'Campo de data e/ou hora',
             nome: 'Campo para nome completo',
             whatsapp: 'Campo para número do WhatsApp',
-            range: 'Slider para seleção de valores'
+            range: 'Slider para seleção de valores',
+            sexo: 'Campo para seleção de sexo',
+            estado_civil: 'Campo para seleção de estado civil',
+            batismo: 'Campo para informar se foi batizado',
         };
         return descriptions[type] || 'Elemento de formulário';
     }

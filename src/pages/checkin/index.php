@@ -72,10 +72,13 @@ require_once __DIR__ . '/../../components/layout/header.php';
                         <thead class="bg-gray-50 dark:bg-gray-700">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Check-in
+                                    ID
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    Processo/Evento
+                                    Nome
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Data Criação
                                 </th>
                                 <th scope="col" class="relative px-6 py-3">
                                     <span class="sr-only">Ações</span>
@@ -95,15 +98,19 @@ require_once __DIR__ . '/../../components/layout/header.php';
         </div>
     </div>
 
-    <!-- Modal Component -->
+    <!-- Modal Components -->
     <?php require_once __DIR__ . '/components/modal.php'; ?>
+    <?php require_once __DIR__ . '/components/modal-create.php'; ?>
 </main>
 
 
 <!-- Scripts da página -->
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/checkin/js/api.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/checkin/js/ui.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/checkin/js/checkin-acessos.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/checkin/js/checkin-itens.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/checkin/js/checkin-formularios.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/checkin/js/state.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/checkin/js/ui.js"></script>
 <script src="<?= $_ENV['URL_BASE'] ?>/src/pages/checkin/js/main.js"></script>
 
 <?php require_once __DIR__ . '/../../components/layout/footer.php'; ?>

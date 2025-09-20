@@ -1,8 +1,11 @@
 <?php
-// Página de preenchimentos de um formulário específico
-$pageTitle = "Preenchimentos do Formulário";
-require_once __DIR__ . '/../../../components/layout/header.php';
+// Configurações da página
+$pageTitle = "Preenchimentos";
+
+// Incluir o header
+require_once __DIR__ . '/../../components/layout/header.php';
 ?>
+
 
 <main class="mt-24 lg:ml-64 px-6 pb-8">
     <div class=" mx-auto">
@@ -53,7 +56,7 @@ require_once __DIR__ . '/../../../components/layout/header.php';
         </div>
 
         <!-- Estados (Loading, Error, Empty) -->
-        <?php include __DIR__ . '/../components/estados.php'; ?>
+        <?php include __DIR__ . '/components/estados.php'; ?>
 
         <!-- Tabela de Preenchimentos -->
         <div id="preenchimentos-table" class="hidden">
@@ -75,9 +78,9 @@ require_once __DIR__ . '/../../../components/layout/header.php';
 
 </main>
 
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/preenchimentos/dados/js/api.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/preenchimentos/dados/js/state.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/preenchimentos/dados/js/ui.js"></script>
-<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/preenchimentos/dados/js/main.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/preenchimentos-dados/js/api.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/preenchimentos-dados/js/state.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/preenchimentos-dados/js/ui.js"></script>
+<script src="<?= $_ENV['URL_BASE'] ?>/src/pages/preenchimentos-dados/js/main.js"></script>
 
-<?php require_once __DIR__ . '/../../../components/layout/footer.php'; ?>
+<?php require_once __DIR__ . '/../../components/layout/footer.php'; ?>

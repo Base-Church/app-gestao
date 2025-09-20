@@ -14,7 +14,7 @@ return [
     // Formularios
     '/formularios'                          => '/src/pages/formularios/index.php',
     '/formularios/preenchimentos'           => '/src/pages/preenchimentos/index.php',
-    '/formularios/preenchimentos/dados'     => '/src/pages/preenchimentos/dados/index.php',
+    '/formularios/preenchimentos/dados'     => '/src/pages/preenchimentos-dados/index.php',
 
     '/formularios/criar'                    => '/src/pages/formularios/builder/index.php',
     '/formularios/editar'                   => '/src/pages/formularios/builder/index.php',

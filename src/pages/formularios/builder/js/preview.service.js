@@ -149,11 +149,20 @@ class FormPreview {
                         <select name="${element.props.name || element.id}"
                                 ${element.props.required ? 'required' : ''}
                                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white">
-                            <option value="">Selecione uma opção</option>
-                            ${(element.props.options || []).map(option => `
-                                <option value="${option.value || option.label || ''}">${option.label || 'Opção'}</option>
+                            <option value="">${element.props.placeholder || 'Selecione uma opção'}</option>
+                            ${(Array.isArray(element.props.options) ? element.props.options : (typeof element.props.options === 'function' ? element.props.options() : [])).map(option => `
+                                <option value="${option.id || option.value || ''}">${option.label || option.text || 'Opção'}</option>
                             `).join('')}
+                            ${element.props.allowOther ? `<option value="other">Outro</option>` : ''}
                         </select>
+                        ${element.props.allowOther ? `
+                            <input type="text" 
+                                   name="${element.props.name || element.id}_other_text" 
+                                   placeholder="Especifique..."
+                                   class="mt-2 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white text-sm"
+                                   style="display: none;">
+                        ` : ''}
+                        ${element.props.helpText ? `<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">${element.props.helpText}</p>` : ''}
                     </div>
                 `;
                 break;
@@ -314,12 +323,120 @@ class FormPreview {
                     </div>
                 `;
                 break;
+                
+            case 'sexo':
+                html = `
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            ${element.props.label || 'Sexo'}
+                            ${element.props.required ? '<span class="text-red-500">*</span>' : ''}
+                        </label>
+                        <div class="space-y-2">
+                            ${(element.props.options || []).map((option, index) => `
+                                <label class="flex items-center">
+                                    <input type="radio" 
+                                           name="${element.props.name || element.id}"
+                                           value="${option.id || option.value || ''}"
+                                           ${element.props.required ? 'required' : ''}
+                                           class="mr-2 text-primary-600 focus:ring-primary-500">
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">${option.label || 'Opção'}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                        ${element.props.helpText ? `<p class="mt-2 text-sm text-gray-500 dark:text-gray-400">${element.props.helpText}</p>` : ''}
+                    </div>
+                `;
+                break;
+                
+            case 'gestao_interna':
+                html = `
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            ${element.props.label || 'Já foi batizado nas águas?'}
+                            ${element.props.required ? '<span class="text-red-500">*</span>' : ''}
+                        </label>
+                        <div class="space-y-2">
+                            ${(element.props.options || []).map((option, index) => `
+                                <label class="flex items-center">
+                                    <input type="radio" 
+                                           name="${element.props.name || element.id}"
+                                           value="${option.id || option.value || ''}"
+                                           ${element.props.required ? 'required' : ''}
+                                           class="mr-2 text-primary-600 focus:ring-primary-500">
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">${option.label || 'Opção'}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                        ${element.props.helpText ? `<p class="mt-2 text-sm text-gray-500 dark:text-gray-400">${element.props.helpText}</p>` : ''}
+                    </div>
+                `;
+                break;
+                
+            case 'estado_civil':
+                html = `
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            ${element.props.label || 'Estado Civil'}
+                            ${element.props.required ? '<span class="text-red-500">*</span>' : ''}
+                        </label>
+                        <select name="${element.props.name || element.id}"
+                                ${element.props.required ? 'required' : ''}
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white">
+                            <option value="">${element.props.placeholder || 'Selecione seu estado civil'}</option>
+                            ${(element.props.options || []).map(option => `
+                                <option value="${option.id || option.value || ''}">${option.label || 'Opção'}</option>
+                            `).join('')}
+                        </select>
+                        ${element.props.helpText ? `<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">${element.props.helpText}</p>` : ''}
+                    </div>
+                `;
+                break;
+            case 'batismo':
+                html = `
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                            ${element.props.label || 'É batizado nas águas?'}
+                            ${element.props.required ? '<span class="text-red-500">*</span>' : ''}
+                        </label>
+                        <div class="space-y-2">
+                            ${element.props.options ? element.props.options.map(option => `
+                                <div class="flex items-center">
+                                    <input type="radio" 
+                                           id="${element.id}_${option.id}" 
+                                           name="${element.props.name || element.id}" 
+                                           value="${option.id}"
+                                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600"
+                                           ${element.props.required ? 'required' : ''}>
+                                    <label for="${element.id}_${option.id}" class="ml-2 text-sm text-gray-700 dark:text-gray-300">${option.label}</label>
+                                </div>
+                            `).join('') : ''}
+                        </div>
+                        ${element.props.helpText ? `<p class="mt-2 text-sm text-gray-500 dark:text-gray-400">${element.props.helpText}</p>` : ''}
+                    </div>
+                `;
+                break;
+            case 'conjugue':
+                html = `
+                    <div class="mb-4" style="display: none;" data-conditions='${JSON.stringify(element.props.conditions || [])}'>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            ${element.props.label || 'Nome do Cônjuge'}
+                            ${element.props.required ? '<span class="text-red-500">*</span>' : ''}
+                        </label>
+                        <input type="text" 
+                               name="${element.props.name || element.id}"
+                               placeholder="${element.props.placeholder || 'Digite o nome do cônjuge'}"
+                               ${element.props.required ? 'required' : ''}
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white">
+                        ${element.props.helpText ? `<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">${element.props.helpText}</p>` : ''}
+                    </div>
+                `;
+                break;
         }
         
         wrapper.innerHTML = html;
         
         // Adicionar event listeners para campos que podem afetar condições
-        if (['text', 'email', 'number', 'radio', 'select', 'checkbox', 'cpf', 'birthdate', 'datetime', 'nome', 'whatsapp', 'range'].includes(element.type)) {
+        if (['text', 'email', 'number', 'radio', 'select', 'checkbox', 'cpf', 'birthdate', 'datetime', 'nome', 'whatsapp', 'range', 'conjugue', 'batismo', 'sexo', 'gestao_interna', 'estado_civil'].includes(element.type)) {
             const inputs = wrapper.querySelectorAll('input, select');
             inputs.forEach(input => {
                 input.addEventListener('change', () => {

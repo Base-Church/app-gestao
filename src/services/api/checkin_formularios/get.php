@@ -46,6 +46,9 @@ foreach ($_GET as $key => $value) {
 if (isset($_GET['formulario_id'])) {
     $params['formulario_id'] = $_GET['formulario_id'];
 }
+if (isset($_GET['id'])) {
+    $params['id'] = $_GET['id'];
+}
 if (isset($_GET['processo_id'])) {
     $params['processo_id'] = $_GET['processo_id'];
 }

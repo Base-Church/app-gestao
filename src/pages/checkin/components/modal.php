@@ -6,7 +6,7 @@
                 <!-- Header do Modal -->
                 <div class="flex items-center justify-between border-b dark:border-gray-700 px-6 py-4">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white" id="modal-title">
-                        Novo Check-in
+                        Check-in
                     </h3>
                     <button type="button" 
                             id="btn-close-modal"
@@ -22,7 +22,7 @@
                 <div class="px-6 py-4">
                     <form id="form-create" class="space-y-6">
                         <input type="hidden" id="checkin-id" name="id" value="">
-                        <input type="hidden" id="checkin-formulario-id" name="formulario_id" value="">
+                        <input type="hidden" id="ministerio-id" name="ministerio_id" value="">
                         
                         <!-- Grid Principal -->
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -45,8 +45,21 @@
                                            required>
                                 </div>
                                 
-                                <!-- Processo, Evento e Formulário lado a lado -->
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <!-- Formulário e Processo lado a lado -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Formulário -->
+                                    <div>
+                                        <label for="checkin-formulario" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-200">
+                                            Formulário
+                                        </label>
+                                        <select name="formulario_id" 
+                                                id="checkin-formulario" 
+                                                class="w-full rounded-md border-0 py-2 px-3 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-primary-600 dark:bg-gray-800 dark:focus:ring-primary-500 sm:text-sm sm:leading-6"
+                                                required>
+                                            <option value="">Selecione um formulário</option>
+                                        </select>
+                                    </div>
+                                    
                                     <!-- Processo -->
                                     <div>
                                         <label for="checkin-processo" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-200">
@@ -58,30 +71,18 @@
                                             <option value="">Selecione um processo</option>
                                         </select>
                                     </div>
-                                    
-                                    <!-- Evento -->
-                                    <div>
-                                        <label for="checkin-evento" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-200">
-                                            Evento
-                                        </label>
-                                        <select name="evento_id" 
-                                                id="checkin-evento" 
-                                                class="w-full rounded-md border-0 py-2 px-3 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-primary-600 dark:bg-gray-800 dark:focus:ring-primary-500 sm:text-sm sm:leading-6">
-                                            <option value="">Selecione um evento</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <!-- Formulário -->
-                                    <div>
-                                        <label for="checkin-formulario" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-200">
-                                            Formulário
-                                        </label>
-                                        <select name="formulario_id" 
-                                                id="checkin-formulario" 
-                                                class="w-full rounded-md border-0 py-2 px-3 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-primary-600 dark:bg-gray-800 dark:focus:ring-primary-500 sm:text-sm sm:leading-6">
-                                            <option value="">Selecione um formulário</option>
-                                        </select>
-                                    </div>
+                                </div>
+                                
+                                <!-- Evento -->
+                                <div>
+                                    <label for="checkin-evento" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-200">
+                                        Evento
+                                    </label>
+                                    <select name="evento_id" 
+                                            id="checkin-evento" 
+                                            class="w-full rounded-md border-0 py-2 px-3 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:ring-2 focus:ring-primary-600 dark:bg-gray-800 dark:focus:ring-primary-500 sm:text-sm sm:leading-6">
+                                        <option value="">Selecione um evento</option>
+                                    </select>
                                 </div>
                                 
                                 <!-- Itens do Check-in -->
@@ -99,8 +100,9 @@
                                             Adicionar Item
                                         </button>
                                     </div>
-                                    <div id="checkin-itens-container" class="space-y-3">
-                                        <div class="text-center text-sm text-gray-500 dark:text-gray-400 py-8 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800">
+                                    <!-- Container com rolagem para itens -->
+                                    <div id="checkin-itens-container" class="max-h-64 overflow-y-auto space-y-3 border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-gray-50 dark:bg-gray-900">
+                                        <div class="text-center text-sm text-gray-500 dark:text-gray-400 py-8">
                                             <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                                             </svg>
@@ -131,14 +133,15 @@
                                             Adicionar Pessoa
                                         </button>
                                     </div>
-                                    <div id="checkin-acessos-container" class="space-y-3">
-                                        <div class="text-center text-sm text-gray-500 dark:text-gray-400 py-8 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800">
-                            <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"></path>
-                            </svg>
-                            <p class="font-medium">Nenhuma pessoa autorizada</p>
-                            <p class="mt-1">Clique em "Adicionar Pessoa" para começar</p>
-                        </div>
+                                    <!-- Container com rolagem para acessos -->
+                                    <div id="checkin-acessos-container" class="max-h-64 overflow-y-auto space-y-3 border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-gray-50 dark:bg-gray-900">
+                                        <div class="text-center text-sm text-gray-500 dark:text-gray-400 py-8">
+                                            <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"></path>
+                                            </svg>
+                                            <p class="font-medium">Nenhuma pessoa autorizada</p>
+                                            <p class="mt-1">Clique em "Adicionar Pessoa" para começar</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -154,7 +157,7 @@
                                 class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                             Cancelar
                         </button>
-
+                        
                     </div>
                 </div>
             </div>

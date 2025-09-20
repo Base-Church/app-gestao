@@ -226,7 +226,7 @@ class PropertiesManager {
      // Obter campos disponíveis para condições
      getAvailableFields() {
          return this.formBuilder.formElements
-             .filter(el => el.id !== this.currentElement.id && ['text', 'number', 'email', 'radio', 'select', 'checkbox', 'range'].includes(el.type))
+             .filter(el => el.id !== this.currentElement.id && ['text', 'number', 'email', 'radio', 'select', 'checkbox', 'range', 'sexo', 'gestao_interna', 'estado_civil', 'conjugue', 'batismo'].includes(el.type))
              .map(el => ({ id: el.id, label: el.props.label || el.props.placeholder || `Campo ${el.type}` }));
      }
 
@@ -357,6 +357,21 @@ class PropertiesManager {
                 break;
             case 'range':
                 html += this.renderRangeProperties(element);
+                break;
+            case 'sexo':
+                html += this.renderSexoProperties(element);
+                break;
+            case 'gestao_interna':
+                html += this.renderGestaoInternaProperties(element);
+                break;
+            case 'estado_civil':
+                html += this.renderEstadoCivilProperties(element);
+                break;
+            case 'batismo':
+                this.renderBatismoProperties(element);
+                break;
+            case 'conjugue':
+                this.renderConjugueProperties(element);
                 break;
         }
 
@@ -911,6 +926,134 @@ class PropertiesManager {
             });
         });
     }
+
+    // Propriedades para campo de sexo
+    renderSexoProperties(element) {
+        return `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Rótulo</label>
+                    <input type="text" id="prop-label" value="${element.props.label || ''}" 
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Texto de ajuda</label>
+                    <textarea id="prop-helpText" rows="2" 
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">${element.props.helpText || ''}</textarea>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="prop-required" ${element.props.required ? 'checked' : ''} 
+                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                    <label for="prop-required" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Campo obrigatório</label>
+                </div>
+            </div>
+        `;
+    }
+
+    // Propriedades para campo de gestão interna
+    renderGestaoInternaProperties(element) {
+        return `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Pergunta</label>
+                    <input type="text" id="prop-label" value="${element.props.label || ''}" 
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Texto de ajuda</label>
+                    <textarea id="prop-helpText" rows="2" 
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">${element.props.helpText || ''}</textarea>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="prop-required" ${element.props.required ? 'checked' : ''} 
+                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                    <label for="prop-required" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Campo obrigatório</label>
+                </div>
+            </div>
+        `;
+    }
+
+    // Propriedades para campo de estado civil
+    renderEstadoCivilProperties(element) {
+        return `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Rótulo</label>
+                    <input type="text" id="prop-label" value="${element.props.label || ''}" 
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Texto do placeholder</label>
+                    <input type="text" id="prop-placeholder" value="${element.props.placeholder || ''}" 
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Texto de ajuda</label>
+                    <textarea id="prop-helpText" rows="2" 
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">${element.props.helpText || ''}</textarea>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="prop-required" ${element.props.required ? 'checked' : ''} 
+                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                    <label for="prop-required" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Campo obrigatório</label>
+                </div>
+            </div>
+        `;
+    }
+
+    // Propriedades para campo de cônjuge
+    renderBatismoProperties(element) {
+        return `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Rótulo</label>
+                    <input type="text" id="prop-label" value="${element.props.label || 'É batizado nas águas?'}" 
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Texto de ajuda</label>
+                    <textarea id="prop-helpText" rows="2" 
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">${element.props.helpText || ''}</textarea>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="prop-required" ${element.props.required ? 'checked' : ''} 
+                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                    <label for="prop-required" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Campo obrigatório</label>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Este campo apresenta as opções: Sim e Não</p>
+                </div>
+            </div>
+        `;
+    }
+
+    renderConjugueProperties(element) {
+        return `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Rótulo</label>
+                    <input type="text" id="prop-label" value="${element.props.label || 'Nome do Cônjuge'}" 
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Texto do placeholder</label>
+                    <input type="text" id="prop-placeholder" value="${element.props.placeholder || 'Digite o nome do cônjuge'}" 
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Texto de ajuda</label>
+                    <textarea id="prop-helpText" rows="2" 
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white">${element.props.helpText || ''}</textarea>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="prop-required" ${element.props.required ? 'checked' : ''} 
+                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                    <label for="prop-required" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Campo obrigatório</label>
+                </div>
+            </div>
+        `;
+    }
+
 }
 
 // Exporta a classe globalmente

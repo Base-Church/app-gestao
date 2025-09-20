@@ -6,6 +6,7 @@ class CheckinAPI {
         this.checkinAcessosPath = `${this.baseUrl}/src/services/api/checkin_formularios_acessos`;
         this.processosPath = `${this.baseUrl}/src/services/api/processos_etapas`;
         this.eventosPath = `${this.baseUrl}/src/services/api/eventos`;
+        this.formulariosPath = `${this.baseUrl}/src/services/api/formularios`;
     }
 
     // Obter ID do ministério
@@ -88,6 +89,10 @@ class CheckinAPI {
 
     async update(id, data) {
         try {
+            console.log('API Update - Método:', 'PUT');
+            console.log('API Update - URL:', `${this.checkinFormulariosPath}/put.php?id=${id}`);
+            console.log('API Update - Payload:', data);
+            
             if (!id) {
                 throw new Error('ID é obrigatório');
             }
@@ -107,12 +112,18 @@ class CheckinAPI {
                 body: JSON.stringify(payload)
             });
 
+            console.log('API Update - Response Status:', response.status);
+            console.log('API Update - Response OK:', response.ok);
+
             if (!response.ok) {
                 const errorText = await response.text();
+                console.error('API Update - Error Response:', errorText);
                 throw new Error(errorText || 'Erro ao atualizar check-in');
             }
 
-            return await response.json();
+            const result = await response.json();
+            console.log('API Update - Success Response:', result);
+            return result;
         } catch (error) {
             console.error('Erro na API:', error);
             throw new Error(error.message || 'Erro ao atualizar check-in');
@@ -145,7 +156,7 @@ class CheckinAPI {
         try {
             const ministerio_id = this.getMinisterioId();
             const params = new URLSearchParams({
-                formulario_id: id,
+                id: id,
                 ministerio_id
             });
             
@@ -156,7 +167,24 @@ class CheckinAPI {
                 throw new Error(errorText || `Erro ${response.status} ao buscar check-in`);
             }
             
-            return await response.json();
+            const data = await response.json();
+            
+            // Se a API retorna um array, pega o primeiro item
+            if (Array.isArray(data) && data.length > 0) {
+                return data[0];
+            }
+            
+            // Se a API retorna um objeto com propriedade data
+            if (data && data.data && Array.isArray(data.data) && data.data.length > 0) {
+                return data.data[0];
+            }
+            
+            // Se a API retorna um objeto direto
+            if (data && typeof data === 'object' && !Array.isArray(data)) {
+                return data;
+            }
+            
+            return data;
         } catch (error) {
             console.error('Erro na API:', error);
             throw new Error(error.message || 'Erro ao buscar check-in');
@@ -383,14 +411,14 @@ class CheckinAPI {
         }
     }
 
-    async getFormularios() {
+    // ========== FORMULÁRIOS ==========
+    async getFormularios(ministerio_id) {
         try {
-            const ministerio_id = this.getMinisterioId();
             const params = new URLSearchParams({
                 ministerio_id
             });
             
-            const response = await fetch(`${this.baseUrl}/src/services/api/formularios/get.php?${params}`);
+            const response = await fetch(`${this.formulariosPath}/get.php?${params}`);
             
             if (!response.ok) {
                 const errorText = await response.text();
@@ -401,6 +429,27 @@ class CheckinAPI {
         } catch (error) {
             console.error('Erro na API:', error);
             throw new Error(error.message || 'Erro ao buscar formulários');
+        }
+    }
+
+    // ========== PROCESSOS ==========
+    async getProcessos(ministerio_id) {
+        try {
+            const params = new URLSearchParams({
+                ministerio_id
+            });
+            
+            const response = await fetch(`${this.processosPath}/get.php?${params}`);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || `Erro ${response.status} ao buscar processos`);
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Erro na API:', error);
+            throw new Error(error.message || 'Erro ao buscar processos');
         }
     }
 }

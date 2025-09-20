@@ -19,9 +19,7 @@ class CheckinApp {
             // Carregar dados iniciais
             await this.loadCheckins();
 
-            console.log('CheckinApp inicializado com sucesso');
         } catch (error) {
-            console.error('Erro ao inicializar CheckinApp:', error);
             this.ui?.showError('Erro ao inicializar a aplicação');
         }
     }
@@ -47,22 +45,97 @@ class CheckinApp {
             cancelBtn.addEventListener('click', () => this.toggleModal(false));
         }
 
-        // Formulário de criação/edição
-        const form = document.getElementById('form-create');
-        if (form) {
-            form.addEventListener('submit', (e) => this.handleFormSubmit(e));
-        }
+        // Auto-save nos campos do modal de edição
+        this.setupAutoSaveListeners();
 
         // Eventos de paginação
         this.setupPaginationEvents();
 
         // Eventos de ordenação
         this.setupSortingEvents();
-
-
     }
 
-    setupPaginationEvents() {
+    setupAutoSaveListeners() {
+        console.log('🔧 Configurando auto-save listeners...');
+        
+        const nomeField = document.getElementById('checkin-nome');
+        const formularioSelect = document.getElementById('checkin-formulario');
+        const processoSelect = document.getElementById('checkin-processo');
+        const eventoSelect = document.getElementById('checkin-evento');
+
+        console.log('📋 Elementos encontrados:', {
+            nome: !!nomeField,
+            formulario: !!formularioSelect,
+            processo: !!processoSelect,
+            evento: !!eventoSelect
+        });
+
+        // Debounce para evitar muitas requisições
+        let saveTimeout;
+        const debouncedSave = (fieldName) => {
+            console.log(`🔄 Campo alterado: ${fieldName} - iniciando debounce...`);
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                console.log(`💾 Executando auto-save após alteração em: ${fieldName}`);
+                this.autoSave();
+            }, 1000); // Aguarda 1 segundo após a última alteração
+        };
+
+        // Listeners para os campos
+        if (nomeField) {
+            nomeField.addEventListener('input', () => debouncedSave('nome'));
+            console.log('✅ Listener adicionado ao campo nome');
+        }
+        
+        if (formularioSelect) {
+            formularioSelect.addEventListener('change', () => debouncedSave('formulario'));
+            console.log('✅ Listener adicionado ao select formulário');
+        }
+        
+        if (processoSelect) {
+            processoSelect.addEventListener('change', () => debouncedSave('processo'));
+            console.log('✅ Listener adicionado ao select processo');
+        }
+        
+        if (eventoSelect) {
+            eventoSelect.addEventListener('change', () => debouncedSave('evento'));
+            console.log('✅ Listener adicionado ao select evento');
+        }
+    }
+
+    async autoSave() {
+        const form = document.getElementById('form-create');
+        const checkinId = form?.querySelector('#checkin-id')?.value;
+        
+        // Só faz auto-save se estiver editando (tem ID)
+        if (!checkinId) return;
+
+        const checkinData = this.getFormData();
+        if (!checkinData) return;
+
+        // Validação básica
+        if (!checkinData.nome) {
+            this.ui.showNotification('Nome do check-in é obrigatório', 'error');
+            return;
+        }
+
+        try {
+            console.log('Auto-save iniciado para ID:', checkinId);
+            const response = await this.api.update(checkinId, checkinData);
+            
+            if (response.success || response.code === 200) {
+                this.state.updateCheckin(parseInt(checkinId), response.data || checkinData);
+                this.ui.showNotification('Check-in salvo automaticamente', 'success', 2000);
+                this.renderCheckins();
+            } else {
+                throw new Error(response.message || 'Erro ao salvar check-in');
+            }
+        } catch (error) {
+            console.error('Erro no auto-save:', error);
+            this.ui.showNotification('Erro ao salvar: ' + error.message, 'error');
+        }
+    }
+        setupPaginationEvents() {
         // Implementação básica se necessário
     }
 
@@ -78,41 +151,12 @@ class CheckinApp {
             this.state.setCheckins(checkins);
             this.renderCheckins();
         } catch (error) {
-            console.error('Erro ao carregar check-ins:', error);
             this.ui.showError('Erro ao carregar check-ins: ' + error.message);
         }
     }
 
-    async create() {
-        // Solicitar apenas o nome do check-in
-        const nome = prompt('Digite o nome do novo check-in:');
-        if (!nome || nome.trim() === '') {
-            this.ui.showNotification('Nome do check-in é obrigatório', 'error');
-            return;
-        }
-
-        try {
-            // Criar check-in apenas com nome
-            const checkinData = { nome: nome.trim() };
-            const response = await this.api.create(checkinData);
-            
-            if (response.success || response.code === 201) {
-                const newCheckin = response.data || { ...checkinData, id: Date.now() };
-                this.state.addCheckin(newCheckin);
-                this.renderCheckins();
-                this.ui.showNotification('Check-in criado com sucesso! Agora você pode editá-lo para adicionar mais detalhes.', 'success');
-                
-                // Abrir automaticamente para edição
-                setTimeout(() => {
-                    this.edit(newCheckin.id);
-                }, 1000);
-            } else {
-                throw new Error(response.message || 'Erro ao criar check-in');
-            }
-        } catch (error) {
-            console.error('Erro ao criar check-in:', error);
-            this.ui.showNotification('Erro ao criar check-in: ' + error.message, 'error');
-        }
+    create() {
+        this.ui.openCreateModal();
     }
 
     async edit(checkinId) {
@@ -135,7 +179,6 @@ class CheckinApp {
             this.state.setCurrentCheckinId(checkinId);
             await this.ui.openModal(checkin);
         } catch (error) {
-            console.error('Erro ao carregar check-in para edição:', error);
             this.ui.showNotification('Erro ao carregar check-in: ' + error.message, 'error');
         } finally {
             this.ui.stopEditLoading(checkinId);
@@ -167,7 +210,8 @@ class CheckinApp {
         }
 
         try {
-            const checkinId = formData.get('checkin-id');
+            const form = document.getElementById('form-create');
+            const checkinId = form?.querySelector('#checkin-id')?.value;
             let response;
 
             if (checkinId) {
@@ -194,7 +238,6 @@ class CheckinApp {
             this.ui.closeModal();
             this.renderCheckins();
         } catch (error) {
-            console.error('Erro ao salvar check-in:', error);
             this.ui.showNotification('Erro ao salvar check-in: ' + error.message, 'error');
         }
     }
@@ -217,7 +260,6 @@ class CheckinApp {
                 throw new Error(response.message || 'Erro ao excluir check-in');
             }
         } catch (error) {
-            console.error('Erro ao excluir check-in:', error);
             this.ui.showNotification('Erro ao excluir check-in: ' + error.message, 'error');
         }
     }
@@ -270,6 +312,8 @@ class CheckinApp {
 // Inicializar aplicação quando DOM estiver pronto
 document.addEventListener('DOMContentLoaded', () => {
     window.app = new CheckinApp();
+    // Disponibilizar UI globalmente para os botões inline
+    window.checkinUI = window.app.getUI();
 });
 
 // Exportar para uso global
